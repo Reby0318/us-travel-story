@@ -7,9 +7,25 @@ Turn the US states you've visited into an aesthetic **Instagram Story** (1080 ×
 
 📘 **[Download the PDF lookbook](US-Travel-Story-Lookbook.pdf)**: all 14 designs at full size, with recommendations.
 
+## ✨ No code? Use the online maker
+
+### 👉 **[reby0318.github.io/us-travel-story](https://reby0318.github.io/us-travel-story/)**
+
+It works like a survey, on your phone or laptop:
+
+1. Tap the states you've been to (grouped by region, with search and "select all").
+2. Tap the landmark cities for your skyline, or type any other city.
+3. Pick a headline, choose "since when", and add your name (optional).
+4. Choose a design. The preview updates live.
+5. Tap **Download my Story** to get a 1080 × 1920 PNG, ready to post. On phones it opens the share sheet, so you can save it to Photos or send it straight to Instagram.
+
+Nothing you type is uploaded anywhere. Everything runs in your browser. **Copy link to my answers** gives you a link that reopens your exact Story later.
+
 ---
 
-## Quick start (about 2 minutes)
+---
+
+## Quick start for tinkerers (edit the config file)
 
 1. **Download** this repo (green **Code** button → *Download ZIP*) and unzip it.
 2. **Open `my-travel.js`** in any text editor and change it to your own info:
@@ -79,6 +95,8 @@ Any other city still shows up, with a generic skyline and its name. The skyline 
 ## Folder layout
 
 ```
+index.html            ← the no-code survey maker (GitHub Pages)
+maker/thumbs/         ← design thumbnails for the maker
 my-travel.js          ← edit me
 generator/index.html  ← all designs (open in a browser)
 generator/data/       ← US + world map shapes

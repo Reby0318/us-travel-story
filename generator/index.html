@@ -9,11 +9,13 @@
 <svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
 <script>
 const US=window.US_STATES, WORLD=window.WORLD_COUNTRIES;
-const V=+(location.hash.match(/v=(\d+)/)||[0,1])[1];
+const V=+(location.hash.match(/[#&]v=(\d+)/)||[0,1])[1];
 const CONFIG=Object.assign({name:"Me",title:"States I've Been To",since:"since I moved to the US",sinceShort:"since day one",states:[],cities:[]},window.CONFIG||{});
+/* settings passed from the maker page (#cfg=base64 JSON) override my-travel.js */
+try{const mc=location.hash.match(/[#&]cfg=([^&]+)/);if(mc)Object.assign(CONFIG,JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(mc[1]))))));}catch(e){console.warn("bad cfg",e);}
 const VISITED=CONFIG.states.slice();
 const VIS=new Set(VISITED), N=VISITED.length, ALPHA=VISITED.slice().sort();
-const AB={"Alabama":"AL","Arizona":"AZ","Arkansas":"AR","California":"CA","Colorado":"CO","Connecticut":"CT","Delaware":"DE","Florida":"FL","Georgia":"GA","Idaho":"ID","Illinois":"IL","Indiana":"IN","Iowa":"IA","Kansas":"KS","Kentucky":"KY","Louisiana":"LA","Maine":"ME","Maryland":"MD","Massachusetts":"MA","Michigan":"MI","Minnesota":"MN","Mississippi":"MS","Missouri":"MO","Montana":"MT","Nebraska":"NE","Nevada":"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND","Ohio":"OH","Oklahoma":"OK","Oregon":"OR","Pennsylvania":"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD","Tennessee":"TN","Texas":"TX","Utah":"UT","Vermont":"VT","Virginia":"VA","Washington":"WA","West Virginia":"WV","Wisconsin":"WI","Wyoming":"WY","District of Columbia":""};
+const AB={"Alaska":"AK","Hawaii":"HI","Alabama":"AL","Arizona":"AZ","Arkansas":"AR","California":"CA","Colorado":"CO","Connecticut":"CT","Delaware":"DE","Florida":"FL","Georgia":"GA","Idaho":"ID","Illinois":"IL","Indiana":"IN","Iowa":"IA","Kansas":"KS","Kentucky":"KY","Louisiana":"LA","Maine":"ME","Maryland":"MD","Massachusetts":"MA","Michigan":"MI","Minnesota":"MN","Mississippi":"MS","Missouri":"MO","Montana":"MT","Nebraska":"NE","Nevada":"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND","Ohio":"OH","Oklahoma":"OK","Oregon":"OR","Pennsylvania":"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD","Tennessee":"TN","Texas":"TX","Utah":"UT","Vermont":"VT","Virginia":"VA","Washington":"WA","West Virginia":"WV","Wisconsin":"WI","Wyoming":"WY","District of Columbia":""};
 const EMO={"Washington":"☕","Oregon":"🌲","California":"🌉","Nevada":"🎰","Arizona":"🌵","New Mexico":"🌶️","Texas":"🤠","Oklahoma":"🌪️","Arkansas":"💎","Iowa":"🌽","Wisconsin":"🧀","Illinois":"🍕","Indiana":"🏎️","Michigan":"🚗","Ohio":"🎢","Kentucky":"🐎","Tennessee":"🎸","North Carolina":"✈️","Florida":"🌴","New York":"🗽","Pennsylvania":"🔔","New Jersey":"🎡"};
 const POS={"Michigan":[-84.6,43.4],"Florida":[-81.4,28.0],"New Jersey":[-74.45,40.15],"Kentucky":[-85.3,37.55],"California":[-119.6,36.9],"New York":[-75.4,42.85],"Oklahoma":[-97.4,35.55],"Texas":[-99.3,31.3],"Washington":[-120.2,47.4],"Illinois":[-89.2,40.1],"Tennessee":[-86.4,35.8],"North Carolina":[-79.3,35.55],"Pennsylvania":[-77.6,40.9],"Indiana":[-86.25,39.9],"Ohio":[-82.75,40.3],"Wisconsin":[-89.8,44.6],"Arkansas":[-92.4,34.8],"Louisiana":[-92.4,31.0],"Idaho":[-114.6,43.9],"Virginia":[-78.6,37.6],"West Virginia":[-80.6,38.65],"Minnesota":[-94.4,46.0],"Maine":[-69.2,45.3],"Vermont":[-72.7,44.05],"New Hampshire":[-71.6,43.6],"Massachusetts":[-69.2,42.05],"Rhode Island":[-70.9,40.95],"Connecticut":[-72.7,40.75],"Delaware":[-74.2,38.5],"Maryland":[-74.6,37.8]};
 const OUT=new Set(["Massachusetts","Rhode Island","Connecticut","Delaware","Maryland"]);
@@ -62,9 +64,9 @@ function listCols(g,x,y,cols,colW,rowH,draw){const per=Math.ceil(ALPHA.length/co
 
 
 /* ---------- shared for guide & passport families ---------- */
-const REG=n=>["Washington","Oregon","California","Nevada","Idaho","Montana","Wyoming","Utah","Colorado"].includes(n)?"West":["Arizona","New Mexico","Texas","Oklahoma"].includes(n)?"Southwest":["North Dakota","South Dakota","Nebraska","Kansas","Minnesota","Iowa","Missouri","Wisconsin","Illinois","Indiana","Michigan","Ohio"].includes(n)?"Midwest":["New York","Pennsylvania","New Jersey","Vermont","New Hampshire","Maine","Massachusetts","Rhode Island","Connecticut"].includes(n)?"Northeast":"Southeast";
+const REG=n=>["Washington","Oregon","California","Nevada","Idaho","Montana","Wyoming","Utah","Colorado","Alaska","Hawaii"].includes(n)?"West":["Arizona","New Mexico","Texas","Oklahoma"].includes(n)?"Southwest":["North Dakota","South Dakota","Nebraska","Kansas","Minnesota","Iowa","Missouri","Wisconsin","Illinois","Indiana","Michigan","Ohio"].includes(n)?"Midwest":["New York","Pennsylvania","New Jersey","Vermont","New Hampshire","Maine","Massachusetts","Rhode Island","Connecticut"].includes(n)?"Northeast":"Southeast";
 const REGS=["West","Southwest","Midwest","Southeast","Northeast"];
-const RTOT={},RVIS={};STATES.forEach(d=>{const r=REG(d.properties.name);RTOT[r]=(RTOT[r]||0)+1;if(VIS.has(d.properties.name))RVIS[r]=(RVIS[r]||0)+1;});
+const RTOT={},RVIS={};STATES.map(d=>d.properties.name).concat(["Alaska","Hawaii"]).forEach(n=>{const r=REG(n);RTOT[r]=(RTOT[r]||0)+1;if(VIS.has(n))RVIS[r]=(RVIS[r]||0)+1;});
 function allLabels(m,cv,cu,f="DM Sans",s=14){STATES.forEach(d=>{const n=d.properties.name,v=VIS.has(n),[x,y]=m.anchor(n);T(m.g,x,y+5,AB[n],{f,w:700,s:OUT.has(n)?s-3:s,c:v?cv:cu,a:"middle"});});}
 function box(x,y,w,h,title,col,B,fill="#fffaf3"){const g=svg.append("g").attr("transform",`translate(${x},${y})`);g.append("rect").attr("width",w).attr("height",h).attr("rx",18).attr("fill",fill).attr("stroke",B).attr("stroke-width",2);const tw=Math.max(200,title.length*15+60);g.append("rect").attr("x",w/2-tw/2).attr("y",-18).attr("width",tw).attr("height",36).attr("rx",18).attr("fill",col);T(g,w/2,7,title,{f:"DM Sans",w:700,s:17,ls:2,c:"#fff",a:"middle"});return g;}
 function inkF(seed){const id="ink"+(uid++);const f=defs.append("filter").attr("id",id);f.append("feTurbulence").attr("type","fractalNoise").attr("baseFrequency",1.2).attr("numOctaves",2).attr("seed",seed).attr("result","n");f.append("feColorMatrix").attr("in","n").attr("values","0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.6 2.1").attr("result","m");f.append("feComposite").attr("in","SourceGraphic").attr("in2","m").attr("operator","in");return `url(#${id})`;}
@@ -969,7 +971,7 @@ function v55(){const ST=STATS();
  T(svg,72,200,`TRAVEL PORTFOLIO REVIEW  ·  ${CONFIG.sinceShort.toUpperCase()}`,{f:MONO,w:600,s:20,ls:3,c:TEAL});
  fitT(T(svg,68,292,"US Market Coverage",{f:SANS,w:700,s:86,c:NAVY,ls:-1}),940,86);
  T(svg,72,345,`A footprint across ${N} of 50 states, with presence in ${ST.ra===5?"all 5":ST.ra+" of 5"} regions`,{f:PLEX,s:25,c:MUT});
- const K=[[`${Math.round(N/50*100)}%`,"COVERAGE","of 50 states"],[`${N}`,"STATES ENTERED","coast to coast"],[`${ST.ra}/5`,"REGIONS ACTIVE",ST.ra===5?"full presence":`${5-ST.ra} to go`],[`${CONFIG.cities.length}`,"KEY CITIES",`${CONFIG.cities[0]} → ${CONFIG.cities[CONFIG.cities.length-1]}`]];
+ const K=[[`${Math.round(N/50*100)}%`,"COVERAGE","of 50 states"],[`${N}`,"STATES ENTERED","coast to coast"],[`${ST.ra}/5`,"REGIONS ACTIVE",ST.ra===5?"full presence":`${5-ST.ra} to go`],[`${CONFIG.cities.length}`,"KEY CITIES",(CONFIG.cities.length?`${CONFIG.cities[0]} → ${CONFIG.cities[CONFIG.cities.length-1]}`:"add some!")]];
  K.forEach(([v,k,s],i)=>{const x=72+i*238,g=svg.append("g");cardBox(g,x,388,222,170,{sh});g.append("rect").attr("x",x).attr("y",388).attr("width",6).attr("height",170).attr("rx",3).attr("fill",i===0?CORAL:TEAL);
   T(g,x+26,428,k,{f:MONO,w:600,s:14,ls:2,c:MUT});T(g,x+24,500,v,{f:SANS,w:700,s:62,c:NAVY});T(g,x+26,536,s,{f:PLEX,s:17,c:MUT});});
  const mg=svg.append("g");cardBox(mg,72,590,936,580,{sh});
@@ -1064,7 +1066,7 @@ function v58(){const ST=STATS();
  const INK="#2c2531",MUT="#857a88",R={West:"#7fb79c",Southwest:"#eea27f",Midwest:"#efcd78",Southeast:"#e9a0b4",Northeast:"#9fb3e6"};
  aura({base:"#f8f2ec",blobs:[[120,200,330,"#f8d3dc"],[980,240,300,"#fbe1c6"],[960,1000,340,"#e2dbf4"],[100,1050,320,"#d7e9ef"],[560,1750,380,"#f7d6df"],[1000,1820,240,"#f8eccb"]]});
  const sh=shadow(0,12,22,INK,.10),glass=(g,x,y,w,h,r=26)=>g.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",r).attr("fill","#ffffff").attr("fill-opacity",.72).attr("stroke","#ffffff").attr("stroke-width",2).attr("filter",sh);
- T(svg,72,168,"me@usa:~$ travel --since-day-one",{f:MONO,w:500,s:21,c:MUT});
+ T(svg,72,168,"me@usa:~$ travel --wrapped",{f:MONO,w:500,s:21,c:MUT});
  T(svg,64,272,"Travel Wrapped",{f:"Playfair Display",i:true,w:500,s:118,c:INK});
  T(svg,72,316,`Every state ${CONFIG.since}`,{f:PLEX,s:25,c:MUT});
  // now playing (music) — same card, shifted up
@@ -1111,13 +1113,32 @@ function v58(){const ST=STATS();
 }
 const FN=[null,null,null,null,null,null,null,null,null,null,null,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22,v23,v24,v25,v26,v27,v28,v29,v30,v31,v32,v33,v34,v35,v36,v37,v38,v39,v40,v41,v42,v43,v44,v45,v46,v47,v48,v49,v50,v51,v52,v53,v54,v55,v56,v57,v58];
 const PRE=["400 20px \"IBM Plex Mono\"","500 20px \"IBM Plex Mono\"","600 20px \"IBM Plex Mono\"","400 20px \"IBM Plex Sans\"","600 20px \"IBM Plex Sans\"","700 20px \"IBM Plex Sans\"","400 20px \"DM Sans\"","500 20px \"DM Sans\"","700 20px \"DM Sans\"","italic 500 20px \"Playfair Display\"","500 20px \"Playfair Display\"","600 20px \"Playfair Display\"","900 20px Fraunces","20px Anton","600 20px \"Big Shoulders Display\"","800 20px \"Big Shoulders Display\"","600 20px Cinzel","20px Limelight"];
+
+/* ---------- in-browser PNG export (used by the maker page) ---------- */
+async function inlineFontsCSS(){let out="";const toData=b=>new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(b);});
+ for(const l of document.querySelectorAll('link[rel=stylesheet]')){const css=await (await fetch(l.href)).text();
+  const blocks=css.split(/(?=\/\*[^*]*\*\/\s*@font-face)/).filter(b=>/\/\*\s*latin\s*\*\//.test(b)||!/\/\*/.test(b));
+  for(let b of blocks){const urls=[...new Set([...b.matchAll(/url\((https:[^)]+)\)/g)].map(m=>m[1]))];for(const u of urls){b=b.split(u).join(await toData(await (await fetch(u)).blob()));}out+=b.replace(/\/\*[^*]*\*\//g,"");}}
+ return out;}
+let _fontCSS=null;
+window.exportPNG=async function(scale=1){
+ _fontCSS=_fontCSS||await inlineFontsCSS();
+ const clone=document.getElementById("s").cloneNode(true);clone.setAttribute("xmlns","http://www.w3.org/2000/svg");
+ const st=document.createElementNS("http://www.w3.org/2000/svg","style");st.textContent=_fontCSS;clone.insertBefore(st,clone.firstChild);
+ const xml=new XMLSerializer().serializeToString(clone);
+ const img=new Image();img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(xml);await img.decode();await new Promise(r=>setTimeout(r,300));
+ const c=document.createElement("canvas");c.width=1080*scale;c.height=1920*scale;const ctx=c.getContext("2d");ctx.drawImage(img,0,0,c.width,c.height);
+ return c.toDataURL("image/png");};
+window.addEventListener("message",async e=>{if(!e.data||e.data.type!=="export")return;
+ try{const url=await window.exportPNG();e.source.postMessage({type:"png",url,id:e.data.id},"*");}catch(err){e.source.postMessage({type:"png",error:String(err),id:e.data.id},"*");}});
+
 const FEATURED=[[58,"travel-wrapped"],[57,"music-album"],[55,"mba-market-coverage"],[56,"tech-dashboard"],[51,"luxe-sky"],[52,"luxe-cream"],[53,"pop-pink"],[54,"pop-sunset"],[48,"sky-skyline-top"],[49,"lavender-skyline-top"],[47,"sage"],[50,"terracotta"],[45,"travel-map-cream"],[46,"places-blush"]];
-if(!/v=\d+/.test(location.hash)){
+if(!/[#&]v=\d+/.test(location.hash)){
  document.documentElement.style.cssText="width:auto;height:auto;overflow:auto";document.body.style.cssText="margin:0;width:auto;height:auto;overflow:auto;background:#f4efe8;font-family:system-ui,sans-serif;padding:32px";
  document.getElementById("s").remove();
  const h=document.createElement("div");h.innerHTML=`<h1 style="font:600 28px system-ui;margin:0 0 6px">US Travel Story — gallery</h1><p style="margin:0 0 24px;color:#6b6070">Edit <code>my-travel.js</code>, refresh, then click a design to open it full size (1080×1920). Use <code>scripts/render.sh</code> to export PNGs.</p>`;document.body.appendChild(h);
  const g=document.createElement("div");g.style.cssText="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px";document.body.appendChild(g);
  FEATURED.forEach(([v,n])=>{const a=document.createElement("a");a.href="#v="+v;a.onclick=()=>setTimeout(()=>location.reload(),0);a.style.cssText="text-decoration:none;color:#2c2531;font:500 14px system-ui";
   a.innerHTML=`<div style="width:216px;height:384px;overflow:hidden;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.12);background:#fff"><iframe src="index.html#v=${v}" style="width:1080px;height:1920px;border:0;transform:scale(.2);transform-origin:0 0;pointer-events:none" loading="lazy"></iframe></div><div style="margin-top:8px">${v} · ${n}</div>`;g.appendChild(a);});
-}else Promise.all(PRE.map(f=>document.fonts.load(f).catch(()=>null))).then(()=>document.fonts.ready).then(()=>FN[V]());
+}else Promise.all(PRE.map(f=>document.fonts.load(f).catch(()=>null))).then(()=>document.fonts.ready).then(()=>{FN[V]();window.__drawn=true;try{parent.postMessage({type:"drawn"},"*");}catch(e){}});
 </script></body></html>

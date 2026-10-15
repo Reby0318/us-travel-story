@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Make Your US Travel Story</title>
+<meta name="description" content="Tap the states you've visited and download an aesthetic 1080×1920 Instagram Story. No coding needed.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f8f2ec;--card:#fffdfa;--ink:#2c2531;--muted:#857a88;--line:#ecdfd6;--accent:#d9728a;--accent2:#eea27f;
+ --West:#7fb79c;--Southwest:#eea27f;--Midwest:#efcd78;--Southeast:#e9a0b4;--Northeast:#9fb3e6}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 "DM Sans",system-ui,sans-serif;
+ background-image:radial-gradient(circle at 10% 0%,#f8d6df 0,transparent 40%),radial-gradient(circle at 100% 20%,#fbe3cb 0,transparent 35%),radial-gradient(circle at 90% 100%,#e6e0f5 0,transparent 40%);background-attachment:fixed}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 16px 120px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:32px;align-items:start}
+header{grid-column:1/-1}
+h1{font:italic 500 clamp(40px,7vw,68px)/1.02 "Playfair Display",serif;margin:0 0 8px}
+.sub{color:var(--muted);margin:0;font-size:18px}
+.q{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px 22px 20px;margin-bottom:16px;box-shadow:0 8px 24px rgba(44,37,49,.05)}
+.q h2{font-size:19px;margin:0 0 4px;display:flex;gap:12px;align-items:center}
+.n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;font-size:14px;flex:none}
+.hint{color:var(--muted);font-size:14px;margin:0 0 14px 42px}
+.body{margin-left:42px}
+@media(max-width:600px){.hint,.body{margin-left:0}}
+input[type=text]{width:100%;font:inherit;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);outline:none}
+input[type=text]:focus{border-color:var(--accent)}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{font:500 15px "DM Sans",sans-serif;border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:9px 15px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;min-height:42px}
+.pill[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+.pill .dot{width:10px;height:10px;border-radius:50%}
+.pill:focus-visible,.design:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.region{margin-bottom:16px}
+.region-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.region-h b{font-size:15px;display:flex;align-items:center;gap:8px}
+.region-h b i{width:12px;height:12px;border-radius:4px;display:inline-block}
+.link{background:none;border:0;color:var(--accent);font:500 14px "DM Sans";cursor:pointer;padding:4px}
+.st[aria-pressed=true]{color:#fff}
+.count{font-weight:700;color:var(--accent)}
+.row{display:flex;gap:8px}
+.row input{flex:1}
+.btn{font:700 16px "DM Sans";border:0;border-radius:14px;padding:12px 18px;cursor:pointer;background:var(--ink);color:#fff}
+.btn.big{width:100%;padding:16px;font-size:18px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.6;cursor:default}
+.chosen{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{background:var(--ink);color:#fff;border-radius:999px;padding:7px 8px 7px 14px;font-size:14px;display:inline-flex;align-items:center;gap:6px}
+.chip button{background:rgba(255,255,255,.2);border:0;color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:14px;line-height:1}
+.designs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
+.design{border:2px solid transparent;border-radius:14px;padding:4px;background:none;cursor:pointer;text-align:center;font:500 13px "DM Sans";color:var(--ink)}
+.design img{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:10px;display:block;margin-bottom:6px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.design[aria-pressed=true]{border-color:var(--accent)}
+.badge{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--accent);border-radius:6px;padding:1px 6px;margin-left:4px}
+aside{position:sticky;top:20px}
+.frame{width:360px;height:640px;border-radius:22px;overflow:hidden;background:#eee;box-shadow:0 16px 40px rgba(44,37,49,.18);position:relative;margin:0 auto}
+.frame iframe{width:1080px;height:1920px;border:0;transform:scale(.3333);transform-origin:0 0;position:absolute;left:0;top:0}
+.loading{position:absolute;inset:0;display:grid;place-items:center;background:rgba(248,242,236,.6);font-weight:500;color:var(--muted);transition:opacity .2s}
+.loading.off{opacity:0;pointer-events:none}
+.actions{margin-top:16px;display:grid;gap:10px}
+.small{font-size:13px;color:var(--muted);text-align:center;margin:4px 0 0}
+.status{min-height:20px;font-size:14px;text-align:center;color:var(--accent)}
+.mobilebar{display:none}
+@media(max-width:980px){
+ .wrap{grid-template-columns:1fr}
+ aside{position:static}
+ .mobilebar{display:block;position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(248,242,236,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);z-index:5}
+}
+@media(max-width:420px){.frame{width:min(360px,calc(100vw - 32px));height:calc(min(360px,calc(100vw - 32px))*16/9)}.frame iframe{transform:scale(calc(min(360px,calc(100vw - 32px))/1080px))}}
+footer{grid-column:1/-1;color:var(--muted);font-size:14px;text-align:center}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <header>
+  <h1>Make your US Travel Story</h1>
+  <p class="sub">Answer a few quick questions, tap the states you've been to, and download a ready-to-post Instagram Story (1080 × 1920). No coding needed.</p>
+ </header>
+
+ <main>
+  <section class="q">
+   <h2><span class="n">1</span>Which states have you been to?</h2>
+   <p class="hint">Tap to select. <span class="count" id="count">0</span> of 50 selected.</p>
+   <div class="body">
+    <input type="text" id="stateSearch" placeholder="Search states… (e.g. Texas)" aria-label="Search states" style="margin-bottom:14px">
+    <div id="regions"></div>
+    <button class="link" id="clearStates" type="button">Clear all states</button>
+   </div>
+  </section>
+
+  <section class="q">
+   <h2><span class="n">2</span>Which cities should be in your skyline?</h2>
+   <p class="hint">Tap the landmark cities, or type any other city. They'll be ordered west to east automatically.</p>
+   <div class="body">
+    <div class="pills" id="cityPills"></div>
+    <div class="row" style="margin-top:12px">
+     <input type="text" id="cityInput" placeholder="Add another city (e.g. Boston)" aria-label="Add a city" list="cityList">
+     <button class="btn" id="addCity" type="button">Add</button>
+    </div>
+    <datalist id="cityList"></datalist>
+    <div class="chosen" id="chosenCities"></div>
+   </div>
+  </section>
+
+  <section class="q">
+   <h2><span class="n">3</span>Pick a headline</h2>
+   <p class="hint">Or write your own.</p>
+   <div class="body">
+    <div class="pills" id="titlePills"></div>
+    <input type="text" id="titleCustom" placeholder="Custom headline (max 24 characters)" maxlength="24" style="margin-top:12px;display:none" aria-label="Custom headline">
+   </div>
+  </section>
+
+  <section class="q">
+   <h2><span class="n">4</span>Since when?</h2>
+   <p class="hint">Shown in small text on some designs.</p>
+   <div class="body">
+    <div class="pills" id="sincePills"></div>
+    <input type="text" id="sinceYear" placeholder="Year, e.g. 2019" inputmode="numeric" maxlength="4" style="margin-top:12px;display:none;max-width:200px" aria-label="Year">
+   </div>
+  </section>
+
+  <section class="q">
+   <h2><span class="n">5</span>Your name <span style="color:var(--muted);font-weight:400;font-size:15px">(optional)</span></h2>
+   <p class="hint">Appears as the "artist" on the album and Wrapped designs.</p>
+   <div class="body"><input type="text" id="name" placeholder="Me" maxlength="18" aria-label="Your name"></div>
+  </section>
+
+  <section class="q">
+   <h2><span class="n">6</span>Choose a design</h2>
+   <p class="hint">You can switch any time. The preview updates instantly.</p>
+   <div class="body"><div class="designs" id="designs"></div></div>
+  </section>
+ </main>
+
+ <aside id="preview">
+  <div class="frame"><iframe id="pv" title="Story preview" loading="eager"></iframe><div class="loading" id="loading">Drawing your map…</div></div>
+  <div class="actions">
+   <button class="btn big" id="download" type="button">Download my Story ⬇</button>
+   <div class="status" id="status" role="status"></div>
+   <button class="btn ghost" id="share" type="button">Copy link to my answers</button>
+   <p class="small">PNG · 1080 × 1920 px · fits Instagram Stories exactly</p>
+  </div>
+ </aside>
+
+ <footer>Made with <a href="https://github.com/Reby0318/us-travel-story">US Travel Story</a> · open source · nothing you enter leaves your browser</footer>
+</div>
+<div class="mobilebar"><button class="btn big" id="toPreview" type="button">See preview &amp; download ↓</button></div>
+
+<script>
+const REGIONS={
+ West:["Washington","Oregon","California","Nevada","Idaho","Montana","Wyoming","Utah","Colorado","Alaska","Hawaii"],
+ Southwest:["Arizona","New Mexico","Texas","Oklahoma"],
+ Midwest:["North Dakota","South Dakota","Nebraska","Kansas","Minnesota","Iowa","Missouri","Wisconsin","Illinois","Indiana","Michigan","Ohio"],
+ Southeast:["Kentucky","Tennessee","North Carolina","South Carolina","Georgia","Florida","Alabama","Mississippi","Louisiana","Arkansas","Virginia","West Virginia","Maryland","Delaware"],
+ Northeast:["New York","Pennsylvania","New Jersey","Connecticut","Rhode Island","Massachusetts","Vermont","New Hampshire","Maine"]};
+const LANDMARKS=["Seattle","Portland","San Francisco","Las Vegas","Albuquerque","Dallas","Chicago","Nashville","Philadelphia","New York","Miami"];
+// approximate longitudes, used only to order the skyline west → east
+const LON={"Honolulu":-157.9,"Anchorage":-149.9,"Seattle":-122.3,"Portland":-122.7,"San Francisco":-122.4,"San Jose":-121.9,"Sacramento":-121.5,"Los Angeles":-118.2,"San Diego":-117.2,"Las Vegas":-115.1,"Salt Lake City":-111.9,"Phoenix":-112.1,"Tucson":-110.9,"Boise":-116.2,"Albuquerque":-106.6,"Santa Fe":-105.9,"Denver":-105.0,"El Paso":-106.5,"Austin":-97.7,"San Antonio":-98.5,"Dallas":-96.8,"Houston":-95.4,"Oklahoma City":-97.5,"Kansas City":-94.6,"Minneapolis":-93.3,"Omaha":-95.9,"New Orleans":-90.1,"Memphis":-90.0,"St. Louis":-90.2,"Chicago":-87.6,"Milwaukee":-87.9,"Nashville":-86.8,"Indianapolis":-86.2,"Louisville":-85.8,"Atlanta":-84.4,"Detroit":-83.0,"Columbus":-83.0,"Cincinnati":-84.5,"Cleveland":-81.7,"Orlando":-81.4,"Tampa":-82.5,"Miami":-80.2,"Charlotte":-80.8,"Pittsburgh":-80.0,"Raleigh":-78.6,"Charleston":-79.9,"Savannah":-81.1,"Washington DC":-77.0,"Baltimore":-76.6,"Philadelphia":-75.2,"New York":-74.0,"Newark":-74.2,"Boston":-71.1,"Providence":-71.4,"Portland ME":-70.3};
+const TITLES=["States I've Been To","Where I've Been","Places I've Been","Coast to Coast","My US Travel Map"];
+const SINCE=[["since I moved to the US","since day one","Since I moved to the US"],["so far","so far","So far"],["year","","Since a year…"]];
+const DESIGNS=[[58,"Travel Wrapped","Top pick"],[51,"Luxe Sky","Luxury"],[57,"Album"],[55,"MBA Slide"],[56,"Tech"],[52,"Luxe Cream"],[53,"Pop Pink"],[54,"Pop Sunset"],[48,"Sky"],[49,"Lavender"],[47,"Sage"],[50,"Terracotta"],[45,"Cream"],[46,"Blush"]];
+
+const S={states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:58};
+// restore from a shared link or the last visit
+try{const h=new URLSearchParams(location.hash.slice(1)).get("a");const saved=h?JSON.parse(decodeURIComponent(escape(atob(h)))):JSON.parse(localStorage.getItem("ustravel")||"null");
+ if(saved){Object.assign(S,saved);S.states=new Set(saved.states||[]);}else{["California","Nevada","New York","Florida","Illinois","Texas"].forEach(s=>S.states.add(s));S.cities=["San Francisco","Las Vegas","Chicago","New York","Miami"];}}catch(e){}
+
+const $=id=>document.getElementById(id);
+const el=(tag,attrs={},html="")=>{const e=document.createElement(tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(html)e.innerHTML=html;return e;};
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---- Q1 states ---- */
+function drawStates(){const box=$("regions");box.innerHTML="";const q=$("stateSearch").value.trim().toLowerCase();
+ Object.entries(REGIONS).forEach(([r,list])=>{const shown=list.filter(s=>!q||s.toLowerCase().includes(q));if(!shown.length)return;
+  const sec=el("div",{class:"region"});const n=list.filter(s=>S.states.has(s)).length;
+  sec.innerHTML=`<div class="region-h"><b><i style="background:var(--${r})"></i>${r} <span style="color:var(--muted);font-weight:500">${n}/${list.length}</span></b><button class="link" type="button" data-all="${r}">${n===list.length?"Clear":"Select all"}</button></div>`;
+  const pills=el("div",{class:"pills"});shown.sort().forEach(s=>{const on=S.states.has(s);const b=el("button",{class:"pill st",type:"button","aria-pressed":on,"data-s":s},`${esc(s)}`);if(on)b.style.background=`var(--${r})`,b.style.borderColor=`var(--${r})`;pills.appendChild(b);});
+  sec.appendChild(pills);box.appendChild(sec);});
+ $("count").textContent=S.states.size;}
+$("regions").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+ if(b.dataset.s){S.states.has(b.dataset.s)?S.states.delete(b.dataset.s):S.states.add(b.dataset.s);}
+ else if(b.dataset.all){const L=REGIONS[b.dataset.all];const all=L.every(s=>S.states.has(s));L.forEach(s=>all?S.states.delete(s):S.states.add(s));}
+ drawStates();update();});
+$("stateSearch").addEventListener("input",drawStates);
+$("clearStates").onclick=()=>{S.states.clear();drawStates();update();};
+
+/* ---- Q2 cities ---- */
+const sortCities=()=>{S.cities.sort((a,b)=>(LON[a]??-75)-(LON[b]??-75));};
+function drawCities(){const p=$("cityPills");p.innerHTML="";LANDMARKS.forEach(c=>{p.appendChild(el("button",{class:"pill",type:"button","aria-pressed":S.cities.includes(c),"data-c":c},esc(c)));});
+ const ch=$("chosenCities");ch.innerHTML="";S.cities.filter(c=>!LANDMARKS.includes(c)).forEach(c=>{const x=el("span",{class:"chip"},`${esc(c)}<button type="button" aria-label="Remove ${esc(c)}" data-rm="${esc(c)}">×</button>`);ch.appendChild(x);});
+ const dl=$("cityList");dl.innerHTML=Object.keys(LON).filter(c=>!LANDMARKS.includes(c)).map(c=>`<option value="${esc(c)}">`).join("");}
+$("cityPills").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const c=b.dataset.c;S.cities.includes(c)?S.cities=S.cities.filter(x=>x!==c):S.cities.push(c);sortCities();drawCities();update();});
+$("chosenCities").addEventListener("click",e=>{const b=e.target.closest("button[data-rm]");if(!b)return;S.cities=S.cities.filter(x=>x!==b.dataset.rm);drawCities();update();});
+const addCity=()=>{let v=$("cityInput").value.trim().replace(/\s+/g," ");if(!v)return;v=v.replace(/\b\w/g,m=>m.toUpperCase());const alias={"Nyc":"New York","New York City":"New York","Sf":"San Francisco","Vegas":"Las Vegas","Philly":"Philadelphia","La":"Los Angeles","Dc":"Washington DC"};v=alias[v]||v;
+ if(!S.cities.includes(v)&&S.cities.length<14)S.cities.push(v);$("cityInput").value="";sortCities();drawCities();update();};
+$("addCity").onclick=addCity;$("cityInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addCity();}});
+
+/* ---- Q3 title ---- */
+function drawTitles(){const p=$("titlePills");p.innerHTML="";[...TITLES,"Custom…"].forEach(t=>{const on=t==="Custom…"?S.title==="__custom":S.title===t;p.appendChild(el("button",{class:"pill",type:"button","aria-pressed":on,"data-t":t},esc(t)));});
+ $("titleCustom").style.display=S.title==="__custom"?"block":"none";$("titleCustom").value=S.titleCustom;}
+$("titlePills").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.title=b.dataset.t==="Custom…"?"__custom":b.dataset.t;drawTitles();if(S.title==="__custom")$("titleCustom").focus();update();});
+$("titleCustom").addEventListener("input",e=>{S.titleCustom=e.target.value;update();});
+
+/* ---- Q4 since ---- */
+function drawSince(){const p=$("sincePills");p.innerHTML="";SINCE.forEach((s,i)=>p.appendChild(el("button",{class:"pill",type:"button","aria-pressed":S.since===i,"data-i":i},esc(s[2]))));
+ $("sinceYear").style.display=S.since===2?"block":"none";$("sinceYear").value=S.year;}
+$("sincePills").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.since=+b.dataset.i;drawSince();if(S.since===2)$("sinceYear").focus();update();});
+$("sinceYear").addEventListener("input",e=>{S.year=e.target.value.replace(/\D/g,"");update();});
+
+/* ---- Q5 name ---- */
+$("name").value=S.name;$("name").addEventListener("input",e=>{S.name=e.target.value;update();});
+
+/* ---- Q6 designs ---- */
+function drawDesigns(){const g=$("designs");g.innerHTML="";DESIGNS.forEach(([v,n,tag])=>{const b=el("button",{class:"design",type:"button","aria-pressed":S.design===v,"data-v":v},`<img src="maker/thumbs/${v}.jpg" alt="${esc(n)} design preview" loading="lazy">${esc(n)}${tag?`<span class="badge">${tag}</span>`:""}`);g.appendChild(b);});}
+$("designs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.design=+b.dataset.v;drawDesigns();update();});
+
+/* ---- build config + preview ---- */
+function config(){const yr=S.year&&S.year.length===4?S.year:"20XX";const since=S.since===2?[`since ${yr}`,`since ${yr}`]:SINCE[S.since].slice(0,2);
+ const order=Object.values(REGIONS).flat();
+ return {name:S.name.trim()||"Me",title:(S.title==="__custom"?S.titleCustom.trim():S.title)||"States I've Been To",since:since[0],sinceShort:since[1],
+  states:[...S.states].sort((a,b)=>order.indexOf(a)-order.indexOf(b)),cities:S.cities.slice()};}
+const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+let tmr=null;
+function update(){try{localStorage.setItem("ustravel",JSON.stringify({...S,states:[...S.states]}));}catch(e){}
+ clearTimeout(tmr);tmr=setTimeout(()=>{$("loading").classList.remove("off");$("pv").src=`generator/index.html?r=${Date.now()}#v=${S.design}&cfg=${encodeURIComponent(enc(config()))}`;},350);}
+window.addEventListener("message",e=>{if(e.data&&e.data.type==="drawn")$("loading").classList.add("off");});
+
+/* ---- download ---- */
+let reqId=0;
+$("download").onclick=()=>{const c=config();if(!c.states.length){$("status").textContent="Pick at least one state first.";return;}
+ const btn=$("download");btn.disabled=true;btn.textContent="Creating your PNG…";$("status").textContent="";const id=++reqId;
+ const done=(msg)=>{btn.disabled=false;btn.textContent="Download my Story ⬇";$("status").textContent=msg||"";};
+ const onMsg=e=>{if(!e.data||e.data.type!=="png"||e.data.id!==id)return;window.removeEventListener("message",onMsg);
+  if(e.data.error){done("Sorry, that didn't work. Try Chrome or Safari, or screenshot the preview.");return;}
+  fetch(e.data.url).then(r=>r.blob()).then(async blob=>{const file=new File([blob],"my-us-travel-story.png",{type:"image/png"});
+   if(navigator.canShare&&navigator.canShare({files:[file]})&&/iPhone|iPad|Android/i.test(navigator.userAgent)){try{await navigator.share({files:[file],title:"My US Travel Story"});done("Saved! Share it to your Story ✨");return;}catch(err){}}
+   const a=el("a",{href:URL.createObjectURL(blob),download:"my-us-travel-story.png"});document.body.appendChild(a);a.click();a.remove();done("Downloaded ✓ 1080 × 1920 PNG");});};
+ window.addEventListener("message",onMsg);$("pv").contentWindow.postMessage({type:"export",id},"*");
+ setTimeout(()=>{if(btn.disabled)done("Still working… if nothing happens, refresh and try again.");},20000);};
+
+$("share").onclick=async()=>{const url=location.href.split("#")[0]+"#a="+enc({...S,states:[...S.states]});
+ try{await navigator.clipboard.writeText(url);$("status").textContent="Link copied. Anyone can open your exact Story.";}catch(e){prompt("Copy this link:",url);}};
+$("toPreview").onclick=()=>$("preview").scrollIntoView({behavior:"smooth"});
+
+if("IntersectionObserver" in window)new IntersectionObserver(es=>{document.querySelector(".mobilebar").style.display=es[0].isIntersecting?"none":"";}).observe($("preview"));
+drawStates();drawCities();drawTitles();drawSince();drawDesigns();update();
+</script>
+</body>
+</html>
