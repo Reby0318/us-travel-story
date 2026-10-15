@@ -5,6 +5,8 @@ Turn the US states you've visited into an aesthetic **Instagram Story** (1080 ×
 
 ![Gallery](examples/gallery.jpg)
 
+📘 **[Download the PDF lookbook](US-Travel-Story-Lookbook.pdf)**: all 14 designs at full size, with recommendations.
+
 ---
 
 ## Quick start (about 2 minutes)
