@@ -1,0 +1,1123 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>US Travel Story</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=Baloo+2:wght@600;800&family=Bungee&family=Caveat:wght@500;700&family=Shrikhand&family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;1,500&family=DM+Sans:wght@400;500;700&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Pacifico&family=Courier+Prime:wght@400;700&family=Rubik:wght@500;700;800&family=Bangers&family=Luckiest+Guy&family=Permanent+Marker&family=Bebas+Neue&family=Anton&family=Limelight&family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Cinzel:wght@500;600&display=block" rel="stylesheet">
+<style>html,body{margin:0;width:1080px;height:1920px;overflow:hidden}svg{display:block}</style>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="data/us-states.js"></script><script src="data/world-countries.js"></script>
+<script src="../my-travel.js"></script>
+</head><body>
+<svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
+<script>
+const US=window.US_STATES, WORLD=window.WORLD_COUNTRIES;
+const V=+(location.hash.match(/v=(\d+)/)||[0,1])[1];
+const CONFIG=Object.assign({name:"Me",title:"States I've Been To",since:"since I moved to the US",sinceShort:"since day one",states:[],cities:[]},window.CONFIG||{});
+const VISITED=CONFIG.states.slice();
+const VIS=new Set(VISITED), N=VISITED.length, ALPHA=VISITED.slice().sort();
+const AB={"Alabama":"AL","Arizona":"AZ","Arkansas":"AR","California":"CA","Colorado":"CO","Connecticut":"CT","Delaware":"DE","Florida":"FL","Georgia":"GA","Idaho":"ID","Illinois":"IL","Indiana":"IN","Iowa":"IA","Kansas":"KS","Kentucky":"KY","Louisiana":"LA","Maine":"ME","Maryland":"MD","Massachusetts":"MA","Michigan":"MI","Minnesota":"MN","Mississippi":"MS","Missouri":"MO","Montana":"MT","Nebraska":"NE","Nevada":"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND","Ohio":"OH","Oklahoma":"OK","Oregon":"OR","Pennsylvania":"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD","Tennessee":"TN","Texas":"TX","Utah":"UT","Vermont":"VT","Virginia":"VA","Washington":"WA","West Virginia":"WV","Wisconsin":"WI","Wyoming":"WY","District of Columbia":""};
+const EMO={"Washington":"☕","Oregon":"🌲","California":"🌉","Nevada":"🎰","Arizona":"🌵","New Mexico":"🌶️","Texas":"🤠","Oklahoma":"🌪️","Arkansas":"💎","Iowa":"🌽","Wisconsin":"🧀","Illinois":"🍕","Indiana":"🏎️","Michigan":"🚗","Ohio":"🎢","Kentucky":"🐎","Tennessee":"🎸","North Carolina":"✈️","Florida":"🌴","New York":"🗽","Pennsylvania":"🔔","New Jersey":"🎡"};
+const POS={"Michigan":[-84.6,43.4],"Florida":[-81.4,28.0],"New Jersey":[-74.45,40.15],"Kentucky":[-85.3,37.55],"California":[-119.6,36.9],"New York":[-75.4,42.85],"Oklahoma":[-97.4,35.55],"Texas":[-99.3,31.3],"Washington":[-120.2,47.4],"Illinois":[-89.2,40.1],"Tennessee":[-86.4,35.8],"North Carolina":[-79.3,35.55],"Pennsylvania":[-77.6,40.9],"Indiana":[-86.25,39.9],"Ohio":[-82.75,40.3],"Wisconsin":[-89.8,44.6],"Arkansas":[-92.4,34.8],"Louisiana":[-92.4,31.0],"Idaho":[-114.6,43.9],"Virginia":[-78.6,37.6],"West Virginia":[-80.6,38.65],"Minnesota":[-94.4,46.0],"Maine":[-69.2,45.3],"Vermont":[-72.7,44.05],"New Hampshire":[-71.6,43.6],"Massachusetts":[-69.2,42.05],"Rhode Island":[-70.9,40.95],"Connecticut":[-72.7,40.75],"Delaware":[-74.2,38.5],"Maryland":[-74.6,37.8]};
+const OUT=new Set(["Massachusetts","Rhode Island","Connecticut","Delaware","Maryland"]);
+const EX=["Alaska","Hawaii","Puerto Rico","American Samoa","Guam","Commonwealth of the Northern Mariana Islands","United States Virgin Islands","District of Columbia"];
+const STATES=topojson.feature(US,US.objects.states).features.filter(d=>!EX.includes(d.properties.name));
+const FC={type:"FeatureCollection",features:STATES};
+const COUNTRIES=topojson.feature(WORLD,WORLD.objects.countries).features.filter(d=>d.properties.name!=="United States of America");
+const svg=d3.select("#s"), defs=svg.append("defs");
+let uid=0;
+function T(g,x,y,s,o={}){const t=g.append("text").attr("x",x).attr("y",y).attr("font-family",o.f||"DM Sans").attr("font-size",o.s||24).attr("font-weight",o.w||400).attr("fill",o.c||"#222").attr("text-anchor",o.a||"start");
+ if(o.ls)t.attr("letter-spacing",o.ls); if(o.i)t.attr("font-style","italic"); if(o.st)t.attr("stroke",o.st).attr("stroke-width",o.sw||4).attr("paint-order","stroke").attr("stroke-linejoin","round"); if(o.op!=null)t.attr("opacity",o.op); if(o.fl)t.attr("filter",o.fl); return t.text(s);}
+function bg(c){svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",c);}
+function lg(stops,x2=1,y2=0,user){const id="g"+(uid++);const g=defs.append("linearGradient").attr("id",id).attr("x1",0).attr("y1",0).attr("x2",x2).attr("y2",y2);if(user)g.attr("gradientUnits","userSpaceOnUse").attr("x1",user[0]).attr("y1",user[1]).attr("x2",user[2]).attr("y2",user[3]);stops.forEach((c,i)=>g.append("stop").attr("offset",(i/(stops.length-1)*100)+"%").attr("stop-color",c));return `url(#${id})`;}
+function shadow(dx,dy,sd,c,op){const id="f"+(uid++);defs.append("filter").attr("id",id).attr("x","-30%").attr("y","-30%").attr("width","160%").attr("height","160%").append("feDropShadow").attr("dx",dx).attr("dy",dy).attr("stdDeviation",sd).attr("flood-color",c).attr("flood-opacity",op);return `url(#${id})`;}
+function clip(x,y,w,h,rx=0){const id="c"+(uid++);defs.append("clipPath").attr("id",id).append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",rx);return `url(#${id})`;}
+function map(par,box,o={}){
+ const proj=d3.geoMercator().fitExtent([[box[0],box[1]],[box[0]+box[2],box[1]+box[3]]],FC), path=d3.geoPath(proj);
+ const g=par.append("g"); if(o.clip)g.attr("clip-path",o.clip);
+ if(o.sea)g.append("rect").attr("x",o.seaBox[0]).attr("y",o.seaBox[1]).attr("width",o.seaBox[2]).attr("height",o.seaBox[3]).attr("fill",o.sea);
+ if(o.land)g.append("g").selectAll("path").data(COUNTRIES).join("path").attr("d",path).attr("fill",o.land).attr("stroke",o.landStroke||"none").attr("stroke-width",1);
+ if(o.under)o.under(g,path,proj);
+ const sg=g.append("g");
+ sg.selectAll("path").data(STATES).join("path").attr("d",path)
+  .attr("fill",(d,i)=>o.fill(d.properties.name,VIS.has(d.properties.name)))
+  .attr("stroke",d=>typeof o.stroke==="function"?o.stroke(d.properties.name,VIS.has(d.properties.name)):(o.stroke||"#fff"))
+  .attr("stroke-width",d=>typeof o.sw==="function"?o.sw(d.properties.name,VIS.has(d.properties.name)):(o.sw??1.2)).attr("stroke-linejoin","round")
+  .attr("filter",d=>o.filter?o.filter(d.properties.name,VIS.has(d.properties.name)):null);
+ const anchor=n=>POS[n]?proj(POS[n]):path.centroid(STATES.find(s=>s.properties.name===n));
+ return {g,sg,proj,path,anchor};
+}
+function star(g,x,y,r,fill,rot=0){const p=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5+rot,rr=i%2?r*.45:r;p.push([x+Math.cos(a)*rr,y+Math.sin(a)*rr]);}return g.append("path").attr("d","M"+p.join("L")+"Z").attr("fill",fill);}
+function sparkle(g,x,y,r,c){return g.append("path").attr("d",`M${x},${y-r}Q${x+r*.12},${y-r*.12} ${x+r},${y}Q${x+r*.12},${y+r*.12} ${x},${y+r}Q${x-r*.12},${y+r*.12} ${x-r},${y}Q${x-r*.12},${y-r*.12} ${x},${y-r}Z`).attr("fill",c);}
+function rnd(seed){let s=seed;return()=>{s=(s*16807)%2147483647;return (s-1)/2147483646;};}
+function heart(g,x,y,s,c){return g.append("path").attr("transform",`translate(${x},${y}) scale(${s})`).attr("d","M0,6 C-9,-2 -9,-10 -3.5,-10 C-1,-10 0,-8 0,-7 C0,-8 1,-10 3.5,-10 C9,-10 9,-2 0,6Z").attr("fill",c);}
+function stickerFilter(r=5){const id="stk"+(uid++);const f=defs.append("filter").attr("id",id).attr("x","-40%").attr("y","-40%").attr("width","180%").attr("height","180%");
+ f.append("feMorphology").attr("in","SourceAlpha").attr("operator","dilate").attr("radius",r).attr("result","d");
+ f.append("feFlood").attr("flood-color","#fff").attr("result","wf");f.append("feComposite").attr("in","wf").attr("in2","d").attr("operator","in").attr("result","w");
+ f.append("feGaussianBlur").attr("in","d").attr("stdDeviation",3).attr("result","b");f.append("feOffset").attr("in","b").attr("dy",3).attr("result","bo");
+ f.append("feFlood").attr("flood-color","#5b4a6b").attr("flood-opacity",.28).attr("result","sf");f.append("feComposite").attr("in","sf").attr("in2","bo").attr("operator","in").attr("result","s");
+ const m=f.append("feMerge");["s","w","SourceGraphic"].forEach(k=>m.append("feMergeNode").attr("in",k));return `url(#${id})`;}
+function noise(op,freq=.8,color=[0,0,0]){const id="n"+(uid++);const f=defs.append("filter").attr("id",id).attr("x",0).attr("y",0).attr("width","100%").attr("height","100%");
+ f.append("feTurbulence").attr("type","fractalNoise").attr("baseFrequency",freq).attr("numOctaves",3).attr("seed",7);
+ f.append("feColorMatrix").attr("values",`0 0 0 0 ${color[0]} 0 0 0 0 ${color[1]} 0 0 0 0 ${color[2]} 0 0 0 ${op} 0`);
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("filter",`url(#${id})`);}
+function listCols(g,x,y,cols,colW,rowH,draw){const per=Math.ceil(ALPHA.length/cols);ALPHA.forEach((n,i)=>draw(g,x+Math.floor(i/per)*colW,y+(i%per)*rowH,n,i));}
+
+
+/* ---------- shared for guide & passport families ---------- */
+const REG=n=>["Washington","Oregon","California","Nevada","Idaho","Montana","Wyoming","Utah","Colorado"].includes(n)?"West":["Arizona","New Mexico","Texas","Oklahoma"].includes(n)?"Southwest":["North Dakota","South Dakota","Nebraska","Kansas","Minnesota","Iowa","Missouri","Wisconsin","Illinois","Indiana","Michigan","Ohio"].includes(n)?"Midwest":["New York","Pennsylvania","New Jersey","Vermont","New Hampshire","Maine","Massachusetts","Rhode Island","Connecticut"].includes(n)?"Northeast":"Southeast";
+const REGS=["West","Southwest","Midwest","Southeast","Northeast"];
+const RTOT={},RVIS={};STATES.forEach(d=>{const r=REG(d.properties.name);RTOT[r]=(RTOT[r]||0)+1;if(VIS.has(d.properties.name))RVIS[r]=(RVIS[r]||0)+1;});
+function allLabels(m,cv,cu,f="DM Sans",s=14){STATES.forEach(d=>{const n=d.properties.name,v=VIS.has(n),[x,y]=m.anchor(n);T(m.g,x,y+5,AB[n],{f,w:700,s:OUT.has(n)?s-3:s,c:v?cv:cu,a:"middle"});});}
+function box(x,y,w,h,title,col,B,fill="#fffaf3"){const g=svg.append("g").attr("transform",`translate(${x},${y})`);g.append("rect").attr("width",w).attr("height",h).attr("rx",18).attr("fill",fill).attr("stroke",B).attr("stroke-width",2);const tw=Math.max(200,title.length*15+60);g.append("rect").attr("x",w/2-tw/2).attr("y",-18).attr("width",tw).attr("height",36).attr("rx",18).attr("fill",col);T(g,w/2,7,title,{f:"DM Sans",w:700,s:17,ls:2,c:"#fff",a:"middle"});return g;}
+function inkF(seed){const id="ink"+(uid++);const f=defs.append("filter").attr("id",id);f.append("feTurbulence").attr("type","fractalNoise").attr("baseFrequency",1.2).attr("numOctaves",2).attr("seed",seed).attr("result","n");f.append("feColorMatrix").attr("in","n").attr("values","0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.6 2.1").attr("result","m");f.append("feComposite").attr("in","SourceGraphic").attr("in2","m").attr("operator","in");return `url(#${id})`;}
+function guil(c,op=.8,fill){const id="gl"+(uid++);const gp=defs.append("pattern").attr("id",id).attr("width",120).attr("height",40).attr("patternUnits","userSpaceOnUse");for(let k=0;k<3;k++)gp.append("path").attr("d",`M0,${10+k*10} C30,${k*10} 30,${20+k*10} 60,${10+k*10} S90,${k*10} 120,${10+k*10}`).attr("fill","none").attr("stroke",c).attr("stroke-width",1);svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",`url(#${id})`).attr("opacity",op);}
+function stamp(g,x,y,n,c,k,sc,rot,o={}){const s=g.append("g").attr("transform",`translate(${x},${y}) rotate(${rot}) scale(${sc})`).attr("opacity",o.op??.92);if(o.ink)s.attr("filter",o.ink);
+ const F=o.fill?c:"none", tc=o.fill?"#fff":c;
+ if(k===0){s.append("circle").attr("r",72).attr("fill",F).attr("stroke",c).attr("stroke-width",4);s.append("circle").attr("r",61).attr("fill","none").attr("stroke",o.fill?"#fff":c).attr("stroke-width",1.5);}
+ else if(k===1){s.append("rect").attr("x",-100).attr("y",-58).attr("width",200).attr("height",116).attr("rx",14).attr("fill",F).attr("stroke",c).attr("stroke-width",4);s.append("rect").attr("x",-90).attr("y",-48).attr("width",180).attr("height",96).attr("rx",8).attr("fill","none").attr("stroke",o.fill?"#fff":c).attr("stroke-width",1.5);}
+ else if(k===2){s.append("path").attr("d","M-95,-40 L0,-70 L95,-40 L95,40 L0,70 L-95,40Z").attr("fill",F).attr("stroke",c).attr("stroke-width",4);s.append("path").attr("d","M-84,-33 L0,-59 L84,-33 L84,33 L0,59 L-84,33Z").attr("fill","none").attr("stroke",o.fill?"#fff":c).attr("stroke-width",1.3);}
+ else {s.append("ellipse").attr("rx",100).attr("ry",64).attr("fill",F).attr("stroke",c).attr("stroke-width",4);s.append("ellipse").attr("rx",89).attr("ry",53).attr("fill","none").attr("stroke",o.fill?"#fff":c).attr("stroke-width",1.5);}
+ T(s,0,12,AB[n],{f:"Archivo Black",s:46,c:tc,a:"middle"});T(s,0,-28,n.toUpperCase(),{f:"Space Mono",w:700,s:n.length>11?11:14,ls:1,c:tc,a:"middle"});T(s,0,40,o.sub||"★ ADMITTED ★",{f:"Space Mono",w:700,s:12,ls:2,c:tc,a:"middle"});return s;}
+function ribbon(g,cx,y,w,c,txt,tc="#fff"){const h=70;g.append("path").attr("d",`M${cx-w/2-60},${y+14} l40,0 l0,${h} l-40,0 l22,${-h/2}Z`).attr("fill",d3.color(c).darker(.6));g.append("path").attr("d",`M${cx+w/2+60},${y+14} l-40,0 l0,${h} l40,0 l-22,${-h/2}Z`).attr("fill",d3.color(c).darker(.6));g.append("rect").attr("x",cx-w/2).attr("y",y).attr("width",w).attr("height",h).attr("fill",c);T(g,cx,y+46,txt,{f:"DM Sans",w:700,s:28,ls:4,c:tc,a:"middle"});}
+
+/* 11. Guide — blush & sage */
+function v11(){
+ bg("#fdf5f2"); noise(.04,.9,[.4,.2,.3]); const B="#6d4c5a",R={West:"#a9bfa0",Southwest:"#f0b08a",Midwest:"#f1d48a",Southeast:"#a9c9de",Northeast:"#c7b3dd"};
+ svg.append("rect").attr("x",36).attr("y",36).attr("width",1008).attr("height",1848).attr("rx",34).attr("fill","none").attr("stroke",B).attr("stroke-width",3);
+ T(svg,540,320,"My USA",{f:"Fraunces",w:900,s:140,c:B,a:"middle"});T(svg,540,445,"Travel Guide",{f:"Fraunces",w:900,s:118,c:"#d98493",a:"middle"});
+ heart(svg,120,250,2.6,"#d98493");heart(svg,960,420,2,"#a9bfa0");sparkle(svg,950,250,20,"#f1c86a");sparkle(svg,140,430,14,"#c7b3dd");
+ const m=map(svg,[60,500,960,600],{fill:(n,v)=>v?R[REG(n)]:"#f3ebe6",stroke:"#fffaf8",sw:2});allLabels(m,"#4a3540","#c2aeb3");
+ let g=box(70,1180,440,330,"REGIONS",R.West,B);REGS.forEach((k,i)=>{g.append("circle").attr("cx",36).attr("cy",58+i*54).attr("r",13).attr("fill",R[k]);T(g,62,67+i*54,k,{s:26,c:B,w:500});T(g,410,67+i*54,`${RVIS[k]||0} / ${RTOT[k]}`,{s:24,c:B,w:700,a:"end"});});
+ g=box(530,1180,480,330,"STATES VISITED","#d98493",B);ALPHA.forEach((n,i)=>{const c=Math.floor(i/11),r=i%11;T(g,30+c*230,52+r*25,"♡ "+n,{s:18,c:B,w:500});});
+ g=box(70,1540,940,150,"BY THE NUMBERS","#c7a2d6",B);[[N,"STATES SEEN"],[50-N,"STILL TO GO"],["5/5","REGIONS"],[Math.round(N/50*100)+"%","OF THE USA"]].forEach(([a,b],i)=>{T(g,118+i*235,90,a,{f:"Fraunces",w:900,s:58,c:"#d98493",a:"middle"});T(g,118+i*235,124,b,{s:15,w:700,ls:2,c:B,a:"middle"});});
+ const f=svg.append("g").attr("transform","translate(140,1730)");f.append("rect").attr("width",800).attr("height",72).attr("rx",36).attr("fill","#a9bfa0");T(f,400,48,"WANDER · EXPLORE · REPEAT",{w:700,s:28,ls:4,c:"#fff",a:"middle"});heart(f,40,38,1.5,"#fff");heart(f,760,38,1.5,"#fff");
+}
+
+/* 12. Guide — vintage school map */
+function v12(){
+ bg("#f3e9d2"); noise(.12,.8,[.35,.25,.1]); const B="#23395d",R={West:"#6f9c94",Southwest:"#c8553d",Midwest:"#e2a93b",Southeast:"#8c9a4f",Northeast:"#5b7db1"};
+ svg.append("rect").attr("x",30).attr("y",30).attr("width",1020).attr("height",1860).attr("fill","none").attr("stroke",B).attr("stroke-width",6);svg.append("rect").attr("x",46).attr("y",46).attr("width",988).attr("height",1828).attr("fill","none").attr("stroke",B).attr("stroke-width",1.5);
+ [[46,46],[1034,46],[46,1874],[1034,1874]].forEach(([x,y])=>star(svg,x,y,14,"#c8553d"));
+ T(svg,540,250,"THE UNITED STATES",{f:"Playfair Display",w:600,s:40,ls:10,c:B,a:"middle"});
+ T(svg,540,380,"Travel Map",{f:"Playfair Display",i:true,w:500,s:150,c:"#c8553d",a:"middle"});
+ ribbon(svg,540,420,560,B,`${N} OF 50 STATES · 2026`);
+ const m=map(svg,[60,540,960,600],{fill:(n,v)=>v?R[REG(n)]:"#ebdfc2",stroke:(n,v)=>v?"#f3e9d2":"#c9b896",sw:(n,v)=>v?1.8:1});allLabels(m,"#fff","#a8977a","Space Mono",14);
+ let g=box(70,1210,300,330,"REGIONS",B,B,"#f8f1e0");REGS.forEach((k,i)=>{g.append("rect").attr("x",26).attr("y",42+i*54).attr("width",30).attr("height",24).attr("fill",R[k]);T(g,70,62+i*54,k,{f:"Playfair Display",s:26,c:B,w:600});T(g,276,62+i*54,RVIS[k]||0,{f:"Space Mono",s:24,c:B,w:700,a:"end"});});
+ g=box(390,1210,300,330,"COMPASS",B,B,"#f8f1e0");const cp=g.append("g").attr("transform","translate(150,180)");cp.append("circle").attr("r",92).attr("fill","none").attr("stroke",B).attr("stroke-width",1.5);[0,90,180,270].forEach(a=>cp.append("path").attr("transform",`rotate(${a})`).attr("d","M0,-86 L13,0 L0,10 L-13,0Z").attr("fill",a===0?"#c8553d":B));[45,135,225,315].forEach(a=>cp.append("path").attr("transform",`rotate(${a})`).attr("d","M0,-52 L7,0 L-7,0Z").attr("fill",B).attr("opacity",.5));[["N",0,-100],["E",108,8],["S",0,118],["W",-108,8]].forEach(([l,x,y])=>T(cp,x,y,l,{f:"Playfair Display",w:600,s:22,c:B,a:"middle"}));
+ g=box(710,1210,300,330,"LEGEND",B,B,"#f8f1e0");g.append("rect").attr("x",28).attr("y",50).attr("width",44).attr("height",28).attr("fill","#e2a93b");T(g,88,72,"Visited",{f:"Playfair Display",s:26,c:B,w:600});g.append("rect").attr("x",28).attr("y",102).attr("width",44).attr("height",28).attr("fill","#ebdfc2").attr("stroke","#c9b896");T(g,88,124,"Not yet",{f:"Playfair Display",s:26,c:B,w:600});
+ T(g,150,240,N,{f:"Playfair Display",w:600,s:100,c:"#c8553d",a:"middle"});T(g,150,286,"STATES",{f:"Space Mono",w:700,s:20,ls:4,c:B,a:"middle"});
+ g=box(70,1580,940,230,"STATES I'VE VISITED",B,B,"#f8f1e0");ALPHA.forEach((n,i)=>{const c=Math.floor(i/6),r=i%6;T(g,30+c*228,50+r*30,"✓ "+n,{f:"Playfair Display",s:21,c:B,w:600});});
+}
+
+/* 13. Guide — region progress */
+function v13(){
+ bg("#faf3ea"); noise(.05,.9,[.4,.3,.2]); const B="#4b3a2f",R={West:"#7fa37a",Southwest:"#e0784a",Midwest:"#e9b949",Southeast:"#d4787a",Northeast:"#6f8fc4"};
+ svg.append("rect").attr("x",36).attr("y",36).attr("width",1008).attr("height",1848).attr("rx",34).attr("fill","none").attr("stroke",B).attr("stroke-width",3);
+ T(svg,540,300,"Where I've Been",{f:"Fraunces",w:900,s:112,c:B,a:"middle"});
+ T(svg,540,370,`A TRAVEL GUIDE · ${N} OF 50 STATES`,{w:700,s:26,ls:5,c:"#e0784a",a:"middle"});
+ const hp=k=>{const id="h"+(uid++);const p=defs.append("pattern").attr("id",id).attr("width",9).attr("height",9).attr("patternUnits","userSpaceOnUse").attr("patternTransform","rotate(45)");p.append("rect").attr("width",9).attr("height",9).attr("fill","#fbf6ef");p.append("line").attr("x1",0).attr("y1",0).attr("x2",0).attr("y2",9).attr("stroke",R[k]).attr("stroke-width",2).attr("opacity",.45);return `url(#${id})`;};
+ const H={};REGS.forEach(k=>H[k]=hp(k));
+ const m=map(svg,[60,420,960,640],{fill:(n,v)=>v?R[REG(n)]:H[REG(n)],stroke:"#fff",sw:2});allLabels(m,"#fff","#a8978a");
+ m.sg.selectAll("path").filter(d=>!VIS.has(d.properties.name)).attr("stroke",d=>R[REG(d.properties.name)]).attr("stroke-width",.8).attr("stroke-opacity",.5);
+ const k1=svg.append("g").attr("transform","translate(110,1100)");k1.append("rect").attr("width",36).attr("height",24).attr("rx",4).attr("fill",R.Midwest);T(k1,48,20,"visited",{s:22,c:B,w:500});k1.append("rect").attr("x",180).attr("width",36).attr("height",24).attr("rx",4).attr("fill",H.Midwest).attr("stroke",R.Midwest);T(k1,228,20,"not yet",{s:22,c:B,w:500});
+ let g=box(70,1170,940,380,"REGION PROGRESS","#e0784a",B);REGS.forEach((k,i)=>{const y=60+i*62,v=RVIS[k]||0,t=RTOT[k];T(g,36,y+18,k,{f:"Fraunces",w:600,s:28,c:B});g.append("rect").attr("x",260).attr("y",y).attr("width",520).attr("height",24).attr("rx",12).attr("fill",H[k]).attr("stroke",R[k]).attr("stroke-width",1.5);g.append("rect").attr("x",260).attr("y",y).attr("width",520*v/t).attr("height",24).attr("rx",12).attr("fill",R[k]);T(g,904,y+20,`${v}/${t}`,{w:700,s:26,c:B,a:"end"});});
+ g=box(70,1590,450,220,"TOTAL",B,B);T(g,140,150,N,{f:"Fraunces",w:900,s:130,c:"#e0784a",a:"middle"});T(g,250,105,"states",{f:"Fraunces",w:600,s:40,c:B});T(g,250,150,`${Math.round(N/50*100)}% done!`,{s:26,c:B,w:500});
+ g=box(560,1590,450,220,"NEXT UP",R.West,B);["□ ____________","□ ____________","□ ____________"].forEach((s,i)=>T(g,40,70+i*50,s,{f:"Caveat",w:700,s:36,c:B}));
+}
+
+/* 14. Guide — with state icons */
+function v14(){
+ bg("#fbf4ea"); noise(.05,.9,[.4,.3,.2]); const B="#5b4636",R={West:"#a7b58c",Southwest:"#df9363",Midwest:"#e8bd62",Southeast:"#c9a08a",Northeast:"#cf9a9a"};const stk=stickerFilter(4);
+ svg.append("rect").attr("x",36).attr("y",36).attr("width",1008).attr("height",1848).attr("rx",34).attr("fill","none").attr("stroke",B).attr("stroke-width",3);
+ T(svg,540,300,"My US",{f:"Fraunces",w:900,s:130,c:B,a:"middle"});T(svg,540,410,"Field Guide",{f:"Fraunces",w:900,s:110,c:"#c4703f",a:"middle"});
+ heart(svg,140,260,3,"#c4703f");star(svg,940,260,22,"#e8bd62");
+ const m=map(svg,[60,460,960,620],{fill:(n,v)=>v?R[REG(n)]:"#efe5d6",stroke:"#fffaf2",sw:2});
+ STATES.filter(d=>!VIS.has(d.properties.name)).forEach(d=>{const n=d.properties.name,[x,y]=m.anchor(n);T(m.g,x,y+5,AB[n],{w:700,s:OUT.has(n)?11:13,c:"#b3a189",a:"middle"});});
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+12,EMO[n],{f:"Apple Color Emoji",s:n==="New Jersey"?20:32,a:"middle",fl:stk});});
+ let g=box(70,1150,940,560,"STATE ICONS","#c4703f",B);
+ ALPHA.forEach((n,i)=>{const c=i%4,r=Math.floor(i/4),x=40+c*225,y=70+r*82;g.append("rect").attr("x",x).attr("y",y-38).attr("width",205).attr("height",66).attr("rx",33).attr("fill",R[REG(n)]).attr("opacity",.35);T(g,x+36,y+8,EMO[n],{f:"Apple Color Emoji",s:32,a:"middle"});T(g,x+64,y+4,n,{w:700,s:n.length>11?16:20,c:B});});
+ const f=svg.append("g").attr("transform","translate(140,1750)");f.append("rect").attr("width",800).attr("height",72).attr("rx",36).attr("fill","#a7b58c");T(f,400,48,`${N} STATES · ${50-N} TO GO`,{w:700,s:30,ls:4,c:"#fff",a:"middle"});heart(f,40,38,1.5,"#fff");heart(f,760,38,1.5,"#fff");
+}
+
+/* 15. Passport — scattered overlapping stamps */
+function v15(){
+ bg("#f3eee2"); guil("#d9cdb2",.9); noise(.06,.9,[.4,.3,.2]);
+ const INKS=["#c0392b","#1d3c6e","#2e7d5b","#7b3fa0","#d35400","#b03a6f"];const IK=inkF(4);const r=rnd(77);
+ const col=n=>INKS[ALPHA.indexOf(n)%INKS.length];
+ T(svg,540,230,"UNITED STATES OF AMERICA",{f:"Space Mono",w:700,s:26,ls:6,c:"#1d3c6e",a:"middle"});
+ T(svg,540,350,"Travel Record",{f:"Playfair Display",i:true,w:500,s:110,c:"#1d3c6e",a:"middle"});
+ T(svg,540,410,`VISAS ISSUED: ${N}  ·  VALID FOR ALL 50`,{f:"Space Mono",s:22,ls:3,c:"#6b6047",a:"middle"});
+ const m=map(svg,[60,450,960,560],{fill:(n,v)=>v?d3.color(col(n)).brighter(1.6).formatHex():"#faf7ef",stroke:(n,v)=>v?col(n):"#c9bfa6",sw:(n,v)=>v?1.4:.8});
+ m.sg.selectAll("path").filter(d=>VIS.has(d.properties.name)).attr("fill-opacity",.55);
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+5,AB[n],{f:"Space Mono",w:700,s:14,c:col(n),a:"middle"});});
+ const order=ALPHA.slice().sort(()=>r()-.5);
+ order.forEach((n,i)=>{const c=i%4,row=Math.floor(i/4),x=150+c*260+(r()-.5)*70+(row%2?60:0),y=1110+row*128+(r()-.5)*40;stamp(svg,Math.min(960,x),y,n,col(n),i%4,.82+r()*.25,(r()-.5)*36,{ink:IK,op:.85});});
+}
+
+/* 16. Passport — colorful filled stamps */
+function v16(){
+ bg("#fdf1f1"); guil("#f2cfd3",1);
+ const INKS=["#e85d75","#3d7dd8","#2fa37a","#9b5de5","#f08a24","#14a3b8"];const IK=inkF(9);const r=rnd(5);
+ T(svg,540,225,"PASSPORT · PASSEPORT · PASAPORTE",{f:"Space Mono",w:700,s:22,ls:4,c:"#b0485c",a:"middle"});
+ T(svg,540,345,"My Travel Stamps",{f:"Fraunces",w:900,s:96,c:"#2b2a4c",a:"middle"});
+ T(svg,540,405,`${N} STATES COLLECTED · ${50-N} TO GO`,{f:"Space Mono",w:700,s:24,ls:3,c:"#e85d75",a:"middle"});
+ const m=map(svg,[60,450,960,560],{fill:(n,v)=>v?INKS[ALPHA.indexOf(n)%6]:"#fffafa",stroke:"#fff",sw:(n,v)=>v?2:1});
+ m.sg.selectAll("path").filter(d=>!VIS.has(d.properties.name)).attr("stroke","#ead3d6");
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+5,AB[n],{f:"Space Mono",w:700,s:14,c:"#fff",a:"middle"});});
+ const cols=4,cw=245,ch=146;ALPHA.forEach((n,i)=>{const x=72+cw/2+(i%cols)*cw-15,y=1110+Math.floor(i/cols)*ch;stamp(svg,x,y,n,INKS[i%6],i%4,.92,(r()-.5)*14,{fill:true,ink:IK,op:.95,sub:"✈ VISITED ✈"});});
+}
+
+/* 17. Passport — data page */
+function v17(){
+ bg("#eef3f6"); guil("#c9d9e4",1); noise(.05,.9,[.2,.3,.4]);
+ const NV="#1d3557",RED="#c0392b",INKS=["#c0392b","#1d3c6e","#2e7d5b","#7b3fa0","#d35400"];const IK=inkF(13);const r=rnd(31);
+ T(svg,80,210,"PASSPORT",{f:"Archivo Black",s:40,ls:8,c:NV});T(svg,1000,210,"USA",{f:"Archivo Black",s:40,ls:8,c:RED,a:"end"});
+ svg.append("line").attr("x1",80).attr("x2",1000).attr("y1",235).attr("y2",235).attr("stroke",NV).attr("stroke-width",2);
+ const card=svg.append("g").attr("transform","translate(80,270)");card.append("rect").attr("width",920).attr("height",360).attr("rx",22).attr("fill","#ffffff").attr("opacity",.75).attr("stroke","#b9cbd8");
+ // "photo" = mini map
+ card.append("rect").attr("x",28).attr("y",28).attr("width",330).attr("height",300).attr("rx",12).attr("fill","#dfe9f0");
+ const mm=map(card,[40,60,306,236],{fill:(n,v)=>v?RED:"#fff",stroke:"#dfe9f0",sw:.6});
+ const F=[["TYPE / CODE","P · USA"],["HOLDER","Me ♡"],["STATES VISITED",`${N} of 50`],["REGIONS","5 of 5"],["DATE OF ISSUE","OCT 2026"],["STATUS","STILL EXPLORING"]];
+ F.forEach(([a,b],i)=>{const x=390+(i%2)*270,y=70+Math.floor(i/2)*100;T(card,x,y,a,{f:"Space Mono",s:15,ls:2,c:"#6a7f92"});T(card,x,y+36,b,{f:"Space Mono",w:700,s:28,c:NV});});
+ T(svg,80,690,"P<USA<<TRAVEL<RECORD<<<<<<<<<<<<<<<<<<<<<<<",{f:"Space Mono",w:700,s:27,c:NV});T(svg,80,728,`${String(N).padStart(2,"0")}<OF<50<STATES<<<<<<<<<<<<<<<<<<<<<<<<<<<<`,{f:"Space Mono",w:700,s:27,c:NV});
+ const m=map(svg,[60,780,960,520],{fill:(n,v)=>v?"#f6c3bd":"#fbfdfe",stroke:(n,v)=>v?RED:"#a9bccb",sw:(n,v)=>v?1.4:.8});
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+5,AB[n],{f:"Space Mono",w:700,s:13,c:RED,a:"middle"});});
+ T(svg,80,1370,"ENTRIES",{f:"Space Mono",w:700,s:22,ls:6,c:NV});svg.append("line").attr("x1",220).attr("x2",1000).attr("y1",1363).attr("y2",1363).attr("stroke",NV).attr("stroke-width",1);
+ ALPHA.forEach((n,i)=>{const x=135+(i%6)*162,y=1450+Math.floor(i/6)*118;stamp(svg,x,y,n,INKS[i%5],i%4,.62,(r()-.5)*24,{ink:IK,op:.88});});
+}
+
+/* 18. Guide x passport */
+function v18(){
+ bg("#fbf4ea"); noise(.05,.9,[.4,.3,.2]); const B="#5b4636",R={West:"#a7b58c",Southwest:"#df9363",Midwest:"#e8bd62",Southeast:"#c9a08a",Northeast:"#cf9a9a"};
+ const INKS=["#c4703f","#5b7d5a","#8a5a8c","#3f6c8e","#b5523b"];const IK=inkF(21);const r=rnd(12);
+ svg.append("rect").attr("x",36).attr("y",36).attr("width",1008).attr("height",1848).attr("rx",34).attr("fill","none").attr("stroke",B).attr("stroke-width",3);
+ T(svg,540,290,"My US",{f:"Fraunces",w:900,s:130,c:B,a:"middle"});T(svg,540,400,"Travel Passport",{f:"Fraunces",w:900,s:96,c:"#c4703f",a:"middle"});
+ star(svg,540,445,13,"#c4703f");svg.append("line").attr("x1",330).attr("x2",510).attr("y1",445).attr("y2",445).attr("stroke",B).attr("stroke-width",2);svg.append("line").attr("x1",570).attr("x2",750).attr("y1",445).attr("y2",445).attr("stroke",B).attr("stroke-width",2);
+ const m=map(svg,[60,480,960,600],{fill:(n,v)=>v?R[REG(n)]:"#efe5d6",stroke:"#fffaf2",sw:2});allLabels(m,"#3d2e22","#b3a189");
+ let g=box(70,1150,940,620,"PASSPORT STAMPS · "+N,"#c4703f",B);
+ ALPHA.forEach((n,i)=>{const x=85+(i%5)*192,y=95+Math.floor(i/5)*122;stamp(g,x,y,n,INKS[i%5],i%4,.7,(r()-.5)*22,{ink:IK,op:.88});});
+ const f=svg.append("g").attr("transform","translate(140,1790)");f.append("rect").attr("width",800).attr("height",60).attr("rx",30).attr("fill","#a7b58c");T(f,400,41,"EXPLORE · COLLECT · REPEAT",{w:700,s:26,ls:4,c:"#fff",a:"middle"});
+}
+
+function wobble(scale=3,seed=2){const id="wb"+(uid++);const f=defs.append("filter").attr("id",id).attr("x","-5%").attr("y","-5%").attr("width","110%").attr("height","110%");f.append("feTurbulence").attr("type","fractalNoise").attr("baseFrequency",.04).attr("numOctaves",2).attr("seed",seed).attr("result","t");f.append("feDisplacementMap").attr("in","SourceGraphic").attr("in2","t").attr("scale",scale);return `url(#${id})`;}
+function tv(g,x,y,w,h,frame="#7a4a2b"){g.append("line").attr("x1",x+w/2).attr("y1",y-10).attr("x2",x+w/2-90).attr("y2",y-110).attr("stroke","#333").attr("stroke-width",5).attr("stroke-linecap","round");g.append("line").attr("x1",x+w/2).attr("y1",y-10).attr("x2",x+w/2+80).attr("y2",y-120).attr("stroke","#333").attr("stroke-width",5).attr("stroke-linecap","round");g.append("circle").attr("cx",x+w/2-90).attr("cy",y-110).attr("r",9).attr("fill","#e85d4a");g.append("circle").attr("cx",x+w/2+80).attr("cy",y-120).attr("r",9).attr("fill","#e85d4a");
+ g.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",40).attr("fill",frame).attr("stroke","#2b1a10").attr("stroke-width",5);
+ g.append("rect").attr("x",x+w-150).attr("y",y+40).attr("width",110).attr("height",h-80).attr("rx",16).attr("fill",d3.color(frame).darker(.5));
+ [0,1].forEach(i=>{g.append("circle").attr("cx",x+w-95).attr("cy",y+110+i*110).attr("r",30).attr("fill","#e8d5b0").attr("stroke","#2b1a10").attr("stroke-width",4);g.append("line").attr("x1",x+w-95).attr("y1",y+110+i*110).attr("x2",x+w-95+(i?-18:18)).attr("y2",y+110+i*110-18).attr("stroke","#2b1a10").attr("stroke-width",4);});
+ for(let i=0;i<5;i++)g.append("line").attr("x1",x+w-130).attr("x2",x+w-60).attr("y1",y+h-170+i*16).attr("y2",y+h-170+i*16).attr("stroke","#2b1a10").attr("stroke-width",3);
+ g.append("rect").attr("x",x+70).attr("y",y+h).attr("width",30).attr("height",40).attr("fill","#2b1a10");g.append("rect").attr("x",x+w-100).attr("y",y+h).attr("width",30).attr("height",40).attr("fill","#2b1a10");
+ return [x+30,y+30,w-200,h-60];}
+
+/* 19. 90s sitcom */
+function v19(){
+ bg("#fff4e0"); noise(.05,.9,[.4,.3,.1]);
+ const C=["#e8524a","#f4b52f","#3a9bd9","#5cb85c","#9b59b6"];
+ const words=["THE ONE","WHERE I SAW",`${N} STATES`];const y0=250;
+ words.forEach((w,i)=>{T(svg,540,y0+i*96,w,{f:"Archivo Black",s:i===2?104:80,ls:4,c:"#2b2233",a:"middle"});});
+ [[150,233],[930,233],[110,330],[970,330]].forEach(([x,y],i)=>svg.append("circle").attr("cx",x).attr("cy",y).attr("r",13).attr("fill",C[i]));
+ T(svg,540,505,"SEASON 1  ·  EPISODE GUIDE",{f:"DM Sans",w:700,s:26,ls:6,c:"#e8524a",a:"middle"});
+ const scr=tv(svg,80,690,920,560);
+ svg.append("rect").attr("x",scr[0]).attr("y",scr[1]).attr("width",scr[2]).attr("height",scr[3]).attr("rx",36).attr("fill","#cfe9f7").attr("stroke","#2b1a10").attr("stroke-width",4);
+ const m=map(svg,[scr[0]+20,scr[1]+30,scr[2]-40,scr[3]-60],{fill:(n,v)=>v?C[ALPHA.indexOf(n)%5]:"#fffaf0",stroke:"#2b2233",sw:(n,v)=>v?1.6:.7});
+ const sh=defs.append("radialGradient").attr("id","glass");sh.append("stop").attr("offset","60%").attr("stop-color","#fff").attr("stop-opacity",0);sh.append("stop").attr("offset","100%").attr("stop-color","#000").attr("stop-opacity",.18);
+ svg.append("rect").attr("x",scr[0]).attr("y",scr[1]).attr("width",scr[2]).attr("height",scr[3]).attr("rx",36).attr("fill","url(#glass)");
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/11),r=i%11,x=90+c*470,y=1355+r*41;T(svg,x,y,`S01E${String(i+1).padStart(2,"0")}`,{f:"Space Mono",w:700,s:20,c:C[i%5]});T(svg,x+130,y,n,{f:"DM Sans",w:700,s:26,c:"#2b2233"});});
+ T(svg,540,1840,"▶  now streaming on my story",{f:"DM Sans",w:700,s:28,ls:2,c:"#3a9bd9",a:"middle"});
+}
+
+/* 20. Portal adventure (sci-fi cartoon) */
+function v20(){
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",lg(["#0e1a3a","#1b2f5e","#2a1f4f"],0,1));
+ const r=rnd(42);for(let i=0;i<160;i++)svg.append("circle").attr("cx",r()*1080).attr("cy",r()*1920).attr("r",r()*1.8+.3).attr("fill","#fff").attr("opacity",.4+r()*.6);
+ const WB=wobble(4,3),LIME="#97ce4c",CY="#4fd1e8";
+ // planets
+ svg.append("circle").attr("cx",960).attr("cy",1250).attr("r",58).attr("fill","#f28c5b").attr("stroke","#111").attr("stroke-width",5);svg.append("ellipse").attr("cx",960).attr("cy",1250).attr("rx",120).attr("ry",22).attr("fill","none").attr("stroke","#ffd36b").attr("stroke-width",8).attr("transform","rotate(-18,960,1250)");
+ svg.append("circle").attr("cx",980).attr("cy",130).attr("r",34).attr("fill","#c77dff").attr("stroke","#111").attr("stroke-width",4);
+ // portal
+ const pg=defs.append("radialGradient").attr("id","portal");[["0%","#eaffb0"],["35%","#b6f05a"],["70%","#4fbf2a"],["100%","#1f6e1a"]].forEach(([o,c])=>pg.append("stop").attr("offset",o).attr("stop-color",c));
+ const P=svg.append("g").attr("transform","translate(540,860)");P.append("ellipse").attr("rx",520).attr("ry",400).attr("fill","url(#portal)").attr("filter",wobble(30,8)).attr("opacity",.95);
+ for(let k=0;k<6;k++){let d="";for(let a=0;a<12;a+=.1){const rr=20+a*38;d+=(a?"L":"M")+(Math.cos(a+k*Math.PI/3)*rr*1.25)+","+(Math.sin(a+k*Math.PI/3)*rr*.95);}P.append("path").attr("d",d).attr("fill","none").attr("stroke","#eaffb0").attr("stroke-width",6).attr("opacity",.45).attr("filter",WB);}
+ // title with goo drips
+ const tg=svg.append("g");T(tg,540,250,"INTERDIMENSIONAL",{f:"Luckiest Guy",s:84,c:LIME,a:"middle",st:"#111",sw:12});T(tg,540,350,"ROAD TRIP",{f:"Luckiest Guy",s:110,c:CY,a:"middle",st:"#111",sw:12});
+ [].forEach(([x,y,h])=>{const c=y<300?LIME:CY;tg.append("path").attr("d",`M${x-12},${y} L${x-12},${y+h} a12,12 0 0,0 24,0 L${x+12},${y}Z`).attr("fill",c).attr("stroke","#111").attr("stroke-width",4);});
+ T(svg,540,470,`${N} / 50 STATES SURVIVED`,{f:"Bangers",s:52,ls:3,c:"#fff",a:"middle",st:"#111",sw:8});
+ const m=map(svg,[60,580,960,560],{fill:(n,v)=>v?(["#97ce4c","#4fd1e8","#ff7eb6","#ffd36b"][ALPHA.indexOf(n)%4]):"#e6f7ff",stroke:"#111",sw:(n,v)=>v?3:2});
+ m.g.attr("filter",WB);
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+6,AB[n],{f:"Bangers",s:20,ls:1,c:"#111",a:"middle"});});
+ // saucer
+ const u=svg.append("g").attr("transform","translate(110,1245) rotate(10) scale(.8)").attr("filter",WB);u.append("ellipse").attr("cy",-14).attr("rx",34).attr("ry",26).attr("fill","#bdf3ff").attr("stroke","#111").attr("stroke-width",4);u.append("ellipse").attr("rx",80).attr("ry",22).attr("fill","#c9ccd6").attr("stroke","#111").attr("stroke-width",4);[-45,0,45].forEach(x=>u.append("circle").attr("cx",x).attr("cy",4).attr("r",6).attr("fill",LIME).attr("stroke","#111").attr("stroke-width",2));
+ // scanner panel
+ const pn=svg.append("g").attr("transform","translate(70,1330)");pn.append("rect").attr("width",940).attr("height",470).attr("rx",30).attr("fill","#0c1530").attr("opacity",.85).attr("stroke",LIME).attr("stroke-width",5).attr("filter",WB);
+ T(pn,40,62,"> DIMENSIONS VISITED",{f:"Space Mono",w:700,s:28,c:LIME});T(pn,900,62,"SCAN 100%",{f:"Space Mono",w:700,s:22,c:CY,a:"end"});
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/8),rw=i%8;T(pn,44+c*300,118+rw*42,"◉ "+n.toUpperCase(),{f:"Space Mono",w:700,s:n.length>11?17:20,c:["#97ce4c","#4fd1e8","#ff7eb6","#ffd36b"][i%4]});});
+}
+
+/* 21. Cartoon sky sitcom */
+function v21(){
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",lg(["#4fb3ff","#8fd3ff","#c8ecff"],0,1));
+ const cl=(x,y,s)=>{const c=svg.append("g").attr("transform",`translate(${x},${y}) scale(${s})`);[[0,0,40],[45,-22,52],[100,0,42],[50,14,44]].forEach(([a,b,r])=>c.append("circle").attr("cx",a).attr("cy",b).attr("r",r).attr("fill","#fff"));};
+ cl(60,180,1);cl(780,140,1.2);cl(820,560,.8);cl(30,600,.7);cl(900,1180,.9);cl(-20,1150,.9);
+ const Y="#ffd90f";
+ T(svg,540,300,"THE STATES",{f:"Luckiest Guy",s:120,c:Y,a:"middle",st:"#3b2a1a",sw:14});T(svg,540,430,"I'VE SEEN",{f:"Luckiest Guy",s:120,c:Y,a:"middle",st:"#3b2a1a",sw:14});
+ T(svg,540,505,`SEASON 1 · ${N} EPISODES`,{f:"Bangers",s:46,ls:3,c:"#fff",a:"middle",st:"#3b2a1a",sw:7});
+ const CC=["#ffd90f","#ff7aa2","#ff9f1c","#4ecdc4","#a06cd5","#7bd84f"];
+ const m=map(svg,[50,560,980,560],{fill:(n,v)=>v?CC[ALPHA.indexOf(n)%6]:"#fff8e7",stroke:"#3b2a1a",sw:(n,v)=>v?2.6:1.2});
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+6,AB[n],{f:"Bangers",s:20,ls:1,c:"#3b2a1a",a:"middle"});});
+ // chalkboard
+ const b=svg.append("g").attr("transform","translate(90,1170)");b.append("rect").attr("width",900).attr("height",250).attr("rx",10).attr("fill","#a0672f").attr("stroke","#3b2a1a").attr("stroke-width",5);b.append("rect").attr("x",20).attr("y",20).attr("width",860).attr("height",210).attr("fill","#2f5d46");
+ [0,1,2].forEach(i=>T(b,50,82+i*58,"I will visit all 50 states.",{f:"Caveat",w:700,s:46,c:"#f2f2e8",op:.92-i*.12}));
+ ALPHA.forEach((n,i)=>{const c=i%3,r=Math.floor(i/3),x=80+c*310,y=1470+r*50;svg.append("rect").attr("x",x).attr("y",y).attr("width",290).attr("height",40).attr("rx",20).attr("fill",CC[i%6]).attr("stroke","#3b2a1a").attr("stroke-width",3);T(svg,x+145,y+30,n.toUpperCase(),{f:"Bangers",s:n.length>11?23:27,ls:1.5,c:"#3b2a1a",a:"middle"});});
+}
+
+/* 22. Streaming show page (light) */
+function v22(){
+ bg("#f7f5f2");const RED="#e5383b",INK="#1b1b1f";
+ const hero=svg.append("g");hero.append("rect").attr("x",40).attr("y",170).attr("width",1000).attr("height",700).attr("rx",30).attr("fill",lg(["#ffe1d6","#ffd0e0","#d9d4ff"],1,1));
+ const m=map(hero,[80,200,920,520],{fill:(n,v)=>v?RED:"rgba(255,255,255,.75)",stroke:(n,v)=>v?"#fff":"#e9c9cf",sw:(n,v)=>v?1.6:1});
+ hero.append("rect").attr("x",40).attr("y",620).attr("width",1000).attr("height",250).attr("rx",30).attr("fill",lg(["rgba(247,245,242,0)","#f7f5f2"],0,1));
+ T(svg,80,780,"USA: The Road Trip",{f:"Fraunces",w:900,s:84,c:INK});
+ T(svg,80,832,`2026  ·  Limited Series  ·  ${N} Episodes  ·  98% Match`,{f:"DM Sans",w:500,s:26,c:"#55555c"});
+ const btn=(x,txt,fill,tc)=>{svg.append("rect").attr("x",x).attr("y",880).attr("width",300).attr("height",80).attr("rx",14).attr("fill",fill);T(svg,x+150,932,txt,{f:"DM Sans",w:700,s:32,c:tc,a:"middle"});};
+ btn(80,"▶  Play",INK,"#fff");btn(400,"＋  My List","#e7e3df",INK);btn(720,"★  Rate","#e7e3df",INK);
+ T(svg,80,1030,"Episodes",{f:"DM Sans",w:700,s:38,c:INK});T(svg,1000,1030,"Season 1 ▾",{f:"DM Sans",w:500,s:28,c:"#55555c",a:"end"});
+ const cw=176,ch=150;ALPHA.forEach((n,i)=>{const x=80+(i%5)*(cw+12),y=1060+Math.floor(i/5)*ch;const g=svg.append("g");
+  g.append("rect").attr("x",x).attr("y",y).attr("width",cw).attr("height",100).attr("rx",12).attr("fill",["#ffd6cc","#ffe3b3","#d6ecff","#e3d9ff","#d4f2e3"][i%5]);
+  const f=STATES.find(s=>s.properties.name===n),pr=d3.geoMercator().fitExtent([[x+30,y+12],[x+cw-30,y+88]],f);g.append("path").attr("d",d3.geoPath(pr)(f)).attr("fill",RED).attr("stroke","#fff").attr("stroke-width",1.5);
+  T(g,x+10,y+24,`E${i+1}`,{f:"DM Sans",w:700,s:16,c:INK,op:.7});
+  T(g,x,y+128,n,{f:"DM Sans",w:700,s:n.length>11?17:20,c:INK});});
+}
+
+const SLIME=["#97ce4c","#4fd1e8","#ff7eb6","#ffd36b"];
+/* 23. Garage lab blueprint */
+function v23(){
+ bg("#2f80d6");const gp=defs.append("pattern").attr("id","bp").attr("width",40).attr("height",40).attr("patternUnits","userSpaceOnUse");gp.append("path").attr("d","M40,0 L0,0 0,40").attr("fill","none").attr("stroke","#fff").attr("stroke-width",.6).attr("opacity",.35);
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill","url(#bp)");const WB=wobble(3,5);
+ T(svg,540,250,"RESEARCH LOG #22",{f:"Bangers",s:110,ls:3,c:"#fff",a:"middle",st:"#123d6e",sw:10});
+ T(svg,540,320,"SUBJECT: EARTH · USA · STATES VISITED",{f:"Space Mono",w:700,s:26,ls:2,c:"#d6ecff",a:"middle"});
+ const m=map(svg,[60,370,960,600],{fill:(n,v)=>v?SLIME[ALPHA.indexOf(n)%4]:"rgba(255,255,255,.08)",stroke:(n,v)=>v?"#111":"#e6f2ff",sw:(n,v)=>v?3:1.2});m.g.attr("filter",WB);
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+6,AB[n],{f:"Bangers",s:20,c:"#111",a:"middle"});});
+ // beakers
+ const flask=(x,y,c,s)=>{const g=svg.append("g").attr("transform",`translate(${x},${y}) scale(${s})`).attr("filter",WB);g.append("path").attr("d","M-14,-60 L-14,-20 L-50,40 Q-55,55 -40,55 L40,55 Q55,55 50,40 L14,-20 L14,-60Z").attr("fill","#e9f6ff").attr("stroke","#111").attr("stroke-width",5);g.append("path").attr("d","M-34,15 L34,15 L50,40 Q55,55 40,55 L-40,55 Q-55,55 -50,40Z").attr("fill",c).attr("stroke","#111").attr("stroke-width",4);[[-10,-5,7],[8,-28,5],[-4,-48,4]].forEach(([a,b,r])=>g.append("circle").attr("cx",a).attr("cy",b).attr("r",r).attr("fill",c).attr("stroke","#111").attr("stroke-width",3));};
+ flask(110,1040,"#97ce4c",1);flask(980,1050,"#ff7eb6",.9);
+ // clipboard
+ const cb=svg.append("g").attr("transform","translate(70,1110) rotate(-2)").attr("filter",WB);cb.append("rect").attr("width",620).attr("height",700).attr("rx",24).attr("fill","#b5793f").attr("stroke","#111").attr("stroke-width",5);cb.append("rect").attr("x",28).attr("y",60).attr("width",564).attr("height",612).attr("fill","#fffdf5").attr("stroke","#111").attr("stroke-width",3);cb.append("rect").attr("x",210).attr("y",20).attr("width",200).attr("height",70).attr("rx",14).attr("fill","#c9ccd6").attr("stroke","#111").attr("stroke-width",5);
+ T(cb,60,140,"Places I've been:",{f:"Caveat",w:700,s:44,c:"#123d6e"});
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/11),r=i%11;T(cb,60+c*270,192+r*42,"✓ "+n,{f:"Caveat",w:700,s:33,c:"#1d2b3a"});});
+ const note=(x,y,rot,c,lines)=>{const g=svg.append("g").attr("transform",`translate(${x},${y}) rotate(${rot})`).attr("filter",WB);g.append("rect").attr("width",290).attr("height",250).attr("fill",c).attr("stroke","#111").attr("stroke-width",4);lines.forEach((l,i)=>T(g,22,62+i*50,l,{f:"Caveat",w:700,s:40,c:"#1d2b3a"}));};
+ note(730,1140,4,"#fff27a",["NOTE TO SELF:",`${50-N} states`,"left to go!"]);note(735,1450,-5,"#ffb3d1",["Results:",`${N}/50 = ${Math.round(N/50*100)}%`,"science!!"]);
+}
+
+/* 24. Alien planet */
+function v24(){
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",lg(["#5ee7d0","#b7f27a","#f6f09a"],0,1));const WB=wobble(4,9);
+ [[180,190,60,"#ffffff"],[880,260,38,"#ff9ad5"],[960,140,22,"#c49aff"]].forEach(([x,y,r,c])=>{svg.append("circle").attr("cx",x).attr("cy",y).attr("r",r).attr("fill",c).attr("stroke","#111").attr("stroke-width",5).attr("filter",WB);svg.append("circle").attr("cx",x-r*.3).attr("cy",y-r*.2).attr("r",r*.18).attr("fill","#000").attr("opacity",.12);});
+ T(svg,540,370,"DIMENSION",{f:"Luckiest Guy",s:110,c:"#ff6fb5",a:"middle",st:"#111",sw:12});T(svg,540,490,"USA-22",{f:"Luckiest Guy",s:130,c:"#ffe14d",a:"middle",st:"#111",sw:12});
+ const pn=svg.append("g").attr("filter",WB);pn.append("rect").attr("x",50).attr("y",540).attr("width",980).attr("height",600).attr("rx",40).attr("fill","#bff6ff").attr("opacity",.85).attr("stroke","#111").attr("stroke-width",6);
+ const m=map(pn,[80,570,920,540],{fill:(n,v)=>v?SLIME[(ALPHA.indexOf(n)+1)%4]:"#ffffff",stroke:"#111",sw:(n,v)=>v?3:1.5});
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+6,AB[n],{f:"Bangers",s:20,c:"#111",a:"middle"});});
+ const lp=svg.append("g").attr("filter",WB);lp.append("rect").attr("x",70).attr("y",1180).attr("width",940).attr("height",420).attr("rx",30).attr("fill","#2a1f4f").attr("stroke","#111").attr("stroke-width",6);
+ T(lp,110,1240,"EARTH LOCATIONS VISITED",{f:"Bangers",s:40,ls:2,c:"#97ce4c"});T(lp,970,1240,`${N}/50`,{f:"Bangers",s:40,c:"#ffe14d",a:"end"});
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/8),r=i%8;T(lp,110+c*300,1295+r*38,"● "+n,{f:"Space Mono",w:700,s:n.length>12?17:20,c:SLIME[i%4]});});
+ // ground
+ let d="M0,1920 L0,1680";for(let x=0;x<=1080;x+=20)d+=` L${x},${1660-35*Math.sin(x/160)}`;d+=" L1080,1920Z";svg.append("path").attr("d",d).attr("fill","#a36bd6").attr("stroke","#111").attr("stroke-width",6).attr("filter",WB);
+ const shroom=(x,y,s,c)=>{const g=svg.append("g").attr("transform",`translate(${x},${y}) scale(${s})`).attr("filter",WB);g.append("rect").attr("x",-10).attr("y",-50).attr("width",20).attr("height",55).attr("fill","#fff3d6").attr("stroke","#111").attr("stroke-width",4);g.append("path").attr("d","M-48,-48 Q0,-110 48,-48Z").attr("fill",c).attr("stroke","#111").attr("stroke-width",4);[[-20,-62],[12,-74],[25,-55]].forEach(([a,b])=>g.append("circle").attr("cx",a).attr("cy",b).attr("r",6).attr("fill","#fff"));};
+ const eye=(x,y,h)=>{const g=svg.append("g").attr("filter",WB);g.append("path").attr("d",`M${x},${y} Q${x+20},${y-h/2} ${x},${y-h}`).attr("fill","none").attr("stroke","#4ab84a").attr("stroke-width",10);g.append("circle").attr("cx",x).attr("cy",y-h).attr("r",20).attr("fill","#fff").attr("stroke","#111").attr("stroke-width",4);g.append("circle").attr("cx",x+5).attr("cy",y-h).attr("r",8).attr("fill","#111");};
+ shroom(140,1760,1.2,"#ff6fb5");shroom(900,1790,1,"#4fd1e8");eye(320,1760,110);eye(760,1750,90);shroom(540,1830,.8,"#ffe14d");eye(1010,1720,70);
+}
+
+/* 25. Interstate cable */
+function v25(){
+ bg("#5b2a86");const r=rnd(6);for(let i=0;i<40;i++)sparkle(svg,r()*1080,r()*1920,4+r()*10,["#97ce4c","#ff7eb6","#4fd1e8"][i%3]).attr("opacity",.7);const WB=wobble(4,12);
+ T(svg,540,250,"INTERSTATE",{f:"Luckiest Guy",s:120,c:"#97ce4c",a:"middle",st:"#111",sw:12});T(svg,540,360,"CABLE",{f:"Luckiest Guy",s:120,c:"#ff7eb6",a:"middle",st:"#111",sw:12});
+ T(svg,540,430,`${N} CHANNELS · NO COMMERCIALS`,{f:"Bangers",s:40,ls:3,c:"#fff",a:"middle"});
+ const g=svg.append("g").attr("filter",WB);const scr=tv(g,70,560,940,600,"#c96b3c");
+ g.append("rect").attr("x",scr[0]).attr("y",scr[1]).attr("width",scr[2]).attr("height",scr[3]).attr("rx",36).attr("fill","#c9f3ff").attr("stroke","#111").attr("stroke-width",5);
+ const m=map(svg,[scr[0]+20,scr[1]+40,scr[2]-40,scr[3]-70],{fill:(n,v)=>v?SLIME[ALPHA.indexOf(n)%4]:"#ffffff",stroke:"#111",sw:(n,v)=>v?2.2:1});m.g.attr("filter",WB);
+ const sl=defs.append("pattern").attr("id","scan").attr("width",6).attr("height",6).attr("patternUnits","userSpaceOnUse");sl.append("rect").attr("width",6).attr("height",2).attr("fill","#000").attr("opacity",.12);
+ svg.append("rect").attr("x",scr[0]).attr("y",scr[1]).attr("width",scr[2]).attr("height",scr[3]).attr("rx",36).attr("fill","url(#scan)");
+ T(svg,scr[0]+scr[2]-24,scr[1]+52,"CH 22",{f:"Space Mono",w:700,s:34,c:"#2fbf2f",a:"end"});
+ const gd=svg.append("g").attr("filter",WB);gd.append("rect").attr("x",70).attr("y",1240).attr("width",940).attr("height",580).attr("rx",24).attr("fill","#1d1340").attr("stroke","#111").attr("stroke-width",6);
+ T(gd,110,1298,"TONIGHT'S GUIDE",{f:"Bangers",s:40,ls:2,c:"#ffd36b"});
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/11),rw=i%11,x=110+c*455,y=1350+rw*42;T(svg,x,y,`CH ${String(i+1).padStart(2,"0")}`,{f:"Space Mono",w:700,s:22,c:SLIME[i%4]});T(svg,x+110,y,n.toUpperCase(),{f:"Space Mono",w:700,s:22,c:"#fff"});});
+}
+
+/* 26. String-lights wall */
+function v26(){
+ bg("#f4e3c3");const fp=defs.append("pattern").attr("id","flor").attr("width",90).attr("height",90).attr("patternUnits","userSpaceOnUse");
+ [[22,22,"#d9928a"],[67,67,"#8fae8b"]].forEach(([x,y,c])=>{for(let k=0;k<5;k++)fp.append("ellipse").attr("cx",x).attr("cy",y-7).attr("rx",4).attr("ry",8).attr("transform",`rotate(${k*72},${x},${y})`).attr("fill",c).attr("opacity",.45);fp.append("circle").attr("cx",x).attr("cy",y).attr("r",3).attr("fill","#e8c27a");});
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill","url(#flor)");noise(.08,.8,[.3,.2,.1]);
+ const BULB=["#ff3b3b","#2fd05a","#ffd23f","#3b8bff","#ff5fd2"];
+ const glowG=c=>{const id="gw"+(uid++);const g=defs.append("radialGradient").attr("id",id);g.append("stop").attr("offset","0%").attr("stop-color",c).attr("stop-opacity",.75);g.append("stop").attr("offset","100%").attr("stop-color",c).attr("stop-opacity",0);return `url(#${id})`;};
+ const letters="22 STATES".split("");let wire="M20,190";const pts=[];letters.forEach((ch,i)=>{const x=80+i*115,y=200+(i%2?30:0);pts.push([x,y]);});
+ svg.append("path").attr("d","M0,170 "+pts.map(([x,y])=>`Q${x-55},${y+40} ${x},${y}`).join(" ")+" Q1060,240 1080,180").attr("fill","none").attr("stroke","#2b2b2b").attr("stroke-width",4);
+ pts.forEach(([x,y],i)=>{if(letters[i]===" ")return;const c=BULB[i%5];svg.append("circle").attr("cx",x).attr("cy",y+26).attr("r",70).attr("fill",glowG(c));svg.append("rect").attr("x",x-8).attr("y",y-4).attr("width",16).attr("height",16).attr("fill","#333");svg.append("ellipse").attr("cx",x).attr("cy",y+28).attr("rx",13).attr("ry",20).attr("fill",c);
+  T(svg,x,y+190,letters[i],{f:"Permanent Marker",s:130,c:"#1d1d1d",a:"middle",op:.9});});
+ T(svg,540,520,"something strange is happening… i can't stop traveling",{f:"Caveat",w:700,s:40,c:"#5a3a2a",a:"middle"});
+ const m=map(svg,[60,580,960,600],{fill:(n,v)=>v?BULB[ALPHA.indexOf(n)%5]:"rgba(255,250,240,.7)",stroke:(n,v)=>v?"#1d1d1d":"#a88f6b",sw:(n,v)=>v?2:1});
+ m.sg.selectAll("path").filter(d=>VIS.has(d.properties.name)).attr("fill-opacity",.85);
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+7,AB[n],{f:"Permanent Marker",s:20,c:"#fff",a:"middle",st:"#1d1d1d",sw:3});});
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/8),r=i%8,x=90+c*320,y=1290+r*62;const col=BULB[i%5];svg.append("circle").attr("cx",x+12).attr("cy",y-12).attr("r",34).attr("fill",glowG(col));svg.append("ellipse").attr("cx",x+12).attr("cy",y-10).attr("rx",9).attr("ry",13).attr("fill",col);T(svg,x+40,y,n,{f:"Permanent Marker",s:n.length>11?26:30,c:"#1d1d1d"});});
+}
+
+/* 27. Office whiteboard mockumentary */
+function v27(){
+ bg("#e4e9ed");const WB=wobble(2.5,4);
+ svg.append("rect").attr("x",40).attr("y",170).attr("width",1000).attr("height",900).attr("rx",10).attr("fill","#b8bfc6");svg.append("rect").attr("x",56).attr("y",186).attr("width",968).attr("height",868).attr("fill","#ffffff");
+ svg.append("rect").attr("x",80).attr("y",1068).attr("width",920).attr("height",22).attr("rx",6).attr("fill","#9aa3ab");[[200,"#2b5fd9"],[260,"#d93b3b"],[320,"#1f9d55"]].forEach(([x,c])=>svg.append("rect").attr("x",x).attr("y",1058).attr("width",44).attr("height",14).attr("rx",4).attr("fill",c));
+ T(svg,100,280,`2026 TRAVEL GOALS: ${N}/50 ✓`,{f:"Permanent Marker",s:58,c:"#2b5fd9"});
+ T(svg,100,345,"(mostly road trips. no regrets.)",{f:"Permanent Marker",s:30,c:"#d93b3b"});
+ const MK=["#2b5fd9","#d93b3b","#1f9d55","#f08a24","#8e44ad"];
+ const hp=c=>{const id="mh"+(uid++);const p=defs.append("pattern").attr("id",id).attr("width",10).attr("height",10).attr("patternUnits","userSpaceOnUse").attr("patternTransform","rotate(-35)");p.append("line").attr("x1",0).attr("x2",0).attr("y1",0).attr("y2",10).attr("stroke",c).attr("stroke-width",4).attr("opacity",.6);return `url(#${id})`;};const HP=MK.map(hp);
+ const m=map(svg,[90,380,900,640],{fill:(n,v)=>v?HP[ALPHA.indexOf(n)%5]:"none",stroke:(n,v)=>v?MK[ALPHA.indexOf(n)%5]:"#555",sw:(n,v)=>v?3:1.4});m.g.attr("filter",WB);
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+7,AB[n],{f:"Permanent Marker",s:21,c:"#222",a:"middle",st:"#fff",sw:4});});
+ [[90,200,"#d93b3b"],[1000,200,"#2b5fd9"]].forEach(([x,y,c])=>svg.append("circle").attr("cx",x).attr("cy",y).attr("r",12).attr("fill",c));
+ // mug
+ const mug=svg.append("g").attr("transform","translate(850,880) scale(.9)");mug.append("rect").attr("width",150).attr("height",130).attr("rx",12).attr("fill","#fff").attr("stroke","#888").attr("stroke-width",3);mug.append("path").attr("d","M150,30 q45,0 45,35 q0,35 -45,35").attr("fill","none").attr("stroke","#888").attr("stroke-width",10);T(mug,75,50,"WORLD'S",{f:"DM Sans",w:700,s:16,c:"#222",a:"middle"});T(mug,75,76,"BEST",{f:"DM Sans",w:700,s:22,c:"#222",a:"middle"});T(mug,75,104,"TRAVELER",{f:"DM Sans",w:700,s:20,c:"#222",a:"middle"});
+ // stickies
+ const SC=["#fff27a","#ffb3d1","#a8e6ff","#b9f2a1","#ffd29a"];const r=rnd(3);
+ ALPHA.forEach((n,i)=>{const x=60+(i%5)*196,y=1130+Math.floor(i/5)*116;const g=svg.append("g").attr("transform",`translate(${x},${y}) rotate(${(r()-.5)*8})`);g.append("rect").attr("width",176).attr("height",100).attr("fill",SC[i%5]).attr("filter",shadow(2,4,3,"#000",.18));T(g,88,62,n,{f:"Permanent Marker",s:n.length>11?18:23,c:"#222",a:"middle"});});
+ const lt=svg.append("g").attr("transform","translate(60,1740)");lt.append("rect").attr("width",14).attr("height",110).attr("fill","#f2b705");lt.append("rect").attr("x",14).attr("width",700).attr("height",62).attr("fill","#1d1d1d").attr("opacity",.88);lt.append("rect").attr("x",14).attr("y",62).attr("width",560).attr("height",48).attr("fill","#ffffff").attr("opacity",.92);
+ T(lt,36,44,"ME",{f:"DM Sans",w:700,s:34,ls:3,c:"#fff"});T(lt,36,96,"Regional Manager of Road Trips",{f:"DM Sans",w:500,s:26,c:"#1d1d1d"});
+}
+
+/* 28. Periodic table */
+function v28(){
+ bg("#eef6ee");const CAT={West:"#3e9b6b",Southwest:"#e0913a",Midwest:"#3a7fc1",Southeast:"#c4465a",Northeast:"#7b56b5"};
+ const tile=(g,x,y,s,sym,num,name,c,small)=>{g.append("rect").attr("x",x).attr("y",y).attr("width",s).attr("height",s).attr("fill",c).attr("stroke","#fff").attr("stroke-width",3);T(g,x+8,y+s*.2,num,{f:"Space Mono",w:700,s:s*.13,c:"#fff"});T(g,x+s/2,y+s*.62,sym,{f:"Archivo Black",s:s*.42,c:"#fff",a:"middle"});if(name)T(g,x+s/2,y+s*.86,name,{f:"DM Sans",w:700,s:small||s*.1,c:"#fff",a:"middle"});};
+ const H=svg.append("g");tile(H,120,170,170,"Ro","22","",CAT.West);T(H,300,320,"ad",{f:"Archivo Black",s:140,c:"#1e4d33"});tile(H,520,170,170,"Tr","50","",CAT.Midwest);T(H,700,320,"ip",{f:"Archivo Black",s:140,c:"#1e4d33"});
+ T(svg,540,420,"THE PERIODIC TABLE OF MY STATES",{f:"Space Mono",w:700,s:28,ls:2,c:"#1e4d33",a:"middle"});
+ const m=map(svg,[60,450,960,560],{fill:(n,v)=>v?CAT[REG(n)]:"#ffffff",stroke:(n,v)=>v?"#fff":"#c6d8c8",sw:(n,v)=>v?1.8:1});
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+6,AB[n],{f:"Space Mono",w:700,s:15,c:"#fff",a:"middle"});});
+ const order=VISITED.slice().sort((a,b)=>REGS.indexOf(REG(a))-REGS.indexOf(REG(b))||a.localeCompare(b));const s=154,cols=6,x0=(1080-cols*s)/2;
+ order.forEach((n,i)=>tile(svg,x0+(i%cols)*s,1070+Math.floor(i/cols)*s,s,AB[n],i+1,n.toUpperCase(),CAT[REG(n)],n.length>11?11:14));
+ REGS.forEach((k,i)=>{svg.append("rect").attr("x",80+i*190).attr("y",1720).attr("width",28).attr("height",28).attr("fill",CAT[k]);T(svg,116+i*190,1743,k,{f:"DM Sans",w:700,s:22,c:"#1e4d33"});});
+ T(svg,540,1830,`${N} elements discovered · ${50-N} remaining`,{f:"Space Mono",w:700,s:24,c:"#3e9b6b",a:"middle"});
+}
+
+/* 29. Game show board */
+function v29(){
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",lg(["#0b2bd1","#0a1a8f","#2a0f7a"],0,1));
+ const r=rnd(9);for(let i=0;i<14;i++){const x=r()*1080;svg.append("path").attr("d",`M${x},0 L${x-140},1920 L${x+140},1920Z`).attr("fill","#fff").attr("opacity",.035);}
+ const GOLD="#ffcc33";const BULBS=svg.append("g");for(let i=0;i<22;i++){BULBS.append("circle").attr("cx",60+i*45).attr("cy",170).attr("r",9).attr("fill",i%2?GOLD:"#fff");}
+ T(svg,540,300,"ROAD TRIP",{f:"Luckiest Guy",s:130,c:GOLD,a:"middle",st:"#0a0a3a",sw:12});T(svg,540,380,"THE GAME SHOW",{f:"Bangers",s:60,ls:8,c:"#fff",a:"middle"});
+ const sb=svg.append("g").attr("transform","translate(340,410)");sb.append("rect").attr("width",400).attr("height",70).attr("rx",12).attr("fill","#000").attr("stroke",GOLD).attr("stroke-width",4);T(sb,200,52,`SCORE: ${N} / 50`,{f:"Space Mono",w:700,s:38,c:GOLD,a:"middle"});
+ const m=map(svg,[60,520,960,520],{fill:(n,v)=>v?GOLD:"#1c3be8",stroke:(n,v)=>v?"#0a0a3a":"#5c78ff",sw:(n,v)=>v?1.8:1});
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+6,AB[n],{f:"Archivo Black",s:14,c:"#0a0a3a",a:"middle"});});
+ const cw=188,ch=96,x0=(1080-5*cw-4*8)/2,y0=1110;
+ REGS.forEach((k,c)=>{const x=x0+c*(cw+8);svg.append("rect").attr("x",x).attr("y",y0).attr("width",cw).attr("height",ch).attr("fill","#0d1fb0").attr("stroke","#000").attr("stroke-width",4);T(svg,x+cw/2,y0+60,k.toUpperCase(),{f:"Archivo Black",s:k.length>8?19:24,c:"#fff",a:"middle"});
+  const st=ALPHA.filter(n=>REG(n)===k);for(let rw=0;rw<6;rw++){const y=y0+(rw+1)*(ch+8);const n=st[rw];svg.append("rect").attr("x",x).attr("y",y).attr("width",cw).attr("height",ch).attr("fill",n?"#1a35e0":"#0b1a7a").attr("stroke","#000").attr("stroke-width",4);
+   if(n){T(svg,x+cw/2,y+46,AB[n],{f:"Archivo Black",s:34,c:GOLD,a:"middle"});T(svg,x+cw/2,y+78,n.toUpperCase(),{f:"DM Sans",w:700,s:n.length>11?13:16,ls:1,c:"#fff",a:"middle"});}else T(svg,x+cw/2,y+62,"?",{f:"Archivo Black",s:40,c:"#3f55c9",a:"middle"});}});
+}
+
+function halftone(c,r=2.4,step=10,op=1){const id="ht"+(uid++);const p=defs.append("pattern").attr("id",id).attr("width",step).attr("height",step).attr("patternUnits","userSpaceOnUse");p.append("circle").attr("cx",step/2).attr("cy",step/2).attr("r",r).attr("fill",c).attr("opacity",op);return `url(#${id})`;}
+function burst(g,x,y,r1,r2,pts,fill,txt,ts,tc,rot=0){const p=[];for(let i=0;i<pts*2;i++){const a=i*Math.PI/pts+rot,rr=i%2?r2:r1*(0.85+((i*37)%10)/50);p.push([x+Math.cos(a)*rr,y+Math.sin(a)*rr]);}g.append("path").attr("d","M"+p.join("L")+"Z").attr("fill",fill).attr("stroke","#111").attr("stroke-width",6).attr("stroke-linejoin","round");if(txt)T(g,x,y+ts*.35,txt,{f:"Bangers",s:ts,c:tc,a:"middle",st:"#111",sw:6}).attr("transform",`rotate(-8,${x},${y})`);}
+const COMIC=["#e62429","#1e5bd8","#ffd400","#22a845"];
+
+/* 30. Comic cover */
+function v30(){
+ bg("#ffd400");const rays=svg.append("g").attr("transform","translate(540,880)");for(let i=0;i<36;i++)if(i%2)rays.append("path").attr("d",d3.arc()({innerRadius:0,outerRadius:1500,startAngle:i*Math.PI/18,endAngle:(i+1)*Math.PI/18})).attr("fill","#ffb000");
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",halftone("#e62429",2.2,12,.35));
+ const tb=svg.append("g");tb.append("rect").attr("x",40).attr("y",150).attr("width",1000).attr("height",96).attr("fill","#fff").attr("stroke","#111").attr("stroke-width",6);T(tb,70,222,"TRAVEL COMICS",{f:"Bangers",s:64,ls:2,c:"#e62429"});tb.append("rect").attr("x",820).attr("y",150).attr("width",220).attr("height",96).attr("fill","#111");T(tb,930,195,"ISSUE",{f:"Bangers",s:30,c:"#fff",a:"middle"});T(tb,930,236,"#22",{f:"Bangers",s:46,c:"#ffd400",a:"middle"});
+ T(svg,540,360,"THE UNSTOPPABLE",{f:"Bangers",s:96,ls:3,c:"#fff",a:"middle",st:"#111",sw:12});T(svg,540,500,"TRAVELER!",{f:"Luckiest Guy",s:150,c:"#e62429",a:"middle",st:"#111",sw:14});
+ const pn=svg.append("g").attr("transform","rotate(-2,540,860)");pn.append("rect").attr("x",50).attr("y",560).attr("width",980).attr("height",600).attr("fill","#fff").attr("stroke","#111").attr("stroke-width",8);
+ const HT=COMIC.map(c=>halftone(d3.color(c).darker(.6),1.8,7,.5));
+ const m=map(pn,[80,600,920,520],{fill:(n,v)=>v?COMIC[ALPHA.indexOf(n)%4]:"#fff",stroke:"#111",sw:(n,v)=>v?3:1.5});
+ pn.append("g").selectAll("path").data(STATES.filter(d=>VIS.has(d.properties.name))).join("path").attr("d",m.path).attr("fill",d=>HT[ALPHA.indexOf(d.properties.name)%4]);
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(pn,x,y+7,AB[n],{f:"Bangers",s:22,c:"#fff",a:"middle",st:"#111",sw:4});});
+ burst(svg,170,600,120,70,14,"#fff","POW!",64,"#e62429",.1);burst(svg,930,1150,110,65,13,"#1e5bd8","ZOOM!",54,"#ffd400");
+ const cap=svg.append("g").attr("transform","translate(60,1190) rotate(-1)");cap.append("rect").attr("width",620).attr("height",80).attr("fill","#fff27a").attr("stroke","#111").attr("stroke-width",5);T(cap,24,56,`MEANWHILE… ${N} STATES LATER!`,{f:"Bangers",s:44,ls:1,c:"#111"});
+ const bub=svg.append("g");bub.append("path").attr("d","M110,1310 Q60,1310 60,1360 L60,1760 Q60,1810 110,1810 L250,1810 L210,1880 L330,1810 L970,1810 Q1020,1810 1020,1760 L1020,1360 Q1020,1310 970,1310Z").attr("fill","#fff").attr("stroke","#111").attr("stroke-width",6);
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/8),r=i%8;T(bub,100+c*310,1375+r*52,n.toUpperCase()+"!",{f:"Bangers",s:n.length>11?33:38,ls:1,c:COMIC[i%4]==="#ffd400"?"#e09b00":COMIC[i%4]});});
+}
+
+/* 31. Comic page panels */
+function v31(){
+ bg("#fffdf6");const P=(x,y,w,h,fill)=>{svg.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("fill",fill).attr("stroke","#111").attr("stroke-width",7);};
+ P(50,160,980,300,"#1e5bd8");svg.append("rect").attr("x",50).attr("y",160).attr("width",980).attr("height",300).attr("fill",halftone("#5a8cff",3,12,.7));
+ T(svg,540,280,"CHAPTER 22:",{f:"Bangers",s:70,ls:3,c:"#ffd400",a:"middle",st:"#111",sw:10});T(svg,540,390,"THE ROAD TRIP",{f:"Luckiest Guy",s:110,c:"#fff",a:"middle",st:"#111",sw:12});
+ const cap=svg.append("g").attr("transform","translate(70,175)");cap.append("rect").attr("width",380).attr("height",50).attr("fill","#fff27a").attr("stroke","#111").attr("stroke-width",4);T(cap,16,36,"OUR HERO SETS OUT…",{f:"Bangers",s:32,c:"#111"});
+ P(50,480,980,620,"#ffe3ea");svg.append("rect").attr("x",50).attr("y",480).attr("width",980).attr("height",620).attr("fill",halftone("#ff8fab",2.4,11,.55));
+ const m=map(svg,[80,520,920,550],{fill:(n,v)=>v?COMIC[ALPHA.indexOf(n)%4]:"#fff",stroke:"#111",sw:(n,v)=>v?3:1.4});
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+7,AB[n],{f:"Bangers",s:22,c:"#fff",a:"middle",st:"#111",sw:4});});
+ burst(svg,940,560,80,48,12,"#ffd400",`${N}!`,52,"#e62429");
+ const cols=6,gw=980,cw=(gw-(cols-1)*12)/cols,ch=170;
+ ALPHA.forEach((n,i)=>{const x=50+(i%cols)*(cw+12),y=1120+Math.floor(i/cols)*(ch+12),c=COMIC[i%4];P(x,y,cw,ch,["#fff4c2","#dce9ff","#ffe0e0","#dff5e3"][i%4]);
+  const f=STATES.find(s=>s.properties.name===n),pr=d3.geoMercator().fitExtent([[x+18,y+14],[x+cw-18,y+ch-50]],f);svg.append("path").attr("d",d3.geoPath(pr)(f)).attr("fill",c).attr("stroke","#111").attr("stroke-width",3);
+  svg.append("rect").attr("x",x).attr("y",y+ch-40).attr("width",cw).attr("height",40).attr("fill","#fff27a").attr("stroke","#111").attr("stroke-width",4);T(svg,x+cw/2,y+ch-11,n.toUpperCase(),{f:"Bangers",s:n.length>11?20:25,c:"#111",a:"middle"});});
+ const last=svg.append("g");P(50+4*(cw+12),1120+3*(ch+12),cw*2+12,ch,"#e62429");T(svg,50+4*(cw+12)+cw+6,1120+3*(ch+12)+105,"TO BE CONTINUED…",{f:"Bangers",s:40,c:"#fff",a:"middle",st:"#111",sw:6});
+}
+
+/* 32. Blockbuster poster */
+function v32(){
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",lg(["#141a3d","#3b2266","#c2416b","#ff9a3c"],0,1));
+ const r=rnd(19);for(let i=0;i<120;i++)svg.append("circle").attr("cx",r()*1080).attr("cy",r()*900).attr("r",r()*1.6+.2).attr("fill","#fff").attr("opacity",.6);
+ const glow=shadow(0,0,12,"#ffd27a",.9);
+ T(svg,540,230,"FROM THE PACIFIC TO THE ATLANTIC",{f:"Bebas Neue",s:38,ls:10,c:"#ffd9a8",a:"middle"});
+ T(svg,540,820,N,{f:"Anton",s:620,c:"#ffffff",a:"middle",op:.08});
+ const m=map(svg,[60,320,960,600],{fill:(n,v)=>v?lg(["#fff1b8","#ffb347","#ff6a3d"],0,1,[0,320,0,920]):"rgba(255,255,255,.08)",stroke:(n,v)=>v?"#fff5d6":"rgba(255,255,255,.3)",sw:(n,v)=>v?1.4:.8});
+ m.sg.selectAll("path").filter(d=>VIS.has(d.properties.name)).attr("filter",glow);
+ const fl=svg.append("g").attr("transform","translate(820,420)");const fg=defs.append("radialGradient").attr("id","flare");fg.append("stop").attr("offset","0%").attr("stop-color","#fff");fg.append("stop").attr("offset","100%").attr("stop-color","#fff").attr("stop-opacity",0);fl.append("circle").attr("r",90).attr("fill","url(#flare)");fl.append("ellipse").attr("rx",420).attr("ry",4).attr("fill","#fff").attr("opacity",.7);
+ const MET=lg(["#ffffff","#c9d6ff","#8a9bd6","#ffffff","#b6c4f0"],0,1);
+ T(svg,540,1090,"UNITED STATES",{f:"Anton",s:150,ls:4,c:MET,a:"middle",st:"#1a1440",sw:4});
+ T(svg,540,1170,"EVERY HERO NEEDS AN ORIGIN STORY",{f:"Bebas Neue",s:46,ls:8,c:"#fff",a:"middle"});
+ T(svg,540,1290,`NOW PLAYING IN ${N} STATES`,{f:"Anton",s:72,ls:3,c:"#ffd27a",a:"middle"});
+ const cr=["A ROAD TRIP PRODUCTION  ·  STARRING ME  ·  AND FEATURING",ALPHA.slice(0,8).join("  ·  ").toUpperCase(),ALPHA.slice(8,15).join("  ·  ").toUpperCase(),ALPHA.slice(15).join("  ·  ").toUpperCase(),"MUSIC BY THE OPEN ROAD  ·  SNACKS BY EVERY GAS STATION  ·  DIRECTED BY WANDERLUST"];
+ cr.forEach((s,i)=>T(svg,540,1440+i*46,s,{f:"Bebas Neue",s:i===0||i===4?30:34,ls:2,c:"#fff",a:"middle",op:.92}));
+ T(svg,540,1760,"COMING SOON:  STATE #23",{f:"Anton",s:56,ls:4,c:"#fff",a:"middle"});
+}
+
+/* 33. Cinema marquee */
+function v33(){
+ bg("#8e0e1c");const cur=defs.append("linearGradient").attr("id","cur").attr("x1",0).attr("x2",1);for(let i=0;i<=10;i++)cur.append("stop").attr("offset",i*10+"%").attr("stop-color",i%2?"#6d0713":"#b3192b");
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill","url(#cur)");const GOLD="#ffcf4a";
+ const mq=svg.append("g");mq.append("rect").attr("x",60).attr("y",150).attr("width",960).attr("height",400).attr("rx",30).attr("fill","#1a1a1a").attr("stroke",GOLD).attr("stroke-width",8);
+ for(let i=0;i<24;i++){mq.append("circle").attr("cx",90+i*39).attr("cy",178).attr("r",9).attr("fill","#fff3b0");mq.append("circle").attr("cx",90+i*39).attr("cy",522).attr("r",9).attr("fill","#fff3b0");}
+ T(mq,540,262,"NOW SHOWING",{f:"Bebas Neue",s:80,ls:12,c:GOLD,a:"middle"});
+ mq.append("rect").attr("x",110).attr("y",290).attr("width",860).attr("height",200).attr("fill","#fbf6e6");[0,1].forEach(i=>mq.append("line").attr("x1",110).attr("x2",970).attr("y1",290+100*i+100).attr("y2",290+100*i+100).attr("stroke","#999").attr("stroke-width",2));
+ T(mq,540,375,`${N} STATES`,{f:"Anton",s:86,ls:10,c:"#111",a:"middle"});T(mq,540,474,"A ROAD TRIP EPIC",{f:"Anton",s:70,ls:8,c:"#c0151f",a:"middle"});
+ svg.append("rect").attr("x",60).attr("y",600).attr("width",960).attr("height",560).attr("fill","#fffaf0").attr("stroke","#1a1a1a").attr("stroke-width",6);
+ const m=map(svg,[90,630,900,500],{fill:(n,v)=>v?(["#c0151f","#ffb000","#1a1a1a"][ALPHA.indexOf(n)%3]):"#f2ead8",stroke:(n,v)=>v?"#fff":"#cdbfa3",sw:(n,v)=>v?1.6:1});
+ VISITED.forEach(n=>{const[x,y]=m.anchor(n);T(m.g,x,y+6,AB[n],{f:"Bebas Neue",s:20,ls:1,c:"#fff",a:"middle"});});
+ const cw=232,ch=96;ALPHA.forEach((n,i)=>{const x=60+(i%4)*(cw+11),y=1200+Math.floor(i/4)*(ch+10),c=["#ffcf4a","#fbf6e6"][i%2];const g=svg.append("g");
+  g.append("path").attr("d",`M${x},${y} h${cw} v${ch/2-12} a12,12 0 0,0 0,24 v${ch/2-12} h${-cw} v${-(ch/2-12)} a12,12 0 0,0 0,-24Z`).attr("fill",c);
+  g.append("line").attr("x1",x+60).attr("x2",x+60).attr("y1",y+8).attr("y2",y+ch-8).attr("stroke","#8e0e1c").attr("stroke-width",2).attr("stroke-dasharray","5 5");
+  T(g,x+30,y+ch/2,"ADMIT",{f:"Bebas Neue",s:18,c:"#8e0e1c",a:"middle"}).attr("transform",`rotate(-90,${x+30},${y+ch/2})`).attr("dy",6);
+  T(g,x+148,y+44,n.toUpperCase(),{f:"Anton",s:n.length>11?21:27,ls:1,c:"#1a1a1a",a:"middle"});T(g,x+148,y+76,`NO. ${String(i+1).padStart(3,"0")}`,{f:"Bebas Neue",s:22,ls:3,c:"#8e0e1c",a:"middle"});});
+}
+
+
+function fullLabels(m,o){const F=o.f||"DM Sans",W=o.w||700,LS=o.ls??.6;const meas=svg.append("text").attr("font-family",F).attr("font-weight",W).attr("letter-spacing",LS).attr("opacity",0);
+ const mw=(s,str)=>{meas.attr("font-size",s).text(str);return meas.node().getComputedTextLength();};const callouts=[];const MX=o.max||13;
+ STATES.forEach(f=>{const n=f.properties.name,v=VIS.has(n),[x,y]=OUT.has(n)?m.path.centroid(f):m.anchor(n),nm=n.toUpperCase(),c=v?o.cv:o.cu;
+  const ins=(px,py)=>d3.geoContains(f,m.proj.invert([px,py]));const hc={},vc={};
+  const span=yy=>{const k=Math.round(yy);if(hc[k])return hc[k];if(!ins(x,yy))return hc[k]={w:0,cx:x};let l=0;while(l<400&&ins(x-l-2,yy))l+=2;let r=0;while(r<400&&ins(x+r+2,yy))r+=2;return hc[k]={w:l+r,cx:x+(r-l)/2};};
+  const vspan=xx=>{const k=Math.round(xx);if(vc[k])return vc[k];if(!ins(xx,y))return vc[k]={h:0,cy:y};let u=0;while(u<400&&ins(xx,y-u-2))u+=2;let d=0;while(d<400&&ins(xx,y+d+2))d+=2;return vc[k]={h:u+d,cy:y+(d-u)/2};};
+  const put=(lines,s,cx,cy,rot)=>{const t=m.g.append("text").attr("text-anchor","middle").attr("font-family",F).attr("font-weight",W).attr("font-size",s).attr("letter-spacing",LS).attr("fill",c);if(rot)t.attr("transform",`rotate(-90,${cx},${cy})`);if(o.st&&v)t.attr("stroke",o.st).attr("stroke-width",2.4).attr("paint-order","stroke").attr("stroke-linejoin","round");const lh=s*1.05;lines.forEach((L,i)=>t.append("tspan").attr("x",cx).attr("y",cy+s*.35+(i-(lines.length-1)/2)*lh).text(L));};
+  const DY=[0,-5,5,-10,10,-16,16,-22,22,-30,30];const parts=nm.split(" ");const L2=parts.length>1?[parts.slice(0,-1).join(" "),parts.at(-1)]:null;
+  for(let s=MX;s>=7.5;s-=.5){const w1=mw(s,nm);for(const dy of DY){const sp=span(y+dy);if(sp.w&&w1<=sp.w*.88&&Math.min(span(y+dy-s*.4).w,span(y+dy+s*.4).w)>=w1*.9){put([nm],s,sp.cx,y+dy);return;}}
+   if(L2){const w2=Math.max(mw(s,L2[0]),mw(s,L2[1]));for(const dy of DY){const a=span(y+dy-s*.6),b=span(y+dy+s*.6);if(a.w&&b.w&&w2<=Math.min(a.w,b.w)*.88){put(L2,s,(a.cx+b.cx)/2,y+dy);return;}}}
+   if(s<=10){for(const dx of [0,-4,4,-8,8]){const vs=vspan(x+dx);if(vs.h&&w1<=vs.h*.85&&Math.min(vspan(x+dx-s*.45).h,vspan(x+dx+s*.45).h)>=w1*.9){put([nm],s,x+dx,vs.cy,true);return;}}}}
+  callouts.push({n,x,y,v});});
+ callouts.sort((a,b)=>a.y-b.y);let last=-1e9;callouts.forEach(k=>{k.ty=Math.max(k.y,last+16);last=k.ty;});
+ callouts.forEach(k=>{const col=k.v?o.outV:o.outU;m.g.append("path").attr("d",`M${k.x},${k.y} L${o.outX-6},${k.ty-4}`).attr("stroke",col).attr("stroke-width",.9).attr("fill","none").attr("opacity",.8);m.g.append("circle").attr("cx",k.x).attr("cy",k.y).attr("r",2).attr("fill",col);T(m.g,o.outX,k.ty,k.n.toUpperCase(),{f:F,w:W,s:o.cs||10.5,ls:.6,c:col});});
+ meas.remove();}
+
+function STATS(){const ra=REGS.filter(k=>RVIS[k]).length;let top=REGS[0],tp=-1,low=REGS[0],lp=2;
+ REGS.forEach(k=>{const p=(RVIS[k]||0)/RTOT[k];if(p>tp){tp=p;top=k;}if(p<lp){lp=p;low=k;}});
+ const pac=["Washington","Oregon","California"].some(n=>VIS.has(n));
+ const atl=["Maine","New Hampshire","Massachusetts","Rhode Island","Connecticut","New York","New Jersey","Delaware","Maryland","Virginia","North Carolina","South Carolina","Georgia","Florida"].some(n=>VIS.has(n));
+ return {ra,top,tp,low,lp,pac,atl,coasts:[pac&&"pacific",atl&&"atlantic"].filter(Boolean),pct:Math.round(N/50*100)};}
+function splitTitle(s){const w=s.split(" ");if(w.length<2)return [s,""];let best=1,bd=1e9;for(let i=1;i<w.length;i++){const d=Math.abs(w.slice(0,i).join(" ").length-w.slice(i).join(" ").length);if(d<bd){bd=d;best=i;}}return [w.slice(0,best).join(" "),w.slice(best).join(" ")];}
+
+function scatter(g,y0,rows,colFn,ink,seed,sc=.8){const r=rnd(seed);const order=ALPHA.slice().sort(()=>r()-.5);order.forEach((n,i)=>{const c=i%4,row=Math.floor(i/4),x=150+c*260+(r()-.5)*60+(row%2?55:0),y=y0+row*rows+(r()-.5)*34;stamp(g,Math.min(955,x),y,n,colFn(n),i%4,sc+r()*.2,(r()-.5)*34,{ink,op:.85});});}
+const VR={West:"#6f9c94",Southwest:"#c8553d",Midwest:"#e2a93b",Southeast:"#8c9a4f",Northeast:"#5b7db1"};
+function vintageFrame(B){svg.append("rect").attr("x",30).attr("y",30).attr("width",1020).attr("height",1860).attr("fill","none").attr("stroke",B).attr("stroke-width",6);svg.append("rect").attr("x",46).attr("y",46).attr("width",988).attr("height",1828).attr("fill","none").attr("stroke",B).attr("stroke-width",1.5);[[46,46],[1034,46],[46,1874],[1034,1874]].forEach(([x,y])=>star(svg,x,y,14,"#c8553d"));}
+function goldDefs(){return {G:lg(["#b8893d","#f6e3a6","#c99a4b","#f1d998","#a77a33"],1,1),GT:lg(["#a87526","#d4a24f","#8c5f1c"],0,1)};}
+function diamondRule(g,cx,y,w,c){g.append("line").attr("x1",cx-w).attr("x2",cx-14).attr("y1",y).attr("y2",y).attr("stroke",c).attr("stroke-width",1.2);g.append("line").attr("x1",cx+14).attr("x2",cx+w).attr("y1",y).attr("y2",y).attr("stroke",c).attr("stroke-width",1.2);g.append("path").attr("d",`M${cx},${y-8}L${cx+5},${y}L${cx},${y+8}L${cx-5},${y}Z`).attr("fill",c);}
+
+/* 34. Vintage map + scattered stamps */
+function v34(){
+ bg("#f3e9d2"); noise(.12,.8,[.35,.25,.1]); const B="#23395d"; vintageFrame(B);
+ T(svg,540,230,"THE UNITED STATES",{f:"Playfair Display",w:600,s:40,ls:10,c:B,a:"middle"});
+ T(svg,540,360,"Travel Record",{f:"Playfair Display",i:true,w:500,s:140,c:"#c8553d",a:"middle"});
+ ribbon(svg,540,400,560,B,`${N} OF 50 STATES · 2026`);
+ const m=map(svg,[44,510,876,580],{fill:(n,v)=>v?VR[REG(n)]:"#ebdfc2",stroke:(n,v)=>v?"#f3e9d2":"#c9b896",sw:(n,v)=>v?1.8:1});fullLabels(m,{cv:"#fff",cu:"#a8977a",outX:928,outV:"#23395d",outU:"#a8977a"});
+ diamondRule(svg,540,1125,300,B);
+ scatter(svg,1210,112,n=>d3.color(VR[REG(n)]).darker(.5).formatHex(),inkF(31),5,.7);
+}
+
+/* 35. Ivory & gold + stamps */
+function v35(){
+ const {G,GT}=goldDefs();const GOLD="#b98d3e";
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",lg(["#fffdf8","#fbf1e6","#f6e3dc"],0,1));
+ svg.append("rect").attr("x",28).attr("y",28).attr("width",1024).attr("height",1864).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",1.5);svg.append("rect").attr("x",40).attr("y",40).attr("width",1000).attr("height",1840).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",.6);
+ const C={rose:"#d67f93",amber:"#e3a64f",emerald:"#4f9d86",sapphire:"#5b86c4",amethyst:"#9a78bd",coral:"#e2876b",teal:"#3fa0a6",magenta:"#c46a9a"};
+ const SC={"Washington":C.rose,"Oregon":C.amber,"California":C.emerald,"Nevada":C.sapphire,"Arizona":C.amethyst,"New Mexico":C.teal,"Texas":C.coral,"Oklahoma":C.magenta,"Arkansas":C.amber,"Iowa":C.amber,"Wisconsin":C.emerald,"Illinois":C.sapphire,"Indiana":C.amethyst,"Michigan":C.teal,"Ohio":C.coral,"Kentucky":C.rose,"Tennessee":C.sapphire,"North Carolina":C.amber,"Florida":C.emerald,"New York":C.sapphire,"Pennsylvania":C.emerald,"New Jersey":C.amethyst};
+ T(svg,540,215,"THE  AMERICAN  COLLECTION",{f:"Cinzel",s:24,ls:10,c:GOLD,a:"middle"});
+ T(svg,540,330,"States Visited",{f:"Cormorant Garamond",i:true,w:500,s:118,c:GT,a:"middle"});
+ diamondRule(svg,540,375,210,GOLD);T(svg,540,430,`${N}  OF  50  STATES`,{f:"Cinzel",s:30,ls:6,c:"#1f2a44",a:"middle"});
+ svg.append("rect").attr("x",60).attr("y",470).attr("width",960).attr("height",600).attr("fill","#cfe6ec").attr("stroke",G).attr("stroke-width",3);
+ const m=map(svg,[78,500,820,540],{clip:clip(60,470,960,600),sea:null,land:"#f3ecdd",landStroke:"#dccdb0",fill:(n,v)=>v?SC[n]:"#fffaf1",stroke:(n,v)=>v?"#f6e3b4":"#e2d3b8",sw:(n,v)=>v?1.6:.9});fullLabels(m,{f:"Cinzel",w:600,cv:"#fff",cu:"#b9a88a",outX:908,outV:"#1f2a44",outU:"#a8977a",cs:10});
+ diamondRule(svg,540,1120,150,GOLD);T(svg,540,1175,"The Collection",{f:"Cormorant Garamond",i:true,s:54,c:GT,a:"middle"});
+ scatter(svg,1268,104,n=>d3.color(SC[n]).darker(.6).formatHex(),inkF(44),9,.64);
+}
+
+/* 36. Vintage map — itinerary edition */
+function v36(){
+ bg("#f3e9d2"); noise(.12,.8,[.35,.25,.1]); const B="#23395d"; vintageFrame(B);
+ T(svg,540,230,"THE UNITED STATES",{f:"Playfair Display",w:600,s:40,ls:10,c:B,a:"middle"});
+ T(svg,540,360,"Travel Map",{f:"Playfair Display",i:true,w:500,s:150,c:"#c8553d",a:"middle"});
+ ribbon(svg,540,400,560,B,`${N} OF 50 STATES · 2026`);
+ const m=map(svg,[44,510,876,580],{fill:(n,v)=>v?VR[REG(n)]:"#ebdfc2",stroke:(n,v)=>v?"#f3e9d2":"#c9b896",sw:(n,v)=>v?1.8:1});fullLabels(m,{cv:"#fff",cu:"#a8977a",outX:928,outV:"#23395d",outU:"#a8977a"});
+ const cp=svg.append("g").attr("transform","translate(940,1010) scale(.6)");cp.append("circle").attr("r",92).attr("fill","none").attr("stroke",B).attr("stroke-width",2);[0,90,180,270].forEach(a=>cp.append("path").attr("transform",`rotate(${a})`).attr("d","M0,-86 L13,0 L0,10 L-13,0Z").attr("fill",a===0?"#c8553d":B));T(cp,0,-104,"N",{f:"Playfair Display",w:600,s:28,c:B,a:"middle"});
+ diamondRule(svg,540,1140,150,B);T(svg,540,1210,"The Itinerary",{f:"Playfair Display",i:true,w:500,s:60,c:B,a:"middle"});
+ REGS.forEach((k,i)=>{svg.append("rect").attr("x",95+i*184).attr("y",1245).attr("width",22).attr("height",16).attr("fill",VR[k]);T(svg,123+i*184,1260,k,{f:"Playfair Display",s:20,c:B,w:600});});
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/11),r=i%11,x=100+c*460,y=1320+r*44;T(svg,x,y,String(i+1).padStart(2,"0"),{f:"Space Mono",w:700,s:17,c:"#c8553d"});svg.append("rect").attr("x",x+40).attr("y",y-15).attr("width",14).attr("height",14).attr("fill",VR[REG(n)]);T(svg,x+66,y,n,{f:"Playfair Display",w:600,s:30,c:B});T(svg,x+420,y,AB[n],{f:"Space Mono",s:17,ls:2,c:"#8a7a5e",a:"end"});svg.append("line").attr("x1",x+66).attr("x2",x+420).attr("y1",y+12).attr("y2",y+12).attr("stroke",B).attr("stroke-width",.6).attr("opacity",.3);});
+}
+
+/* 37. Blush & sage passport */
+function v37(){
+ bg("#fdf5f2"); noise(.04,.9,[.4,.2,.3]); const B="#6d4c5a",R={West:"#a9bfa0",Southwest:"#f0b08a",Midwest:"#f1d48a",Southeast:"#a9c9de",Northeast:"#c7b3dd"};
+ svg.append("rect").attr("x",36).attr("y",36).attr("width",1008).attr("height",1848).attr("rx",34).attr("fill","none").attr("stroke",B).attr("stroke-width",3);
+ T(svg,540,290,"My USA",{f:"Fraunces",w:900,s:130,c:B,a:"middle"});T(svg,540,400,"Travel Passport",{f:"Fraunces",w:900,s:96,c:"#d98493",a:"middle"});
+ heart(svg,130,240,2.6,"#d98493");sparkle(svg,950,240,20,"#f1c86a");
+ const m=map(svg,[44,450,876,600],{fill:(n,v)=>v?R[REG(n)]:"#f3ebe6",stroke:"#fffaf8",sw:2});fullLabels(m,{cv:"#4a3540",cu:"#b8a2a8",outX:928,outV:"#4a3540",outU:"#b8a2a8"});
+ let g=box(70,1130,940,660,"PASSPORT STAMPS · "+N,"#d98493",B);const IK=inkF(51);const r=rnd(14);
+ ALPHA.forEach((n,i)=>{const x=95+(i%5)*186,y=95+Math.floor(i/5)*122;stamp(g,x,y,n,d3.color(R[REG(n)]).darker(1).formatHex(),i%4,.68,(r()-.5)*22,{ink:IK,op:.9});});
+ const f=svg.append("g").attr("transform","translate(240,1812)");f.append("rect").attr("width",600).attr("height",52).attr("rx",26).attr("fill","#a9bfa0");T(f,300,36,"WANDER · COLLECT · REPEAT",{w:700,s:24,ls:4,c:"#fff",a:"middle"});
+}
+
+/* 38. Travel journal */
+function v38(){
+ bg("#efe4cf"); noise(.16,.75,[.35,.22,.1]);const B="#3d2b1f";const sh=shadow(3,8,8,"#3a2a18",.25);
+ const tape=(x,y,w,rot,c)=>svg.append("rect").attr("x",-w/2).attr("y",-17).attr("width",w).attr("height",34).attr("transform",`translate(${x},${y}) rotate(${rot})`).attr("fill",c).attr("opacity",.8);
+ T(svg,90,250,"travel journal",{f:"Caveat",w:700,s:96,c:B});T(svg,92,310,`vol. 22  ·  the united states  ·  ${N}/50`,{f:"Courier Prime",w:700,s:26,c:"#8a6a4a"});
+ heart(svg,960,220,2.6,"#c8553d");
+ const pg=svg.append("g").attr("transform","rotate(-1.5,540,700)");pg.append("rect").attr("x",50).attr("y",360).attr("width",980).attr("height",660).attr("fill","#fbf6ea").attr("filter",sh);
+ const m=map(pg,[70,400,836,580],{fill:(n,v)=>v?VR[REG(n)]:"#efe6d2",stroke:(n,v)=>v?"#fbf6ea":"#cdbd9c",sw:(n,v)=>v?1.6:.9});fullLabels(m,{f:"Courier Prime",cv:"#fff",cu:"#a8977a",outX:916,outV:"#3d2b1f",outU:"#a8977a",cs:10});
+ tape(120,375,170,-25,"#e8c4b8");tape(960,370,170,22,"#c9d8c0");
+ const IK=inkF(63);scatter(svg,1110,110,n=>d3.color(VR[REG(n)]).darker(.6).formatHex(),IK,21,.74);
+ const nt=svg.append("g").attr("transform","translate(640,1700) rotate(3)");nt.append("rect").attr("width",380).attr("height",170).attr("fill","#fffef6").attr("filter",sh);[0,1,2].forEach(i=>nt.append("line").attr("x1",16).attr("x2",364).attr("y1",58+i*40).attr("y2",58+i*40).attr("stroke","#a9c8e8"));
+ T(nt,24,50,`${N} down, ${50-N} to go`,{f:"Caveat",w:700,s:40,c:"#2d3e66"});T(nt,24,92,"where to next? ♡",{f:"Caveat",w:700,s:36,c:"#c8553d"});tape(830,1700,120,-6,"#f2dc9a");
+}
+
+/* 39. Sage & terracotta guide with itinerary */
+function v39(){
+ bg("#fbf4ea"); noise(.05,.9,[.4,.3,.2]); const B="#5b4636",R={West:"#a7b58c",Southwest:"#df9363",Midwest:"#e8bd62",Southeast:"#c9a08a",Northeast:"#cf9a9a"};
+ svg.append("rect").attr("x",36).attr("y",36).attr("width",1008).attr("height",1848).attr("rx",34).attr("fill","none").attr("stroke",B).attr("stroke-width",3);
+ const TO=[["My US","Travel Guide"],["The Road","So Far"],[`${N} States`,"& Counting"],["Places","I've Been"],["Coast to","Coast"]];const ti=+(location.hash.match(/t=(\d)/)||[0,0])[1];T(svg,540,280,TO[ti][0],{f:"Fraunces",w:900,s:130,c:B,a:"middle"});T(svg,540,390,TO[ti][1],{f:"Fraunces",w:900,s:118,c:"#c4703f",a:"middle"});
+ heart(svg,130,240,3,"#c4703f");star(svg,540,430,13,"#c4703f");svg.append("line").attr("x1",330).attr("x2",510).attr("y1",430).attr("y2",430).attr("stroke",B).attr("stroke-width",2);svg.append("line").attr("x1",570).attr("x2",750).attr("y1",430).attr("y2",430).attr("stroke",B).attr("stroke-width",2);
+ const m=map(svg,[44,460,876,600],{fill:(n,v)=>v?R[REG(n)]:"#efe5d6",stroke:"#fffaf2",sw:2});fullLabels(m,{cv:"#3d2e22",cu:"#b3a189",outX:928,outV:"#3d2e22",outU:"#b3a189"});
+ let g=box(70,1120,940,240,"REGION PROGRESS",R.West,B);REGS.forEach((k,i)=>{const x=40+i*178,v=RVIS[k]||0,tt=RTOT[k];T(g,x+70,62,k,{f:"Fraunces",w:600,s:24,c:B,a:"middle"});g.append("circle").attr("cx",x+70).attr("cy",140).attr("r",48).attr("fill","none").attr("stroke","#efe5d6").attr("stroke-width",12);g.append("path").attr("d",d3.arc()({innerRadius:42,outerRadius:54,startAngle:0,endAngle:2*Math.PI*v/tt})).attr("transform",`translate(${x+70},140)`).attr("fill",R[k]);T(g,x+70,150,`${v}/${tt}`,{w:700,s:26,c:B,a:"middle"});});
+ g=box(70,1400,940,410,"THE ITINERARY","#c4703f",B);ALPHA.forEach((n,i)=>{const c=Math.floor(i/8),r=i%8,x=40+c*305,y=58+r*42;g.append("circle").attr("cx",x+8).attr("cy",y-8).attr("r",8).attr("fill",R[REG(n)]);T(g,x+26,y,n,{s:n.length>12?21:24,c:B,w:500});});
+}
+
+/* ---------- flight-log family (40-42) ---------- */
+const DISP="Big Shoulders Display",PLEX="IBM Plex Sans",MONO="IBM Plex Mono";
+const PLANE="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z";
+function plane(g,x,y,s,c,rot=90){g.append("path").attr("d",PLANE).attr("transform",`translate(${x},${y}) rotate(${rot}) scale(${s}) translate(-12,-12)`).attr("fill",c);}
+function puff(g,x,y,s,c="#fff",op=1){const k=g.append("g").attr("transform",`translate(${x},${y}) scale(${s})`).attr("opacity",op);[[0,0,22],[24,-12,27],[52,0,20],[26,8,22]].forEach(([a,b,r])=>k.append("circle").attr("cx",a).attr("cy",b).attr("r",r).attr("fill",c));}
+function card(g,x,y,w,h,P,r=26,fill){return g.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",r).attr("fill",fill||P.surf).attr("stroke",P.line).attr("stroke-width",1.5).attr("filter",P.sh);}
+const LOGP={
+ cool:{bg:"#eef1f5",surf:"#ffffff",land:"#f4f6f9",land2:"#e8ebf0",ocean:"#d9e6f2",ink:"#17223a",muted:"#5d6a82",line:"#cfd6e1",acc:"#c9761a",acc2:"#e8a33a",navy:"#1d2b4a",unl:"#a3adbf",
+  R:{West:"#8fb3ee",Southwest:"#f5b26b",Midwest:"#f2a0b7",Southeast:"#8fd3bf",Northeast:"#b9a6ee"}},
+ peach:{bg:"#fbf1ec",surf:"#fffdfb",land:"#fbf6f2",land2:"#f1e7e1",ocean:"#dcecf0",ink:"#3a2b3f",muted:"#8a7486",line:"#ead9d2",acc:"#e0607e",acc2:"#f2a33a",navy:"#3a2b3f",unl:"#c4b2b8",
+  R:{West:"#9ccbe8",Southwest:"#f7b27a",Midwest:"#f4a7bf",Southeast:"#a6dcc0",Northeast:"#c4b0f0"}}};
+function logBase(P){bg(P.bg);P.sh=shadow(0,8,14,P.ink,.07);
+ const dp=defs.append("pattern").attr("id","ldots").attr("width",28).attr("height",28).attr("patternUnits","userSpaceOnUse");dp.append("circle").attr("cx",14).attr("cy",14).attr("r",1.4).attr("fill",P.line);
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill","url(#ldots)").attr("opacity",.7);}
+function logMap(P,y,h){const g=svg.append("g");card(g,60,y,960,h,P,30);const cl=clip(72,y+12,936,h-74,22);
+ const m=map(g,[84,y+30,770,h-120],{clip:cl,sea:P.ocean,seaBox:[72,y+12,936,h-74],land:P.land2,landStroke:P.line,fill:(n,v)=>v?P.R[REG(n)]:P.land,stroke:(n,v)=>v?"#ffffff":P.line,sw:(n,v)=>v?2:1});
+ fullLabels(m,{f:PLEX,w:600,ls:.4,cv:P.ink,cu:P.unl,outX:878,outV:P.ink,outU:P.unl,cs:10});
+ let x=96;REGS.forEach(k=>{const w=40+k.length*11.5;g.append("rect").attr("x",x).attr("y",y+h-50).attr("width",w).attr("height",32).attr("rx",16).attr("fill",P.bg);g.append("circle").attr("cx",x+18).attr("cy",y+h-34).attr("r",7).attr("fill",P.R[k]);T(g,x+32,y+h-28,k,{f:PLEX,w:600,s:16,c:P.muted});x+=w+10;});
+ T(g,1000,y+h-28,"full color = visited",{f:MONO,s:14,c:P.muted,a:"end"});return m;}
+function board(P,y,cells){const g=svg.append("g");card(g,60,y,960,140,P,22);const w=960/cells.length;
+ cells.forEach(([k,v,s,hi],i)=>{const x=60+i*w;if(i)g.append("line").attr("x1",x).attr("x2",x).attr("y1",y+18).attr("y2",y+122).attr("stroke",P.line).attr("stroke-width",1.5);
+  T(g,x+24,y+36,k,{f:MONO,w:500,s:15,ls:2,c:P.muted});T(g,x+24,y+96,v,{f:DISP,w:600,s:60,c:hi?P.acc:P.ink});T(g,x+24,y+124,s,{f:PLEX,s:15,c:P.muted});});}
+function passes(P,y0,cols,rowH,w){const gap=12,x0=(1080-cols*w-(cols-1)*gap)/2;
+ ALPHA.forEach((n,i)=>{const c=i%cols,r=Math.floor(i/cols),x=x0+c*(w+gap),y=y0+r*rowH,h=rowH-10,col=P.R[REG(n)];const g=svg.append("g");
+  g.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",12).attr("fill",P.surf).attr("stroke",P.line).attr("stroke-width",1.5);
+  g.append("rect").attr("x",x).attr("y",y).attr("width",68).attr("height",h).attr("rx",12).attr("fill",col).attr("opacity",.28);
+  T(g,x+34,y+h/2+10,AB[n],{f:DISP,w:800,s:28,c:P.ink,a:"middle"});
+  g.append("line").attr("x1",x+68).attr("x2",x+68).attr("y1",y+6).attr("y2",y+h-6).attr("stroke",P.line).attr("stroke-width",1.5).attr("stroke-dasharray","4 4");
+  [y,y+h].forEach(yy=>g.append("circle").attr("cx",x+68).attr("cy",yy).attr("r",6).attr("fill",P.bg).attr("stroke",P.line).attr("stroke-width",1.2));
+  T(g,x+82,y+h/2+6,n,{f:PLEX,w:600,s:n.length>12?15:17,c:P.ink});plane(g,x+w-20,y+h/2,.62,col);});}
+function chips(P,y0,x0,maxW,list,colFn){const meas=svg.append("text").attr("font-family",PLEX).attr("font-weight",600).attr("font-size",19).attr("opacity",0);let x=x0,y=y0;
+ list.forEach(n=>{meas.text(n);const w=meas.node().getComputedTextLength()+44;if(x+w>x0+maxW){x=x0;y+=46;}const g=svg.append("g");g.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",36).attr("rx",18).attr("fill",P.surf).attr("stroke",P.line).attr("stroke-width",1.5);g.append("circle").attr("cx",x+18).attr("cy",y+18).attr("r",6).attr("fill",colFn(n));T(g,x+30,y+25,n,{f:PLEX,w:600,s:19,c:P.ink});x+=w+8;});meas.remove();}
+
+/* 40. Travel log — departures board + boarding passes */
+function v40(P=LOGP.cool,title=[`${N} STATES`,"& COUNTING"],eyebrow="TRAVEL LOG · UNITED STATES · 2026"){
+ logBase(P);
+ puff(svg,820,230,1.1,P.surf);puff(svg,930,300,.7,P.surf);
+ T(svg,64,205,eyebrow,{f:MONO,w:500,s:20,ls:3,c:P.muted});
+ T(svg,58,350,title[0],{f:DISP,w:800,s:158,c:P.ink});T(svg,58,488,title[1],{f:DISP,w:800,s:158,c:P.acc});
+ const tr=svg.append("path").attr("d","M760,420 C850,400 900,330 980,350").attr("fill","none").attr("stroke",P.acc2).attr("stroke-width",4).attr("stroke-dasharray","2 12").attr("stroke-linecap","round");
+ plane(svg,990,346,1.6,P.ink,70);heart(svg,748,426,1.5,P.acc);
+ board(P,530,[["STATES",`${N}`,"of 50"],["REGIONS","5/5","all unlocked"],["COASTS","2","Pacific + Atlantic"],["NEXT STOP","???","to be decided",true]]);
+ logMap(P,700,620);
+ T(svg,64,1388,"BOARDING PASSES",{f:DISP,w:600,s:42,ls:1,c:P.ink});T(svg,1016,1388,`${N} STAMPED ✓`,{f:MONO,w:500,s:17,ls:2,c:P.acc,a:"end"});
+ passes(P,1404,3,55,304);
+}
+
+/* 41. Travel log — traveler profile + achievements */
+function v41(P=LOGP.cool){
+ logBase(P);puff(svg,840,210,1,P.surf);
+ T(svg,64,205,"TRAVELER PROFILE · UNITED STATES",{f:MONO,w:500,s:20,ls:3,c:P.muted});
+ T(svg,58,350,"USA",{f:DISP,w:800,s:158,c:P.ink});T(svg,58,488,"UNLOCKED",{f:DISP,w:800,s:158,c:P.acc});
+ plane(svg,420,300,2,P.acc2,60);
+ const pc=svg.append("g");pc.append("rect").attr("x",60).attr("y",530).attr("width",960).attr("height",250).attr("rx",30).attr("fill",P.navy);
+ pc.append("circle").attr("cx",920).attr("cy",560).attr("r",160).attr("fill","#fff").attr("opacity",.05);puff(pc,820,620,.9,"#fff",.12);
+ T(pc,100,585,"TRAVELER LEVEL",{f:MONO,w:500,s:17,ls:3,c:"#fff",op:.75});T(pc,100,665,"EXPLORER",{f:DISP,w:800,s:80,c:"#fff"});
+ pc.append("rect").attr("x",410).attr("y",620).attr("width",104).attr("height",36).attr("rx",18).attr("fill",P.acc2);T(pc,462,645,"LVL 3",{f:MONO,w:600,s:18,c:P.navy,a:"middle"});
+ pc.append("rect").attr("x",100).attr("y",690).attr("width",880).attr("height",22).attr("rx",11).attr("fill","#fff").attr("opacity",.18);pc.append("rect").attr("x",100).attr("y",690).attr("width",880*N/50).attr("height",22).attr("rx",11).attr("fill",P.acc2);
+ plane(pc,100+880*N/50,701,1.1,"#fff",90);
+ T(pc,100,748,`${N} / 50 states visited`,{f:MONO,w:500,s:18,c:"#fff",op:.9});T(pc,980,748,`${50-N} more to reach LEGEND`,{f:MONO,w:500,s:18,c:"#fff",op:.9,a:"end"});
+ logMap(P,820,560);
+ T(svg,64,1438,"ACHIEVEMENTS",{f:DISP,w:600,s:42,ls:1,c:P.ink});T(svg,1016,1438,"REGIONS EXPLORED",{f:MONO,w:500,s:17,ls:2,c:P.muted,a:"end"});
+ const IC={West:"☀",Southwest:"✦",Midwest:"❀",Southeast:"☂",Northeast:"❄"};
+ REGS.forEach((k,i)=>{const x=60+i*196,y=1460,w=180,h=230,v=RVIS[k]||0,tt=RTOT[k],ok=v>=tt;const g=svg.append("g");card(g,x,y,w,h,P,20);
+  g.append("rect").attr("x",x+16).attr("y",y+16).attr("width",52).attr("height",52).attr("rx",14).attr("fill",P.R[k]);T(g,x+42,y+52,IC[k],{f:PLEX,w:700,s:26,c:"#fff",a:"middle"});
+  T(g,x+16,y+102,k,{f:PLEX,w:700,s:20,c:P.ink});T(g,x+16,y+128,`${tt} states`,{f:PLEX,s:15,c:P.muted});
+  if(ok)T(g,x+16,y+196,"UNLOCKED ★",{f:MONO,w:600,s:15,ls:2,c:P.acc});
+  else{g.append("rect").attr("x",x+16).attr("y",y+160).attr("width",w-32).attr("height",10).attr("rx",5).attr("fill",P.line);g.append("rect").attr("x",x+16).attr("y",y+160).attr("width",(w-32)*v/tt).attr("height",10).attr("rx",5).attr("fill",P.R[k]);}
+  T(g,x+w-16,y+52,`${v}/${tt}`,{f:DISP,w:800,s:34,c:P.ink,a:"end"});});
+ chips(P,1716,64,952,ALPHA,n=>P.R[REG(n)]);
+}
+
+/* 42. Travel log — peach / road trip era */
+function v42(){v40(LOGP.peach,["ROAD TRIP","ERA ♡"],"TRAVEL LOG · 22 OF 50 STATES · USA");}
+
+
+/* ---------- American culture: skyline + holiday helpers ---------- */
+function skyline(g,x0,base,s,col,win,snow,seed=3){const r=rnd(seed);const G=g.append("g").attr("transform",`translate(${x0},${base}) scale(${s})`);const names=[];
+ const B=(x,w,h)=>{G.append("rect").attr("x",x).attr("y",-h).attr("width",w).attr("height",h).attr("fill",col);for(let yy=-h+12;yy<-8;yy+=16)for(let xx=x+6;xx<x+w-6;xx+=12)if(r()<.45)G.append("rect").attr("x",xx).attr("y",yy).attr("width",5).attr("height",8).attr("fill",win).attr("opacity",.55+r()*.45);if(snow)G.append("rect").attr("x",x-2).attr("y",-h-4).attr("width",w+4).attr("height",7).attr("rx",3.5).attr("fill","#fff");};
+ const spire=(x,y,h)=>G.append("rect").attr("x",x-1.5).attr("y",y-h).attr("width",3).attr("height",h).attr("fill",col);
+ let x=0;
+ // Seattle: needle
+ G.append("path").attr("d",`M${x+30},0 L${x+42},-150 L${x+48},-150 L${x+60},0Z`).attr("fill",col);G.append("ellipse").attr("cx",x+45).attr("cy",-160).attr("rx",34).attr("ry",9).attr("fill",col);G.append("rect").attr("x",x+36).attr("y",-176).attr("width",18).attr("height",14).attr("fill",col);spire(x+45,-176,40);if(snow)G.append("ellipse").attr("cx",x+45).attr("cy",-168).attr("rx",30).attr("ry",4).attr("fill","#fff");names.push([x+45,"SEATTLE"]);x+=100;
+ B(x,30,70);B(x+34,26,95);x+=70;
+ // San Francisco: bridge towers + cable
+ const tw=(xx)=>{G.append("rect").attr("x",xx).attr("y",-170).attr("width",8).attr("height",170).attr("fill",col);G.append("rect").attr("x",xx+18).attr("y",-170).attr("width",8).attr("height",170).attr("fill",col);[-150,-110,-70].forEach(yy=>G.append("rect").attr("x",xx).attr("y",yy).attr("width",26).attr("height",6).attr("fill",col));};
+ tw(x+10);tw(x+150);G.append("path").attr("d",`M${x-20},-40 Q${x+23},-160 ${x+23},-165 Q${x+93},-30 ${x+163},-165 Q${x+180},-120 ${x+210},-40`).attr("fill","none").attr("stroke",col).attr("stroke-width",3);G.append("rect").attr("x",x-20).attr("y",-44).attr("width",230).attr("height",8).attr("fill",col);names.push([x+95,"SAN FRANCISCO"]);x+=230;
+ B(x,34,110);B(x+38,28,80);x+=74;
+ // Chicago: willis-like cluster
+ B(x,22,230);B(x+22,22,270);B(x+44,22,210);spire(x+28,-270,40);spire(x+38,-270,34);names.push([x+33,"CHICAGO"]);x+=80;
+ B(x,30,140);x+=40;
+ // Nashville: twin-spire tower
+ B(x,44,190);G.append("path").attr("d",`M${x},${-190} L${x+6},${-250} L${x+12},${-190}Z M${x+32},${-190} L${x+38},${-250} L${x+44},${-190}Z`).attr("fill",col);names.push([x+22,"NASHVILLE"]);x+=60;
+ B(x,30,100);B(x+34,24,130);x+=66;
+ // New York: empire + chrysler
+ B(x,56,240);B(x+8,40,280);B(x+14,28,300);spire(x+28,-300,60);names.push([x+28,"NEW YORK"]);x+=70;
+ B(x,40,220);G.append("path").attr("d",`M${x},${-220} Q${x+20},${-280} ${x+40},${-220}Z`).attr("fill",col);spire(x+20,-268,46);x+=50;B(x,30,150);B(x+34,26,120);x+=70;
+ // Miami: palms
+ const palm=(xx,h)=>{G.append("path").attr("d",`M${xx},0 Q${xx+8},${-h/2} ${xx+2},${-h}`).attr("fill","none").attr("stroke",col).attr("stroke-width",6);[[-40,-10],[40,-10],[-30,14],[30,14],[0,-20]].forEach(([dx,dy])=>G.append("path").attr("d",`M${xx+2},${-h} Q${xx+2+dx/2},${-h+dy-14} ${xx+2+dx},${-h+dy+10}`).attr("fill","none").attr("stroke",col).attr("stroke-width",6).attr("stroke-linecap","round"));};
+ palm(x+20,120);palm(x+60,95);B(x+80,30,90);names.push([x+40,"MIAMI"]);x+=120;
+ return {w:x*s,names:names.map(([a,n])=>[x0+a*s,n])};}
+function snowflake(g,x,y,r,c,op=1){const k=g.append("g").attr("transform",`translate(${x},${y})`).attr("opacity",op);for(let i=0;i<6;i++){const a=i*60;k.append("line").attr("x1",0).attr("y1",0).attr("x2",0).attr("y2",-r).attr("transform",`rotate(${a})`).attr("stroke",c).attr("stroke-width",r/7).attr("stroke-linecap","round");k.append("path").attr("d",`M${-r*.28},${-r*.62} L0,${-r*.42} L${r*.28},${-r*.62}`).attr("transform",`rotate(${a})`).attr("fill","none").attr("stroke",c).attr("stroke-width",r/9).attr("stroke-linecap","round");}}
+function garland(g,y,bulbs=["#d7263d","#2f8f5b","#f2b92b","#2d6cdf","#ff7ab0"]){const pts=[];let d=`M-20,${y}`;for(let i=0;i<=8;i++){const x=i*135;d+=` Q${x-67},${y+46} ${x},${y}`;}g.append("path").attr("d",d).attr("fill","none").attr("stroke","#1f4d36").attr("stroke-width",20).attr("stroke-linecap","round");g.append("path").attr("d",d).attr("fill","none").attr("stroke","#2f6b4f").attr("stroke-width",10).attr("stroke-dasharray","3 5").attr("stroke-linecap","round");
+ const p=g.append("path").attr("d",d).attr("fill","none").node();const L=p.getTotalLength();const gl={};
+ bulbs.forEach(c=>{const id="bl"+(uid++);const rg=defs.append("radialGradient").attr("id",id);rg.append("stop").attr("offset","0%").attr("stop-color",c).attr("stop-opacity",.6);rg.append("stop").attr("offset","100%").attr("stop-color",c).attr("stop-opacity",0);gl[c]=`url(#${id})`;});
+ for(let i=1;i<26;i++){const q=p.getPointAtLength(L*i/26),c=bulbs[i%bulbs.length];g.append("circle").attr("cx",q.x).attr("cy",q.y+22).attr("r",26).attr("fill",gl[c]);g.append("rect").attr("x",q.x-4).attr("y",q.y+4).attr("width",8).attr("height",8).attr("fill","#c9a34e");g.append("ellipse").attr("cx",q.x).attr("cy",q.y+22).attr("rx",8).attr("ry",12).attr("fill",c);}}
+function bow(g,x,y,s,c){const k=g.append("g").attr("transform",`translate(${x},${y}) scale(${s})`);k.append("path").attr("d","M0,0 C-30,-26 -46,4 -6,4Z M0,0 C30,-26 46,4 6,4Z").attr("fill",c);k.append("path").attr("d","M-4,2 L-16,36 L-8,32 L-2,40 L0,4Z M4,2 L16,36 L8,32 L2,40 L0,4Z").attr("fill",c);k.append("circle").attr("r",7).attr("fill",d3.color(c).darker(.6));}
+function ornChips(g,y0,x0,maxW,list,colFn,ink,surf,line,font="Playfair Display",fs=22){const meas=svg.append("text").attr("font-family",font).attr("font-weight",600).attr("font-size",fs).attr("opacity",0);let x=x0,y=y0;
+ list.forEach(n=>{meas.text(n);const w=meas.node().getComputedTextLength()+54;if(x+w>x0+maxW){x=x0;y+=50;}const k=g.append("g");k.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",40).attr("rx",20).attr("fill",surf).attr("stroke",line).attr("stroke-width",1.5);
+  const c=colFn(n);k.append("circle").attr("cx",x+21).attr("cy",y+22).attr("r",10).attr("fill",c);k.append("rect").attr("x",x+17).attr("y",y+8).attr("width",8).attr("height",5).attr("fill","#c9a34e");k.append("circle").attr("cx",x+18).attr("cy",y+19).attr("r",3).attr("fill","#fff").attr("opacity",.6);
+  T(k,x+38,y+28,n,{f:font,w:600,s:fs,c:ink});x+=w+9;});meas.remove();return y+40;}
+
+/* 43. Holiday edition — Merry & Well-Traveled */
+function v43(){
+ const INK="#3d7a5a",RED="#d64550",GOLD="#c9a34e",CREAM="#fbf6ee";const R={West:"#e8707a",Southwest:"#ecc169",Midwest:"#6cb892",Southeast:"#f0a6b8",Northeast:"#7bbad6"};
+ bg(CREAM);noise(.05,.9,[.5,.4,.3]);
+ const cs=defs.append("pattern").attr("id","cane").attr("width",36).attr("height",36).attr("patternUnits","userSpaceOnUse").attr("patternTransform","rotate(45)");cs.append("rect").attr("width",36).attr("height",36).attr("fill","#fff");cs.append("rect").attr("width",14).attr("height",36).attr("fill",RED);
+ svg.append("rect").attr("x",0).attr("y",0).attr("width",1080).attr("height",1920).attr("fill","url(#cane)");svg.append("rect").attr("x",20).attr("y",20).attr("width",1040).attr("height",1880).attr("rx",28).attr("fill",CREAM);
+ svg.append("rect").attr("x",34).attr("y",34).attr("width",1012).attr("height",1852).attr("rx",22).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",1.5);
+ const r=rnd(8);for(let i=0;i<26;i++)snowflake(svg,40+r()*1000,230+r()*1600,6+r()*10,"#9fc3d6",.35+r()*.3);
+ garland(svg,96);bow(svg,40,100,1.4,RED);bow(svg,1040,100,1.4,RED);
+ T(svg,540,268,"HOLIDAY EDITION  ·  22 OF 50 STATES",{f:"Cinzel",w:600,s:24,ls:6,c:GOLD,a:"middle"});
+ T(svg,540,360,"My USA",{f:"Playfair Display",i:true,w:500,s:96,c:RED,a:"middle"});
+ T(svg,540,486,"TRAVEL MAP",{f:DISP,w:800,s:150,ls:2,c:INK,a:"middle"});
+ const g=svg.append("g");g.append("rect").attr("x",60).attr("y",520).attr("width",960).attr("height",600).attr("rx",30).attr("fill","#fff").attr("stroke",GOLD).attr("stroke-width",2.5).attr("filter",shadow(0,8,14,"#1f3b2d",.08));
+ const cl=clip(72,532,936,576,22);
+ const m=map(g,[96,555,888,530],{clip:cl,sea:"#e6eff0",seaBox:[72,532,936,576],land:"#f1ece2",landStroke:"#e2d7c3",fill:(n,v)=>v?R[REG(n)]:"#fbf8f2",stroke:(n,v)=>v?"#fff":"#e2d7c3",sw:(n,v)=>v?2:1});
+ allLabels(m,"#fff","#b8ab92",PLEX,14);
+ const rr=rnd(2);for(let i=0;i<12;i++)snowflake(g,90+rr()*900,560+rr()*520,5+rr()*5,"#ffffff",.8);
+ // skyline band
+ const sk=svg.append("g");const S=skyline(sk,64,1420,.925,INK,"#f2c94c",true,4);
+ sk.append("path").attr("d","M34,1420 Q300,1400 540,1418 T1046,1412 L1046,1450 L34,1450Z").attr("fill","#fff");
+ S.names.forEach(([x,n])=>T(svg,x,1446,n,{f:"Cinzel",w:600,s:13,ls:2,c:GOLD,a:"middle"}));
+ snowflake(svg,1000,1180,16,GOLD,.9);star(svg,560,1100,0,GOLD);
+ T(svg,540,1505,"States I've Visited",{f:"Playfair Display",i:true,w:500,s:44,c:RED,a:"middle"});
+ const end=ornChips(svg,1530,70,940,ALPHA,n=>R[REG(n)],INK,"#fff","#e8dcc6");
+ T(svg,540,Math.min(1858,end+58),"happy holidays & happy travels ✦",{f:"Playfair Display",i:true,s:30,c:INK,a:"middle"});
+}
+
+/* 44. City lights — Art Deco */
+function v44(){
+ const NAVY="#3a5487",GOLD="#b8903f",CH="#f4ecdc";
+ bg(CH);noise(.06,.85,[.45,.35,.2]);
+ const GG=lg(["#9a7430","#e9cf8a","#b8903f","#f1dc9c","#9a7430"],1,1);
+ const fr=svg.append("g");[[30,3],[44,1]].forEach(([o,w])=>fr.append("rect").attr("x",o).attr("y",o).attr("width",1080-2*o).attr("height",1920-2*o).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",w));
+ [[44,44,1,1],[1036,44,-1,1],[44,1876,1,-1],[1036,1876,-1,-1]].forEach(([x,y,sx,sy])=>{const k=fr.append("g").attr("transform",`translate(${x},${y}) scale(${sx},${sy})`);[20,40,60].forEach(d=>k.append("path").attr("d",`M0,${d} L${d},${d} L${d},0`).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",1.5));});
+ const fan=svg.append("g").attr("transform","translate(540,318)");for(let i=0;i<=18;i++){const a=Math.PI+i*Math.PI/18;fan.append("line").attr("x1",Math.cos(a)*44).attr("y1",Math.sin(a)*44).attr("x2",Math.cos(a)*120).attr("y2",Math.sin(a)*120).attr("stroke",GOLD).attr("stroke-width",1.2).attr("opacity",.6);}
+ [40,130].forEach(rr=>fan.append("path").attr("d",d3.arc()({innerRadius:rr,outerRadius:rr+2,startAngle:-Math.PI/2,endAngle:Math.PI/2})).attr("fill",GOLD));
+ T(svg,540,170,"THE  UNITED  STATES",{f:"Cinzel",w:600,s:22,ls:8,c:NAVY,a:"middle"});
+ T(svg,540,430,"MY USA",{f:"Limelight",s:118,c:NAVY,a:"middle"});
+ T(svg,540,500,"TRAVEL MAP",{f:"Limelight",s:84,c:GG,a:"middle"});
+ diamondRule(svg,540,530,260,GOLD);T(svg,540,568,`${N}  OF  50  STATES  VISITED`,{f:"Cinzel",w:600,s:24,ls:6,c:NAVY,a:"middle"});
+ const g=svg.append("g");g.append("rect").attr("x",60).attr("y",595).attr("width",960).attr("height",540).attr("fill","#fbf6ea").attr("stroke",GOLD).attr("stroke-width",2);
+ const m=map(g,[84,620,912,490],{fill:(n,v)=>v?"#a9c0e6":"#fbf6ea",stroke:(n,v)=>v?GOLD:"#d9c9a3",sw:(n,v)=>v?1.4:.9});
+ allLabels(m,"#2d4370","#bba98a","Cinzel",14);
+ diamondRule(svg,540,1170,150,GOLD);
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/8),rw=i%8,x=90+c*320,y=1215+rw*38;svg.append("path").attr("d",`M${x},${y-14} L${x+6},${y-8} L${x},${y-2} L${x-6},${y-8}Z`).attr("fill",GOLD);T(svg,x+18,y,n.toUpperCase(),{f:"Cinzel",w:600,s:n.length>12?17:20,ls:1.5,c:NAVY});});
+ const sk=svg.append("g");sk.append("rect").attr("x",44).attr("y",1830).attr("width",992).attr("height",46).attr("fill","#7f9ccc");
+ const S=skyline(sk,66,1832,.92,"#8fabd8","#fff6d8",false,9);
+ sk.append("line").attr("x1",44).attr("x2",1036).attr("y1",1834).attr("y2",1834).attr("stroke",GOLD).attr("stroke-width",2);
+ S.names.forEach(([x,n])=>T(svg,x,1862,n,{f:"Cinzel",w:600,s:12,ls:2,c:"#ffffff",a:"middle"}));
+}
+
+function lineSky(g,x0,base,s,col,win,snow,seed=3,INKS="#2e2a26",SW=2.2){
+ const r=rnd(seed);const FC=typeof col==="function"?col:()=>col;
+ const ALIAS={"NYC":"NEW YORK","NEW YORK CITY":"NEW YORK","SF":"SAN FRANCISCO","SAN FRAN":"SAN FRANCISCO","VEGAS":"LAS VEGAS","PHILLY":"PHILADELPHIA","ABQ":"ALBUQUERQUE"};
+ const norm=c=>{let k=c.toUpperCase().replace(/,.*$/,"").trim();return ALIAS[k]||k;};
+ const want=(CONFIG.cities||[]).map(norm);
+ // widths (in skyline units) of each landmark, used to auto-fit
+ const WID={"SEATTLE":100,"PORTLAND":150,"SAN FRANCISCO":230,"LAS VEGAS":190,"ALBUQUERQUE":118,"DALLAS":110,"CHICAGO":80,"NASHVILLE":60,"PHILADELPHIA":112,"NEW YORK":190,"MIAMI":120};
+ const FILL=[70,74,40,66];const GEN=110;
+ const total=want.reduce((a2,k)=>a2+(WID[k]||GEN),0)+Math.max(0,want.length-1)*60;
+ s=Math.min(.9,(1080-2*x0)/Math.max(total,1));
+ const G=g.append("g").attr("transform",`translate(${x0},${base}) scale(${s})`);const names=[];
+ const ST={"fill":null};const sty=e=>e.attr("fill",FC()).attr("stroke",INKS).attr("stroke-width",SW/s).attr("stroke-linejoin","round");
+ const B=(x,w,h)=>{sty(G.append("rect").attr("x",x).attr("y",-h).attr("width",w).attr("height",h));for(let yy=-h+12;yy<-8;yy+=16)for(let xx=x+6;xx<x+w-6;xx+=12)if(r()<.45)G.append("rect").attr("x",xx).attr("y",yy).attr("width",5).attr("height",8).attr("fill",win).attr("opacity",.55+r()*.45);if(snow)G.append("rect").attr("x",x-2).attr("y",-h-4).attr("width",w+4).attr("height",7).attr("rx",3.5).attr("fill","#fff");};
+ const spire=(x,y,h)=>sty(G.append("rect").attr("x",x-1.5).attr("y",y-h).attr("width",3).attr("height",h));
+ const L={
+  "SEATTLE":x=>{sty(G.append("path").attr("d",`M${x+30},0 L${x+42},-150 L${x+48},-150 L${x+60},0Z`));sty(G.append("ellipse").attr("cx",x+45).attr("cy",-160).attr("rx",34).attr("ry",9));sty(G.append("rect").attr("x",x+36).attr("y",-176).attr("width",18).attr("height",14));spire(x+45,-176,40);return x+45;},
+  "PORTLAND":x=>{sty(G.append("path").attr("d",`M${x-10},0 L${x+62},-150 L${x+80},-138 L${x+150},0Z`));G.append("path").attr("d",`M${x+44},-114 L${x+62},-150 L${x+80},-138 L${x+96},-106 L${x+84},-112 L${x+74},-100 L${x+64},-114 L${x+54},-104Z`).attr("fill","#ffffff").attr("stroke",INKS).attr("stroke-width",SW*.8/s).attr("stroke-linejoin","round");B(x+10,28,62);B(x+42,24,84);B(x+70,30,54);return x+60;},
+  "SAN FRANCISCO":x=>{const tw=xx=>{sty(G.append("rect").attr("x",xx).attr("y",-170).attr("width",8).attr("height",170));sty(G.append("rect").attr("x",xx+18).attr("y",-170).attr("width",8).attr("height",170));[-150,-110,-70].forEach(yy=>sty(G.append("rect").attr("x",xx).attr("y",yy).attr("width",26).attr("height",6)));};
+   tw(x+10);tw(x+150);G.append("path").attr("d",`M${x-20},-40 Q${x+23},-160 ${x+23},-165 Q${x+93},-30 ${x+163},-165 Q${x+180},-120 ${x+210},-40`).attr("fill","none").attr("stroke",INKS).attr("stroke-width",SW/s);sty(G.append("rect").attr("x",x-20).attr("y",-44).attr("width",230).attr("height",8));return x+95;},
+  "LAS VEGAS":x=>{const vx=x+10,cx=vx+66;sty(G.append("rect").attr("x",cx-14).attr("y",-58).attr("width",6).attr("height",58));sty(G.append("rect").attr("x",cx+8).attr("y",-58).attr("width",6).attr("height",58));sty(G.append("path").attr("d",`M${cx-66},-96 L${cx},-134 L${cx+66},-96 L${cx},-58Z`));
+   G.append("path").attr("d",`M${cx-50},-96 L${cx},-124 L${cx+50},-96 L${cx},-68Z`).attr("fill","none").attr("stroke",INKS).attr("stroke-width",SW*.6/s);const pts=[[cx-66,-96],[cx,-134],[cx+66,-96],[cx,-58]];
+   for(let k=0;k<20;k++){const tt=k/20,seg=Math.floor(tt*4),f=tt*4-seg,p0=pts[seg],p1=pts[(seg+1)%4];G.append("circle").attr("cx",p0[0]+(p1[0]-p0[0])*f).attr("cy",p0[1]+(p1[1]-p0[1])*f).attr("r",2.4).attr("fill",win).attr("stroke",INKS).attr("stroke-width",.6/s);}
+   G.append("text").attr("x",cx).attr("y",-90).attr("text-anchor","middle").attr("font-family","Playfair Display").attr("font-style","italic").attr("font-weight",600).attr("font-size",17).attr("fill",INKS).text("Las Vegas");
+   const sp=[];for(let i=0;i<10;i++){const aa=-Math.PI/2+i*Math.PI/5,rr=i%2?5.5:12;sp.push([cx+Math.cos(aa)*rr,-146+Math.sin(aa)*rr]);}G.append("path").attr("d","M"+sp.join("L")+"Z").attr("fill",win).attr("stroke",INKS).attr("stroke-width",SW/s);
+   sty(G.append("rect").attr("x",vx+150).attr("y",-210).attr("width",9).attr("height",210));sty(G.append("ellipse").attr("cx",vx+154.5).attr("cy",-214).attr("rx",20).attr("ry",11));sty(G.append("rect").attr("x",vx+146).attr("y",-232).attr("width",17).attr("height",10));spire(vx+154.5,-232,34);return vx+90;},
+  "ALBUQUERQUE":x=>{sty(G.append("path").attr("d",`M${x},0 V-52 H${x+28} V-74 H${x+72} V-48 H${x+96} V0Z`));[[x+6,-46],[x+16,-46],[x+34,-68],[x+46,-68],[x+58,-68],[x+80,-42],[x+90,-42]].forEach(([a1,b1])=>G.append("circle").attr("cx",a1).attr("cy",b1).attr("r",2.4).attr("fill",INKS));
+   G.append("path").attr("d",`M${x+42},0 V-22 Q${x+50},-32 ${x+58},-22 V0`).attr("fill","none").attr("stroke",INKS).attr("stroke-width",SW/s);
+   const balloon=(bx,by,k,c1,c2)=>{const bg=G.append("g").attr("transform",`translate(${bx},${by}) scale(${k})`);bg.append("path").attr("d","M0,0 C-34,-12 -38,-70 0,-72 C38,-70 34,-12 0,0Z").attr("fill",c1).attr("stroke",INKS).attr("stroke-width",SW/s/k);bg.append("path").attr("d","M0,0 C-12,-14 -14,-66 0,-72 C14,-66 12,-14 0,0Z").attr("fill",c2).attr("stroke",INKS).attr("stroke-width",SW*.7/s/k);[-6,6].forEach(d=>bg.append("line").attr("x1",d).attr("y1",-2).attr("x2",d*.85).attr("y2",10).attr("stroke",INKS).attr("stroke-width",SW*.6/s/k));bg.append("rect").attr("x",-7).attr("y",10).attr("width",14).attr("height",10).attr("rx",2).attr("fill",FC()).attr("stroke",INKS).attr("stroke-width",SW/s/k);};
+   balloon(x+20,-230,1,"#f4a983","#ffe3b8");balloon(x+86,-176,.72,"#9fb2e6","#e8edff");balloon(x+128,-262,.55,"#eea2b6","#ffe1ea");return x+48;},
+  "DALLAS":x=>{B(x,30,96);sty(G.append("rect").attr("x",x+44).attr("y",-200).attr("width",12).attr("height",200));sty(G.append("rect").attr("x",x+40).attr("y",-206).attr("width",20).attr("height",8));sty(G.append("circle").attr("cx",x+50).attr("cy",-228).attr("r",24));
+   [-14,0,14].forEach(dy=>{const hw=Math.sqrt(24*24-dy*dy);G.append("line").attr("x1",x+50-hw).attr("x2",x+50+hw).attr("y1",-228+dy).attr("y2",-228+dy).attr("stroke",INKS).attr("stroke-width",SW*.6/s);});[12].forEach(dx=>G.append("ellipse").attr("cx",x+50).attr("cy",-228).attr("rx",dx).attr("ry",24).attr("fill","none").attr("stroke",INKS).attr("stroke-width",SW*.6/s));G.append("line").attr("x1",x+50).attr("x2",x+50).attr("y1",-252).attr("y2",-204).attr("stroke",INKS).attr("stroke-width",SW*.6/s);
+   for(let k=0;k<8;k++){const aa=k*Math.PI/4;G.append("circle").attr("cx",x+50+Math.cos(aa)*16).attr("cy",-228+Math.sin(aa)*16).attr("r",2.2).attr("fill",win);}spire(x+50,-252,16);B(x+66,34,130);return x+50;},
+  "CHICAGO":x=>{B(x,22,230);B(x+22,22,270);B(x+44,22,210);spire(x+28,-270,40);spire(x+38,-270,34);return x+33;},
+  "NASHVILLE":x=>{B(x,44,190);sty(G.append("path").attr("d",`M${x},${-190} L${x+6},${-250} L${x+12},${-190}Z M${x+32},${-190} L${x+38},${-250} L${x+44},${-190}Z`));return x+22;},
+  "PHILADELPHIA":x=>{B(x,96,80);sty(G.append("rect").attr("x",x+34).attr("y",-200).attr("width",28).attr("height",120));sty(G.append("rect").attr("x",x+30).attr("y",-90).attr("width",36).attr("height",12));G.append("circle").attr("cx",x+48).attr("cy",-172).attr("r",9).attr("fill",win).attr("stroke",INKS).attr("stroke-width",SW/s);sty(G.append("path").attr("d",`M${x+36},-200 Q${x+48},-240 ${x+60},-200Z`));spire(x+48,-236,26);return x+48;},
+  "NEW YORK":x=>{B(x,56,240);B(x+8,40,280);B(x+14,28,300);spire(x+28,-300,60);B(x+70,40,220);sty(G.append("path").attr("d",`M${x+70},${-220} Q${x+90},${-280} ${x+110},${-220}Z`));spire(x+90,-268,46);B(x+120,30,150);B(x+154,26,120);return x+28;},
+  "MIAMI":x=>{const palm=(xx,h)=>{G.append("path").attr("d",`M${xx},0 Q${xx+8},${-h/2} ${xx+2},${-h}`).attr("fill","none").attr("stroke",INKS).attr("stroke-width",SW*1.2/s);[[-40,-10],[40,-10],[-30,14],[30,14],[0,-20]].forEach(([dx,dy])=>G.append("path").attr("d",`M${xx+2},${-h} Q${xx+2+dx/2},${-h+dy-14} ${xx+2+dx},${-h+dy+10}`).attr("fill","none").attr("stroke",INKS).attr("stroke-width",SW*1.2/s).attr("stroke-linecap","round"));};palm(x+20,120);palm(x+60,95);B(x+80,30,90);return x+40;}
+ };
+ const generic=x=>{B(x,26,90);B(x+28,34,160);spire(x+45,-160,30);B(x+64,24,120);B(x+86,22,70);return x+50;};
+ const fillers=[x=>{B(x,26,70);B(x+30,24,95);},x=>{B(x,30,110);B(x+32,26,80);},x=>{B(x+6,34,140);},x=>{B(x,26,100);B(x+30,24,130);}];
+ let x=0;want.forEach((k,i)=>{if(i){fillers[i%4](x);x+=60;}const cx=(L[k]||generic)(x);names.push([cx,k]);x+=WID[k]||GEN;});
+ return {w:x*s,names:names.map(([a1,n])=>[x0+a1*s,n])};}
+
+function confetti(g,n,box,cols,seed,avoid){const r=rnd(seed);let made=0,tries=0;while(made<n&&tries<n*20){tries++;const x=box[0]+r()*box[2],y=box[1]+r()*box[3],c=cols[made%cols.length],k=r();if(avoid&&avoid.some(([ax,ay,aw,ah])=>x>ax&&x<ax+aw&&y>ay&&y<ay+ah))continue;made++;
+ if(k<.45)g.append("rect").attr("x",x-6).attr("y",y-2).attr("width",12).attr("height",4.5).attr("rx",2.2).attr("fill",c).attr("transform",`rotate(${r()*180},${x},${y})`);
+ else if(k<.8)g.append("circle").attr("cx",x).attr("cy",y).attr("r",2.5+r()*2.5).attr("fill",c);
+ else sparkle(g,x,y,5+r()*6,c);}}
+
+/* 45/46. Editorial festive poster */
+function v45(P){
+ P=P||{paper:"#f6efe4",ink:"#2e2a26",muted:"#9a8b78",un:"#ebe1d1",unInk:"#b3a48d",acc:"#c96f4a",sun:"#f2dca6",
+  R:{West:"#8fa58a",Southwest:"#d9875f",Midwest:"#e2b864",Southeast:"#d99393",Northeast:"#7f9cb5"},title:"Travel Map",eyebrow:"THE  UNITED  STATES"};
+ bg(P.paper);noise(.07,.85,[.4,.3,.2]);
+ const conf=Object.values(P.R).concat([P.sun]);
+ // header
+ confetti(svg,54,[70,140,940,360],conf,7,[[190,195,700,200],[360,395,360,75]]);
+ T(svg,540,232,P.eyebrow,{f:"DM Sans",w:500,s:22,ls:8,c:P.muted,a:"middle"});
+ fitT(T(svg,540,370,P.title,{f:"Playfair Display",i:true,w:500,s:136,c:P.ink,a:"middle"}),930,136);
+ const pill=svg.append("g");pill.append("rect").attr("x",380).attr("y",404).attr("width",320).attr("height",54).attr("rx",27).attr("fill","none").attr("stroke",P.acc).attr("stroke-width",1.8);
+ T(pill,540,440,`${N}  of  50  states`,{f:"DM Sans",w:500,s:24,ls:3,c:P.acc,a:"middle"});
+ // map floating with soft shadow
+ const sh=shadow(0,14,18,P.ink,.12);
+ const m=map(svg,[56,520,968,580],{fill:(n,v)=>v?P.R[REG(n)]:P.un,stroke:P.paper,sw:(n,v)=>v?2.2:1.6,
+  under:(g,path)=>{g.append("path").datum({type:"FeatureCollection",features:STATES}).attr("d",path).attr("fill",P.un).attr("filter",sh);}});
+ allLabels(m,"#ffffff",P.unInk,"DM Sans",14);
+ // legend
+ let lx=0;const items=REGS.map(k=>[k,P.R[k]]);const meas=svg.append("text").attr("font-family","DM Sans").attr("font-weight",500).attr("font-size",19).attr("opacity",0);
+ const widths=items.map(([k])=>{meas.text(k);return meas.node().getComputedTextLength()+64;});meas.remove();
+ const total=widths.reduce((a,b)=>a+b,0);lx=540-total/2;
+ items.forEach(([k,c],i)=>{svg.append("circle").attr("cx",lx+8).attr("cy",1152).attr("r",8).attr("fill",c);T(svg,lx+24,1159,k,{f:"DM Sans",w:500,s:19,c:P.muted});lx+=widths[i];});
+ // list
+ svg.append("line").attr("x1",120).attr("x2",960).attr("y1",1198).attr("y2",1198).attr("stroke",P.ink).attr("stroke-width",.8).attr("opacity",.25);
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/8),r=i%8,x=130+c*290,y=1240+r*36;svg.append("circle").attr("cx",x).attr("cy",y-8).attr("r",5.5).attr("fill",P.R[REG(n)]);T(svg,x+18,y,n,{f:"Playfair Display",w:500,s:27,c:P.ink});});
+ // skyline line-art with sun
+ svg.append("circle").attr("cx",560).attr("cy",1722).attr("r",128).attr("fill",P.sun).attr("opacity",.75);
+ confetti(svg,16,[90,1540,900,110],conf,12,[[380,1520,360,200]]);
+ const sk=svg.append("g");const S=lineSky(sk,92,1808,.87,P.paper,P.sun,false,6,P.ink,2);
+ sk.append("line").attr("x1",60).attr("x2",1020).attr("y1",1808).attr("y2",1808).attr("stroke",P.ink).attr("stroke-width",2);
+ {const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length;T(svg,540,nm.length>6?1846:1856,nm.slice(0,h).join("  ·  "),{f:"DM Sans",w:500,s:15,ls:2.4,c:P.muted,a:"middle"});if(nm.length>6)T(svg,540,1872,nm.slice(h).join("  ·  "),{f:"DM Sans",w:500,s:15,ls:2.4,c:P.muted,a:"middle"});}
+}
+function v46(){v45({paper:"#fbf1ee",ink:"#3a2d33",muted:"#a48c92",un:"#f1e3df",unInk:"#c7aeb0",acc:"#d0697f",sun:"#f8d7c4",
+ R:{West:"#9fb8a0",Southwest:"#f0a07a",Midwest:"#eec27a",Southeast:"#e89aae",Northeast:"#a3b5dc"},title:"Places I've Been",eyebrow:"MY  USA  TRAVEL  MAP"});}
+
+
+function fitT(sel,maxW,s){const w=sel.node().getComputedTextLength();if(w>maxW)sel.attr("font-size",s*maxW/w);return sel;}
+function edLegend(P,y){const meas=svg.append("text").attr("font-family","DM Sans").attr("font-weight",500).attr("font-size",19).attr("opacity",0);
+ const widths=REGS.map(k=>{meas.text(k);return meas.node().getComputedTextLength()+64;});meas.remove();let lx=540-widths.reduce((a,b)=>a+b,0)/2;
+ REGS.forEach((k,i)=>{svg.append("circle").attr("cx",lx+8).attr("cy",y-7).attr("r",8).attr("fill",P.R[k]);T(svg,lx+24,y,k,{f:"DM Sans",w:500,s:19,c:P.muted});lx+=widths[i];});}
+/* editorial layout B: skyline on top */
+function edSkyTop(P){
+ bg(P.paper);noise(.07,.85,[.4,.3,.2]);const conf=Object.values(P.R).concat([P.sun]);
+ svg.append("circle").attr("cx",560).attr("cy",392).attr("r",132).attr("fill",P.sun).attr("opacity",.8);
+ confetti(svg,40,[70,130,940,330],conf,5,[[380,250,360,200]]);
+ const sk=svg.append("g");const S=lineSky(sk,92,470,.87,P.paper,P.sun,false,6,P.ink,2);
+ sk.append("line").attr("x1",60).attr("x2",1020).attr("y1",470).attr("y2",470).attr("stroke",P.ink).attr("stroke-width",2);
+ {const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length;T(svg,540,nm.length>6?505:512,nm.slice(0,h).join("  ·  "),{f:"DM Sans",w:500,s:15,ls:2.4,c:P.muted,a:"middle"});if(nm.length>6)T(svg,540,531,nm.slice(h).join("  ·  "),{f:"DM Sans",w:500,s:15,ls:2.4,c:P.muted,a:"middle"});}
+ T(svg,540,600,P.eyebrow,{f:"DM Sans",w:500,s:22,ls:8,c:P.muted,a:"middle"});
+ fitT(T(svg,540,720,P.title,{f:"Playfair Display",i:true,w:500,s:124,c:P.ink,a:"middle"}),930,124);
+ const pill=svg.append("g");pill.append("rect").attr("x",380).attr("y",752).attr("width",320).attr("height",54).attr("rx",27).attr("fill","none").attr("stroke",P.acc).attr("stroke-width",1.8);
+ T(pill,540,788,`${N}  of  50  states`,{f:"DM Sans",w:500,s:24,ls:3,c:P.acc,a:"middle"});
+ const sh=shadow(0,14,18,P.ink,.12);
+ const m=map(svg,[56,850,968,560],{fill:(n,v)=>v?P.R[REG(n)]:P.un,stroke:P.paper,sw:(n,v)=>v?2.2:1.6,
+  under:(g,path)=>{g.append("path").datum({type:"FeatureCollection",features:STATES}).attr("d",path).attr("fill",P.un).attr("filter",sh);}});
+ allLabels(m,"#ffffff",P.unInk,"DM Sans",14);
+ edLegend(P,1470);
+ svg.append("line").attr("x1",120).attr("x2",960).attr("y1",1506).attr("y2",1506).attr("stroke",P.ink).attr("stroke-width",.8).attr("opacity",.25);
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/8),r=i%8,x=130+c*290,y=1552+r*36;svg.append("circle").attr("cx",x).attr("cy",y-8).attr("r",5.5).attr("fill",P.R[REG(n)]);T(svg,x+18,y,n,{f:"Playfair Display",w:500,s:27,c:P.ink});});
+ confetti(svg,14,[70,1820,940,60],conf,9);
+}
+const ED={
+ sage:{paper:"#eef0e6",ink:"#2c3a33",muted:"#86907f",un:"#e2e5d6",unInk:"#a9b09a",acc:"#c77a52",sun:"#f0d9a6",
+  R:{West:"#7fa39a",Southwest:"#e09a6b",Midwest:"#e8c06f",Southeast:"#d996a2",Northeast:"#8aa4c8"},title:CONFIG.title,eyebrow:"MY  USA  TRAVEL  MAP"},
+ sky:{paper:"#eef4f7",ink:"#28344a",muted:"#7d8aa0",un:"#e1e9ef",unInk:"#a6b3c2",acc:"#e07f6a",sun:"#ffd9b8",
+  R:{West:"#8cc0b4",Southwest:"#f4a983",Midwest:"#f3cf7d",Southeast:"#eea2b6",Northeast:"#9fb2e6"},title:CONFIG.title,eyebrow:"THE  UNITED  STATES"},
+ dusk:{paper:"#f3eff7",ink:"#352d48",muted:"#8f86a3",un:"#e8e2ef",unInk:"#b3aac3",acc:"#c66f98",sun:"#f9cfd8",
+  R:{West:"#a7c4a9",Southwest:"#f2a98f",Midwest:"#f0cf8c",Southeast:"#e9a3c1",Northeast:"#a9a6e3"},title:"Where I've Been",eyebrow:"MY  USA  TRAVEL  MAP"},
+ terra:{paper:"#f7efe6",ink:"#3b2a22",muted:"#a08a7a",un:"#efe3d6",unInk:"#c2ab98",acc:"#b85f45",sun:"#f1cdb5",
+  R:{West:"#c9876a",Southwest:"#b85f45",Midwest:"#e2b48f",Southeast:"#d99a7d",Northeast:"#a8735c"},title:CONFIG.title,eyebrow:"THE  UNITED  STATES"}};
+function v47(){v45(ED.sage);}
+function v48(){edSkyTop(ED.sky);}
+function v49(){edSkyTop(ED.dusk);}
+function v50(){v45(ED.terra);}
+
+
+function luxBg(P){
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",lg(P.grad,0,1));
+ noise(.05,1.4,[.35,.3,.25]);
+ const lin=defs.append("pattern").attr("id","linen"+uid).attr("width",6).attr("height",6).attr("patternUnits","userSpaceOnUse");lin.append("path").attr("d","M0,3 H6 M3,0 V6").attr("stroke","#ffffff").attr("stroke-width",.6).attr("opacity",.35);
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",`url(#linen${uid})`);uid++;
+ const G=lg(["#b8914a","#ecd59a","#c9a45c","#f3e2b0","#b08540"],1,1);
+ svg.append("rect").attr("x",30).attr("y",30).attr("width",1020).attr("height",1860).attr("rx",26).attr("fill","none").attr("stroke",G).attr("stroke-width",2.5);
+ svg.append("rect").attr("x",42).attr("y",42).attr("width",996).attr("height",1836).attr("rx",18).attr("fill","none").attr("stroke",G).attr("stroke-width",.9);
+ [[42,42],[1038,42],[42,1878],[1038,1878]].forEach(([x,y])=>{svg.append("path").attr("d",`M${x},${y-9}L${x+6},${y}L${x},${y+9}L${x-6},${y}Z`).attr("fill",G);});
+ return G;}
+function edLux(P){
+ const GOLD=luxBg(P);const conf=Object.values(P.R).concat([P.sun,"#d4b06a","#d4b06a"]);
+ svg.append("circle").attr("cx",560).attr("cy",410).attr("r",118).attr("fill",P.sun).attr("opacity",.8);
+ confetti(svg,40,[80,120,920,340],conf,5,[[380,250,360,200]]);
+ const sk=svg.append("g");const S=lineSky(sk,76,476,.565,P.paper,P.sun,false,6,P.ink,2);
+ sk.append("line").attr("x1",72).attr("x2",1008).attr("y1",476).attr("y2",476).attr("stroke",P.ink).attr("stroke-width",2);
+ {const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length;T(svg,540,nm.length>6?512:525,nm.slice(0,h).join("  ·  "),{f:"DM Sans",w:500,s:15,ls:2.6,c:P.muted,a:"middle"});if(nm.length>6)T(svg,540,538,nm.slice(h).join("  ·  "),{f:"DM Sans",w:500,s:15,ls:2.6,c:P.muted,a:"middle"});}
+ diamondRule(svg,540,576,90,"#c9a45c");
+ T(svg,540,616,P.eyebrow,{f:"DM Sans",w:500,s:22,ls:8,c:P.muted,a:"middle"});
+ fitT(T(svg,540,734,P.title,{f:"Playfair Display",i:true,w:500,s:124,c:P.ink,a:"middle"}),850,124);
+ const pill=svg.append("g");pill.append("rect").attr("x",380).attr("y",766).attr("width",320).attr("height",54).attr("rx",27).attr("fill","#ffffff").attr("fill-opacity",.45).attr("stroke",GOLD).attr("stroke-width",2);
+ T(pill,540,802,`${N}  of  50  states`,{f:"DM Sans",w:500,s:24,ls:3,c:P.acc,a:"middle"});
+ const sh=shadow(0,14,18,P.ink,.12);
+ const m=map(svg,[64,862,952,550],{fill:(n,v)=>v?P.R[REG(n)]:P.un,stroke:P.edge||"#ffffff",sw:(n,v)=>v?2.2:1.6,
+  under:(g,path)=>{g.append("path").datum({type:"FeatureCollection",features:STATES}).attr("d",path).attr("fill",P.un).attr("filter",sh);}});
+ allLabels(m,"#ffffff",P.unInk,"DM Sans",14);
+ edLegend(P,1474);
+ diamondRule(svg,540,1508,420,"#c9a45c");
+ const PER=Math.max(8,Math.ceil(N/3)),RH=Math.min(36,288/PER);ALPHA.forEach((n,i)=>{const c=Math.floor(i/PER),r=i%PER,x=130+c*290,y=1556+r*RH;svg.append("circle").attr("cx",x).attr("cy",y-8).attr("r",5.5).attr("fill",P.R[REG(n)]);T(svg,x+18,y,n,{f:"Playfair Display",w:500,s:27,c:P.ink});});
+ confetti(svg,12,[80,1830,920,30],conf,9);
+}
+function v51(){edLux(Object.assign({},ED.sky,{grad:["#e4eef6","#eef1f2","#f7efe3"],paper:"#f2f1ee",un:"#e6eaee",edge:"#f6f4f0"}));}
+function v52(){edLux({paper:"#f6efe4",ink:"#2e2a26",muted:"#9a8b78",un:"#ebe1d1",unInk:"#b3a48d",acc:"#c96f4a",sun:"#f2dca6",grad:["#fbf5ea","#f6eddf","#f1e4d2"],edge:"#fbf5ea",
+  R:{West:"#8fa58a",Southwest:"#d9875f",Midwest:"#e2b864",Southeast:"#d99393",Northeast:"#7f9cb5"},title:CONFIG.title,eyebrow:"THE  UNITED  STATES"});}
+
+
+function aura(P){bg(P.base);const id="au"+(uid++);const f=defs.append("filter").attr("id",id).attr("x","-50%").attr("y","-50%").attr("width","200%").attr("height","200%");f.append("feGaussianBlur").attr("stdDeviation",110);
+ const g=svg.append("g").attr("filter",`url(#${id})`);P.blobs.forEach(([x,y,r,c])=>g.append("circle").attr("cx",x).attr("cy",y).attr("r",r).attr("fill",c).attr("opacity",.85));
+ noise(.09,.9,[.3,.2,.3]);}
+function cycler(arr,seed){const r=rnd(seed);let i=0;return()=>arr[(i++ + Math.floor(r()*2))%arr.length];}
+function stickerText(g,x,y,txt,o){const sh=T(g,x+o.off,y+o.off,txt,{f:o.f,w:o.w,s:o.s,ls:o.ls||0,c:o.ink,a:"middle",st:o.ink,sw:o.sw});const fr=T(g,x,y,txt,{f:o.f,w:o.w,s:o.s,ls:o.ls||0,c:o.fill,a:"middle",st:o.ink,sw:o.sw});
+ const w=fr.node().getComputedTextLength();if(w>o.maxW){const k=o.s*o.maxW/w;sh.attr("font-size",k);fr.attr("font-size",k);}return fr;}
+function vIG(P){
+ aura(P);const INK=P.ink;const conf=P.conf;
+ confetti(svg,46,[60,120,960,330],conf,5,[[360,250,400,200]]);
+ svg.append("circle").attr("cx",560).attr("cy",392).attr("r",106).attr("fill",lg(P.sunG,0,1)).attr("opacity",.95);
+ const sk=svg.append("g");const S=lineSky(sk,76,476,.565,cycler(P.bld,4),"#ffffff",false,6,INK,2.2);
+ sk.append("line").attr("x1",60).attr("x2",1020).attr("y1",476).attr("y2",476).attr("stroke",INK).attr("stroke-width",2.4);
+ {const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length;T(svg,540,nm.length>6?512:525,nm.slice(0,h).join("  ·  "),{f:"DM Sans",w:700,s:15,ls:2.4,c:INK,a:"middle",op:.8});if(nm.length>6)T(svg,540,538,nm.slice(h).join("  ·  "),{f:"DM Sans",w:700,s:15,ls:2.4,c:INK,a:"middle",op:.8});}
+ T(svg,540,610,P.eyebrow,{f:"DM Sans",w:700,s:22,ls:7,c:INK,a:"middle",op:.85});
+ stickerText(svg,540,730,P.title,{f:"Fraunces",w:900,s:118,ls:3,fill:P.titleC,ink:INK,sw:6,off:6,maxW:880});
+ const pill=svg.append("g").attr("transform","translate(540,800) rotate(-4)");pill.append("rect").attr("x",-165).attr("y",-34).attr("width",330).attr("height",64).attr("rx",32).attr("fill",P.pill).attr("stroke",INK).attr("stroke-width",3.5);
+ T(pill,0,10,`${N} of 50 states ✦`,{f:"DM Sans",w:700,s:28,c:INK,a:"middle"});
+ const card=svg.append("g");card.append("rect").attr("x",50).attr("y",860).attr("width",980).attr("height",600).attr("rx",40).attr("fill","#ffffff").attr("fill-opacity",.55).attr("stroke","#ffffff").attr("stroke-width",3).attr("filter",shadow(0,16,26,INK,.12));
+ const m=map(card,[78,890,924,500],{fill:(n,v)=>v?P.R[REG(n)]:"rgba(255,255,255,.75)",stroke:(n,v)=>v?"#ffffff":P.unS,sw:(n,v)=>v?2.4:1.2});
+ allLabels(m,"#ffffff",P.unInk,"DM Sans",14);
+ // legend inside card
+ const meas=svg.append("text").attr("font-family","DM Sans").attr("font-weight",700).attr("font-size",18).attr("opacity",0);const ws=REGS.map(k=>{meas.text(k);return meas.node().getComputedTextLength()+58;});meas.remove();
+ let lx=540-ws.reduce((x,y)=>x+y,0)/2;REGS.forEach((k,i)=>{card.append("circle").attr("cx",lx+9).attr("cy",1420).attr("r",9).attr("fill",P.R[k]).attr("stroke","#fff").attr("stroke-width",2);T(card,lx+26,1426,k,{f:"DM Sans",w:700,s:18,c:INK,op:.8});lx+=ws[i];});
+ // glossy chips
+ const fs=21,meas2=svg.append("text").attr("font-family","DM Sans").attr("font-weight",700).attr("font-size",fs).attr("opacity",0);
+ const rows=[];let row=[],rw=0;ALPHA.forEach(n=>{meas2.text(n);const w=meas2.node().getComputedTextLength()+64;if(rw+w>960&&row.length){rows.push([row,rw]);row=[];rw=0;}row.push([n,w]);rw+=w+10;});rows.push([row,rw]);meas2.remove();
+ rows.forEach(([r2,w2],ri)=>{let x=540-(w2-10)/2;const y=1500+ri*56;r2.forEach(([n,w])=>{const c=P.R[REG(n)];svg.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",44).attr("rx",22).attr("fill","#ffffff").attr("fill-opacity",.7).attr("stroke","#ffffff").attr("stroke-width",2);
+  svg.append("circle").attr("cx",x+22).attr("cy",y+22).attr("r",9).attr("fill",c);T(svg,x+38,y+29,n,{f:"DM Sans",w:700,s:fs,c:INK});x+=w+10;});});
+ const ft=svg.append("g").attr("transform","translate(540,1800) rotate(3)");ft.append("rect").attr("x",-150).attr("y",-30).attr("width",300).attr("height",56).attr("rx",28).attr("fill",P.titleC).attr("stroke",INK).attr("stroke-width",3.5);T(ft,0,8,"where to next? ✈",{f:"DM Sans",w:700,s:24,c:"#ffffff",a:"middle"});
+ confetti(svg,10,[70,1760,940,100],conf,11,[[370,1760,340,90]]);
+}
+const IGP={
+ dopamine:{base:"#fff4ec",ink:"#2b1d3a",titleC:"#ff4f93",pill:"#ffd84d",unS:"#e9dcef",unInk:"#b9a6c4",eyebrow:"THE  UNITED  STATES  ✦  SINCE  DAY  ONE",title:CONFIG.title,
+  blobs:[[120,200,320,"#ffb3d1"],[960,260,300,"#ffd59e"],[900,980,360,"#c9b8ff"],[120,1100,340,"#a8e6ff"],[540,1700,380,"#ffc8dd"],[1000,1750,260,"#fff0a6"]],
+  sunG:["#ffd166","#ff8fab"],bld:["#ff8fab","#ffd166","#8ecdf7","#b9a2ff","#7ee0c3","#ffb07a"],conf:["#ff4f93","#ffb000","#3fb8ff","#8a6cff","#2ccf9f","#ff7a3d"],
+  R:{West:"#2ccf9f",Southwest:"#ff8a3d",Midwest:"#ffc23c",Southeast:"#ff5fa2",Northeast:"#7b7dff"}},
+ sunset:{base:"#fff1ea",ink:"#2d1b33",titleC:"#ff6a3d",pill:"#bff0de",unS:"#f1d9d2",unInk:"#c9a6a8",eyebrow:"MY  USA  TRAVEL  MAP  ✦  SINCE  DAY  ONE",title:CONFIG.title,
+  blobs:[[100,180,340,"#ffc2a8"],[980,200,320,"#ffb3cf"],[960,1000,360,"#ffd59e"],[100,1050,340,"#d6c2ff"],[560,1720,400,"#ffb3c7"],[60,1820,240,"#ffe0a3"]],
+  sunG:["#ffe08a","#ff7a59"],bld:["#ffb3a1","#ffe08a","#c7b5ff","#ff9ec4","#9fe0c7","#ffc48a"],conf:["#ff6a3d","#ff4f93","#ffb000","#8a6cff","#2ccf9f"],
+  R:{West:"#35c9a0",Southwest:"#ff7a45",Midwest:"#ffbe2e",Southeast:"#ff5c9a",Northeast:"#8c6cff"}}};
+function v53(){vIG(IGP.dopamine);}
+function v54(){vIG(IGP.sunset);}
+
+
+/* ===== persona versions: MBA / TECH / MUSIC ===== */
+const SANS="DM Sans";
+function cardBox(g,x,y,w,h,o={}){return g.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",o.r??18).attr("fill",o.fill||"#fff").attr("stroke",o.stroke||"#e3e8ef").attr("stroke-width",o.sw??1.5).attr("filter",o.sh||null);}
+
+/* 55. MBA — US Market Coverage */
+function v55(){const ST=STATS();
+ const NAVY="#2b3550",TEAL="#6fa79d",CORAL="#e3907c",MUT="#6b7a90",LINE="#e3e8ef",BG="#f7f4ef";
+ bg(BG);const sh=shadow(0,6,14,"#2b3550",.06);
+ svg.append("rect").attr("x",0).attr("y",0).attr("width",1080).attr("height",10).attr("fill",NAVY);svg.append("rect").attr("x",0).attr("y",10).attr("width",360).attr("height",6).attr("fill",TEAL);
+ T(svg,72,200,`TRAVEL PORTFOLIO REVIEW  ·  ${CONFIG.sinceShort.toUpperCase()}`,{f:MONO,w:600,s:20,ls:3,c:TEAL});
+ fitT(T(svg,68,292,"US Market Coverage",{f:SANS,w:700,s:86,c:NAVY,ls:-1}),940,86);
+ T(svg,72,345,`A footprint across ${N} of 50 states, with presence in ${ST.ra===5?"all 5":ST.ra+" of 5"} regions`,{f:PLEX,s:25,c:MUT});
+ const K=[[`${Math.round(N/50*100)}%`,"COVERAGE","of 50 states"],[`${N}`,"STATES ENTERED","coast to coast"],[`${ST.ra}/5`,"REGIONS ACTIVE",ST.ra===5?"full presence":`${5-ST.ra} to go`],[`${CONFIG.cities.length}`,"KEY CITIES",`${CONFIG.cities[0]} → ${CONFIG.cities[CONFIG.cities.length-1]}`]];
+ K.forEach(([v,k,s],i)=>{const x=72+i*238,g=svg.append("g");cardBox(g,x,388,222,170,{sh});g.append("rect").attr("x",x).attr("y",388).attr("width",6).attr("height",170).attr("rx",3).attr("fill",i===0?CORAL:TEAL);
+  T(g,x+26,428,k,{f:MONO,w:600,s:14,ls:2,c:MUT});T(g,x+24,500,v,{f:SANS,w:700,s:62,c:NAVY});T(g,x+26,536,s,{f:PLEX,s:17,c:MUT});});
+ const mg=svg.append("g");cardBox(mg,72,590,936,580,{sh});
+ T(mg,100,634,"Coverage map",{f:SANS,w:700,s:26,c:NAVY});T(mg,980,634,"Lower 48 shown",{f:MONO,s:15,c:MUT,a:"end"});
+ const m=map(mg,[96,660,888,450],{fill:(n,v)=>v?(REG(n)===ST.top?CORAL:TEAL):"#ebe6df",stroke:"#ffffff",sw:(n,v)=>v?1.8:1.2});
+ allLabels(m,"#ffffff","#b6ada3",SANS,13);
+ const co=m.anchor("Colorado"),ann=(x,y,lines,col,ex,ey,tx,ty)=>{mg.append("path").attr("d",`M${x},${y} L${ex},${ey}`).attr("stroke",col).attr("stroke-width",1.6).attr("stroke-dasharray","4 4");mg.append("circle").attr("cx",x).attr("cy",y).attr("r",5).attr("fill",col);lines.forEach((l,i)=>T(mg,tx,ty+i*22,l,{f:PLEX,w:i?400:700,s:i?16:18,c:i?MUT:col}));};
+ {const wk=STATES.map(d=>d.properties.name).filter(n=>REG(n)===ST.low&&!VIS.has(n)).sort()[0];if(wk){const p=m.anchor(wk);ann(p[0],p[1],["White space",`${ST.low}: ${RVIS[ST.low]||0} of ${RTOT[ST.low]}`],NAVY,200,1050,110,1062);}}
+ {const st=STATES.map(d=>d.properties.name).filter(n=>REG(n)===ST.top&&VIS.has(n)).sort()[0];if(st){const p=m.anchor(st);ann(p[0],p[1],[ST.tp===1?"Fully covered":"Strongest region",`${ST.top}: ${RVIS[ST.top]||0} of ${RTOT[ST.top]}`],CORAL,780,1046,790,1062);}}
+ [["Visited",TEAL],[`${ST.top} (${Math.round(ST.tp*100)}%)`,CORAL],["Not yet","#ebe6df"]].forEach(([l,c],i)=>{mg.append("rect").attr("x",100+i*200).attr("y",1132).attr("width",18).attr("height",18).attr("rx",4).attr("fill",c);T(mg,126+i*200,1147,l,{f:PLEX,s:16,c:MUT});});
+ const bgc=svg.append("g");cardBox(bgc,72,1200,936,330,{sh});T(bgc,100,1244,"Coverage by region",{f:SANS,w:700,s:26,c:NAVY});T(bgc,980,1244,"states visited / total",{f:MONO,s:15,c:MUT,a:"end"});
+ const rs=REGS.map(k=>[k,RVIS[k]||0,RTOT[k]]).sort((a,b)=>b[1]/b[2]-a[1]/a[2]);
+ rs.forEach(([k,v,tt],i)=>{const y=1282+i*46,p=v/tt;T(bgc,100,y+20,k,{f:PLEX,w:600,s:20,c:NAVY});bgc.append("rect").attr("x",270).attr("y",y+2).attr("width",560).attr("height",24).attr("rx",6).attr("fill","#efebe5");
+  bgc.append("rect").attr("x",270).attr("y",y+2).attr("width",560*p).attr("height",24).attr("rx",6).attr("fill",p===1?CORAL:TEAL);T(bgc,980,y+21,`${v}/${tt}  ·  ${Math.round(p*100)}%`,{f:MONO,w:600,s:17,c:NAVY,a:"end"});});
+ const rg=svg.append("g");cardBox(rg,72,1560,936,262,{sh});T(rg,100,1602,"State roster",{f:SANS,w:700,s:26,c:NAVY});T(rg,980,1602,`n = ${N}`,{f:MONO,s:15,c:MUT,a:"end"});
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/6),r=i%6,x=100+c*228,y=1640+r*29;T(rg,x,y,"✓",{f:PLEX,w:700,s:17,c:TEAL});T(rg,x+22,y,n,{f:PLEX,s:18,c:NAVY});});
+ T(svg,72,1866,"Source: personal travel log. Map shows the contiguous US.",{f:MONO,s:14,c:MUT});T(svg,1008,1866,"01",{f:MONO,w:600,s:16,c:NAVY,a:"end"});
+}
+
+/* 56. TECH — travel dashboard */
+function v56(){const ST=STATS();
+ const BG="#f7f4ef",INK="#1f2328",MUT="#656d76",LINE="#d0d7de",GRN=["#cfe5d6","#9fcdb2","#74b493","#4f8f72"],BLUE="#7d93cf",ORG="#d9906f",PURP="#a58fd3";
+ bg(BG);const dp=defs.append("pattern").attr("id","tdots").attr("width",24).attr("height",24).attr("patternUnits","userSpaceOnUse");dp.append("circle").attr("cx",12).attr("cy",12).attr("r",1.1).attr("fill",LINE);svg.append("rect").attr("width",1080).attr("height",1920).attr("fill","url(#tdots)");
+ const RG={West:GRN[2],Southwest:GRN[3],Midwest:GRN[1],Southeast:GRN[2],Northeast:GRN[1]};
+ T(svg,72,196,"me@usa:~$ travel --stats",{f:MONO,w:500,s:24,c:MUT});
+ const tl=T(svg,68,290,"states_visited ",{f:MONO,w:600,s:72,c:INK});tl.append("tspan").attr("fill",GRN[2]).text(`= ${N}`);
+ T(svg,72,338,`// ${N} of 50 · ${Math.round(N/50*100)}% complete · ${ST.ra===5?"all regions unlocked":ST.ra+"/5 regions"}`,{f:MONO,s:21,c:MUT});
+ let bx=72;[["build","passing",GRN[2]],["regions",`${ST.ra}/5`,BLUE],["coverage",`${Math.round(N/50*100)}%`,PURP],["next_stop","TBD",ORG]].forEach(([k,v,c])=>{const meas=svg.append("text").attr("font-family",MONO).attr("font-size",17).attr("font-weight",600).attr("opacity",0);meas.text(k);const w1=meas.node().getComputedTextLength()+22;meas.text(v);const w2=meas.node().getComputedTextLength()+22;meas.remove();
+  svg.append("rect").attr("x",bx).attr("y",370).attr("width",w1+w2).attr("height",34).attr("rx",6).attr("fill","#555");svg.append("path").attr("d",`M${bx+w1},370 h${w2-6} a6,6 0 0 1 6,6 v22 a6,6 0 0 1 -6,6 h${-(w2-6)}Z`).attr("fill",c);
+  T(svg,bx+11,393,k,{f:MONO,w:600,s:17,c:"#fff"});T(svg,bx+w1+11,393,v,{f:MONO,w:600,s:17,c:"#fff"});bx+=w1+w2+12;});
+ const win=(y,h,title)=>{const g=svg.append("g");cardBox(g,72,y,936,h,{r:14,stroke:LINE});g.append("path").attr("d",`M72,${y+14} a14,14 0 0 1 14,-14 h908 a14,14 0 0 1 14,14 v34 h-936Z`).attr("fill","#eef1f4");g.append("line").attr("x1",72).attr("x2",1008).attr("y1",y+48).attr("y2",y+48).attr("stroke",LINE);
+  ["#ff5f57","#febc2e","#28c840"].forEach((c,i)=>g.append("circle").attr("cx",98+i*22).attr("cy",y+24).attr("r",7).attr("fill",c));T(g,540,y+30,title,{f:MONO,w:500,s:17,c:MUT,a:"middle"});return g;};
+ const mg=win(440,560,"map.render(visited)");
+ const m=map(mg,[100,510,880,460],{fill:(n,v)=>v?RG[REG(n)]:"#ece7e1",stroke:"#ffffff",sw:(n,v)=>v?1.8:1.2});allLabels(m,"#ffffff","#a3aab3",MONO,13);
+ const gg=win(1030,500,"state_contributions.grid");
+ const all=STATES.map(d=>d.properties.name).concat(["Alaska","Hawaii"]).sort();const cw=82,gap=8,x0=72+(936-(10*cw+9*gap))/2;
+ all.forEach((n,i)=>{const c=i%10,r=Math.floor(i/10),x=x0+c*(cw+gap),y=1100+r*(cw-6+gap),v=VIS.has(n);gg.append("rect").attr("x",x).attr("y",y).attr("width",cw).attr("height",cw-6).attr("rx",10).attr("fill",v?RG[REG(n)]:"#ece7e1");
+  T(gg,x+cw/2,y+(cw-6)/2+7,AB[n]||(n==="Alaska"?"AK":"HI"),{f:MONO,w:600,s:20,c:v?"#ffffff":"#9aa3ad",a:"middle"});});
+ 
+ const jg=win(1560,290,"stats.json");
+ const L=[["{"],["  ",["\"visited\"",BLUE],": ",[`${N}`,GRN[3]],","],["  ",["\"remaining\"",BLUE],": ",[`${50-N}`,GRN[3]],","],["  ",["\"regions\"",BLUE],": ",[`${ST.ra}`,GRN[3]],","],["  ",["\"coasts\"",BLUE],": [",...ST.coasts.flatMap((c,i)=>i?[", ",[`"${c}"`,ORG]]:[[`"${c}"`,ORG]]),"],"],["  ",["\"next_stop\"",BLUE],": ",["null",PURP]],["}"]];
+ L.forEach((parts,i)=>{const tx=jg.append("text").attr("x",104).attr("y",1640+i*30).attr("font-family",MONO).attr("font-size",21).attr("fill",INK).attr("xml:space","preserve");parts.forEach(p=>{if(Array.isArray(p))tx.append("tspan").attr("fill",p[1]).text(p[0]);else tx.append("tspan").text(p);});});
+ T(jg,980,1830,"✓ 0 errors",{f:MONO,w:600,s:16,c:GRN[2],a:"end"});
+}
+
+/* 57. MUSIC — the album */
+function v57(){const ST=STATS();
+ const BG="#f8f2ec",INK="#2c2531",MUT="#857a88";
+ aura({base:BG,blobs:[[90,240,300,"#f8d6df"],[1010,420,320,"#fbe3cb"],[980,1350,320,"#e6e0f5"],[80,1500,300,"#dcebf0"],[540,1900,300,"#f6d9e1"]]});[[724,150,30],[800,226,24],[872,138,34],[948,214,26],[1004,150,22],[690,236,20]].forEach(([x,y,s],i)=>T(svg,x,y,["♪","♫","♩"][i%3],{f:PLEX,w:700,s,c:["#d9728a","#eea27f","#a995dc"][i%3],op:.6}));
+ const SL=lg(["#d9728a","#eea27f","#a995dc"],1,1);const R={West:"#8cbfa6",Southwest:"#eea27f",Midwest:"#efcd78",Southeast:"#e9a0b4",Northeast:"#9fb3e6"};
+ // equalizer + eyebrow
+ [14,26,18,30,12].forEach((h,i)=>svg.append("rect").attr("x",72+i*9).attr("y",200-h).attr("width",6).attr("height",h).attr("rx",3).attr("fill","#d9728a"));
+ T(svg,130,198,"NOW PLAYING  ·  THE ROAD TRIP SESSIONS",{f:MONO,w:600,s:19,ls:3,c:MUT});
+ // vinyl behind sleeve
+ const vx=760,vy=560,vr=262;const vg=svg.append("g");vg.append("circle").attr("cx",vx).attr("cy",vy).attr("r",vr).attr("fill","#2e2733");
+ for(let r2=vr-14;r2>110;r2-=9)vg.append("circle").attr("cx",vx).attr("cy",vy).attr("r",r2).attr("fill","none").attr("stroke","#40384a").attr("stroke-width",1.2);
+ vg.append("path").attr("d",`M${vx-vr*.7},${vy-vr*.55} A${vr*.9},${vr*.9} 0 0 1 ${vx+vr*.2},${vy-vr*.85}`).attr("stroke","#ffffff").attr("stroke-opacity",.12).attr("stroke-width",18).attr("fill","none");
+ vg.append("circle").attr("cx",vx).attr("cy",vy).attr("r",104).attr("fill","#fff3e6");
+ const lm=map(vg,[vx-84,vy-52,168,104],{fill:(n,v)=>v?R[REG(n)]:"#ead9cc",stroke:"#fff3e6",sw:.6});
+ vg.append("circle").attr("cx",vx).attr("cy",vy).attr("r",7).attr("fill",BG).attr("stroke",INK).attr("stroke-width",1.5);
+ // sleeve
+ const sg=svg.append("g").attr("transform","rotate(-3,360,560)");sg.append("rect").attr("x",80).attr("y",280).attr("width",560).attr("height",560).attr("rx",8).attr("fill",SL).attr("filter",shadow(0,18,24,"#2c2531",.25));
+ sg.append("rect").attr("x",80).attr("y",280).attr("width",560).attr("height",560).attr("rx",8).attr("fill",halftone("#ffffff",1.6,9,.18));
+ const sm=map(sg,[112,330,496,300],{fill:(n,v)=>v?"#ffffff":"rgba(255,255,255,.22)",stroke:(n,v)=>v?"rgba(255,255,255,.0)":"rgba(255,255,255,.35)",sw:.8});
+ {const [l1,l2]=splitTitle(CONFIG.title.toUpperCase());fitT(T(sg,112,720,l1,{f:"Anton",s:66,ls:2,c:"#ffffff"}),480,66);fitT(T(sg,112,792,l2,{f:"Anton",s:66,ls:2,c:"#ffffff"}),400,66);}
+ sg.append("rect").attr("x",520).attr("y",300).attr("width",100).attr("height",40).attr("rx",6).attr("fill","#ffffff");T(sg,570,327,`${N} TRACKS`,{f:MONO,w:600,s:15,c:INK,a:"middle"});
+ sg.append("rect").attr("x",560).attr("y",788).attr("width",62).attr("height",34).attr("rx",4).attr("fill","none").attr("stroke","#fff").attr("stroke-width",2);T(sg,591,811,"USA",{f:MONO,w:700,s:15,c:"#fff",a:"middle"});
+ // player
+ T(svg,70,938,CONFIG.title,{f:"Playfair Display",i:true,w:500,s:62,c:INK});T(svg,72,980,`${CONFIG.name}  ·  Album  ·  ${N} tracks  ·  ${CONFIG.since}`,{f:PLEX,s:24,c:MUT});
+ heart(svg,990,940,2.2,"#d9728a");
+ const py=1030;svg.append("rect").attr("x",72).attr("y",py).attr("width",936).attr("height",8).attr("rx",4).attr("fill","#e4d9cf");svg.append("rect").attr("x",72).attr("y",py).attr("width",936*N/50).attr("height",8).attr("rx",4).attr("fill",lg(["#d9728a","#eea27f"],1,0));
+ svg.append("circle").attr("cx",72+936*N/50).attr("cy",py+4).attr("r",13).attr("fill","#ffffff").attr("stroke","#d9728a").attr("stroke-width",4);
+ T(svg,72,py+44,`${N} states`,{f:MONO,s:18,c:MUT});T(svg,1008,py+44,"50 states",{f:MONO,s:18,c:MUT,a:"end"});
+ const cy=1124;const ctr=svg.append("g");
+ ctr.append("path").attr("d",`M300,${cy-16} L276,${cy} L300,${cy+16}Z M276,${cy-16} L252,${cy} L276,${cy+16}Z`).attr("fill",INK);
+ ctr.append("circle").attr("cx",540).attr("cy",cy).attr("r",46).attr("fill",lg(["#d9728a","#eea27f"],1,1));ctr.append("path").attr("d",`M528,${cy-18} L556,${cy} L528,${cy+18}Z`).attr("fill","#fff");
+ ctr.append("path").attr("d",`M780,${cy-16} L804,${cy} L780,${cy+16}Z M804,${cy-16} L828,${cy} L804,${cy+16}Z`).attr("fill",INK);
+ T(ctr,140,cy+8,"⤨",{f:PLEX,w:700,s:30,c:MUT,a:"middle"});T(ctr,940,cy+8,"↻",{f:PLEX,w:700,s:30,c:"#d9728a",a:"middle"});
+ // tracklist
+ {let gx=72;T(svg,72,1212,"GENRES",{f:MONO,w:600,s:15,ls:3,c:MUT});gx=176;REGS.forEach(k=>{const lab=`${k} ${RVIS[k]||0}`;const meas=svg.append("text").attr("font-family",SANS).attr("font-weight",700).attr("font-size",17).attr("opacity",0).text(lab);const w=meas.node().getComputedTextLength()+40;meas.remove();svg.append("rect").attr("x",gx).attr("y",1188).attr("width",w).attr("height",36).attr("rx",18).attr("fill","#ffffff").attr("fill-opacity",.75).attr("stroke",R[k]).attr("stroke-width",2);svg.append("circle").attr("cx",gx+17).attr("cy",1206).attr("r",6).attr("fill",R[k]);T(svg,gx+29,1212,lab,{f:SANS,w:700,s:17,c:INK});gx+=w+8;});}
+ const tg=svg.append("g");cardBox(tg,72,1250,936,580,{r:24,fill:"#fffaf4",stroke:"#eadfd3",sh:shadow(0,10,20,"#2c2531",.08)});
+ const HALF=Math.ceil(N/2),A=ALPHA.slice(0,HALF),Bs=ALPHA.slice(HALF),TRH=Math.min(43,473/Math.max(HALF,1));
+ [["SIDE A",A,0],["SIDE B",Bs,HALF]].forEach(([lab,arr,off],c)=>{const x=110+c*460;T(tg,x,1294,lab,{f:MONO,w:600,s:18,ls:4,c:"#d9728a"});
+  arr.forEach((n,i)=>{const y=1340+i*TRH;T(tg,x,y,String(i+1+off).padStart(2,"0"),{f:MONO,s:18,c:MUT});tg.append("circle").attr("cx",x+52).attr("cy",y-7).attr("r",6).attr("fill",R[REG(n)]);T(tg,x+68,y,n,{f:SANS,w:700,s:25,c:INK});});});
+ tg.append("line").attr("x1",540).attr("x2",540).attr("y1",1272).attr("y2",1806).attr("stroke","#eadfd3");
+ T(svg,540,1862,"℗ Road Trip Records  ·  every state since day one",{f:MONO,s:15,c:MUT,a:"middle"});
+}
+
+
+/* 58. Travel Wrapped — MBA x TECH x MUSIC */
+function v58(){const ST=STATS();
+ const INK="#2c2531",MUT="#857a88",R={West:"#7fb79c",Southwest:"#eea27f",Midwest:"#efcd78",Southeast:"#e9a0b4",Northeast:"#9fb3e6"};
+ aura({base:"#f8f2ec",blobs:[[120,200,330,"#f8d3dc"],[980,240,300,"#fbe1c6"],[960,1000,340,"#e2dbf4"],[100,1050,320,"#d7e9ef"],[560,1750,380,"#f7d6df"],[1000,1820,240,"#f8eccb"]]});
+ const sh=shadow(0,12,22,INK,.10),glass=(g,x,y,w,h,r=26)=>g.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",r).attr("fill","#ffffff").attr("fill-opacity",.72).attr("stroke","#ffffff").attr("stroke-width",2).attr("filter",sh);
+ T(svg,72,168,"me@usa:~$ travel --since-day-one",{f:MONO,w:500,s:21,c:MUT});
+ T(svg,64,272,"Travel Wrapped",{f:"Playfair Display",i:true,w:500,s:118,c:INK});
+ T(svg,72,316,`Every state ${CONFIG.since}`,{f:PLEX,s:25,c:MUT});
+ // now playing (music) — same card, shifted up
+ const np=svg.append("g").attr("transform","translate(0,-32)");glass(np,72,380,936,190);
+ np.append("rect").attr("x",96).attr("y",404).attr("width",142).attr("height",142).attr("rx",14).attr("fill",lg(["#d9728a","#eea27f","#a995dc"],1,1));
+ map(np,[106,440,122,72],{fill:(n,v)=>v?"#ffffff":"rgba(255,255,255,.25)",stroke:"rgba(0,0,0,0)",sw:0});
+ [10,18,13,22,9].forEach((h,i)=>np.append("rect").attr("x",266+i*7).attr("y",432-h).attr("width",4.5).attr("height",h).attr("rx",2).attr("fill","#d9728a"));
+ T(np,310,431,"NOW PLAYING",{f:MONO,w:600,s:15,ls:3,c:"#d9728a"});
+ fitT(T(np,266,480,CONFIG.title,{f:"Playfair Display",i:true,w:500,s:40,c:INK}),600,40);T(np,266,510,`${CONFIG.name}  ·  ${N} tracks  ·  ${CONFIG.sinceShort}`,{f:PLEX,s:19,c:MUT});
+ np.append("rect").attr("x",266).attr("y",528).attr("width",640).attr("height",6).attr("rx",3).attr("fill","#eadfe6");np.append("rect").attr("x",266).attr("y",528).attr("width",640*N/50).attr("height",6).attr("rx",3).attr("fill",lg(["#d9728a","#eea27f"],1,0));
+ np.append("circle").attr("cx",266+640*N/50).attr("cy",531).attr("r",9).attr("fill","#fff").attr("stroke","#d9728a").attr("stroke-width",3);
+ T(np,266,558,`${N}`,{f:MONO,s:15,c:MUT});T(np,906,558,"50",{f:MONO,s:15,c:MUT,a:"end"});
+ np.append("circle").attr("cx",960).attr("cy",470).attr("r",30).attr("fill",lg(["#d9728a","#eea27f"],1,1));np.append("path").attr("d","M952,456 L974,470 L952,484Z").attr("fill","#fff");
+ // KPIs (MBA) — slimmer
+ const KY=562;
+ [[`${Math.round(N/50*100)}%`,"COVERAGE","of the US"],[`${ST.ra}/5`,"REGIONS",ST.ra===5?"all active":`${5-ST.ra} to go`],[`${Math.round(ST.tp*100)}%`,"TOP REGION",ST.top]].forEach(([v,k,s],i)=>{const x=72+i*316,g=svg.append("g");glass(g,x,KY,304,124,22);
+  T(g,x+24,KY+34,k,{f:MONO,w:600,s:14,ls:2,c:MUT});T(g,x+22,KY+88,v,{f:SANS,w:700,s:50,c:i===2?R[ST.top]:INK});T(g,x+24,KY+112,s,{f:PLEX,s:16,c:MUT});});
+ // map window (tech)
+ const MY=710,MH=452;const mw=svg.append("g");glass(mw,72,MY,936,MH,22);
+ mw.append("path").attr("d",`M72,${MY+22} a22,22 0 0 1 22,-22 h892 a22,22 0 0 1 22,22 v24 h-936Z`).attr("fill","#ffffff").attr("fill-opacity",.6);
+ ["#ff5f57","#febc2e","#28c840"].forEach((c,i)=>mw.append("circle").attr("cx",100+i*22).attr("cy",MY+24).attr("r",7).attr("fill",c));
+ T(mw,540,MY+30,"map.render(visited)",{f:MONO,w:500,s:16,c:MUT,a:"middle"});
+ const m=map(mw,[100,MY+62,880,MH-84],{fill:(n,v)=>v?R[REG(n)]:"rgba(255,255,255,.9)",stroke:(n,v)=>v?"#ffffff":"#e7dbe3",sw:(n,v)=>v?2:1.1});
+ allLabels(m,"#ffffff","#b8aab6",SANS,13);
+ // row A: region bars (MBA) + state grid (tech)
+ const AY=1186,AH=372;
+ const L=svg.append("g");glass(L,72,AY,452,AH,22);T(L,98,AY+46,"Coverage by region",{f:"Playfair Display",i:true,w:500,s:28,c:INK});
+ REGS.map(k=>[k,RVIS[k]||0,RTOT[k]]).sort((a,b)=>b[1]/b[2]-a[1]/a[2]).forEach(([k,v,tt],i)=>{const y=AY+82+i*56;T(L,98,y+4,k,{f:PLEX,w:600,s:18,c:INK});T(L,498,y+4,`${v}/${tt}`,{f:MONO,w:600,s:16,c:MUT,a:"end"});
+  L.append("rect").attr("x",98).attr("y",y+14).attr("width",400).attr("height",16).attr("rx",8).attr("fill","#f0e8ee");L.append("rect").attr("x",98).attr("y",y+14).attr("width",400*v/tt).attr("height",16).attr("rx",8).attr("fill",R[k]);});
+ const G=svg.append("g");glass(G,556,AY,452,AH,22);T(G,582,AY+46,"state_grid",{f:MONO,w:600,s:22,c:INK});T(G,982,AY+44,`${N}/50`,{f:MONO,w:600,s:17,c:"#d9728a",a:"end"});
+ const all=STATES.map(d=>d.properties.name).concat(["Alaska","Hawaii"]).sort(),cw=36,ch=48,gp=5,gx0=556+(452-(10*cw+9*gp))/2;
+ all.forEach((n,i)=>{const c=i%10,r=Math.floor(i/10),x=gx0+c*(cw+gp),y=AY+74+r*(ch+8),v=VIS.has(n);G.append("rect").attr("x",x).attr("y",y).attr("width",cw).attr("height",ch).attr("rx",8).attr("fill",v?R[REG(n)]:"#f0e8ee");
+  T(G,x+cw/2,y+ch/2+5,AB[n]||(n==="Alaska"?"AK":"HI"),{f:MONO,w:600,s:13,c:v?"#ffffff":"#b3a6b0",a:"middle"});});
+ // row B: full state names
+ const BY=1582,BH=250;const Lb=svg.append("g");glass(Lb,72,BY,936,BH,22);
+ T(Lb,98,BY+46,"States visited",{f:"Playfair Display",i:true,w:500,s:28,c:INK});T(Lb,982,BY+44,`${N} of 50`,{f:MONO,w:600,s:17,c:"#d9728a",a:"end"});
+ const per=Math.max(6,Math.ceil(N/4)),rh=Math.min(28,168/per);ALPHA.forEach((n,i)=>{const c=Math.floor(i/per),r=i%per,x=100+c*226,y=BY+86+r*rh;Lb.append("circle").attr("cx",x+6).attr("cy",y-6).attr("r",6).attr("fill",R[REG(n)]);T(Lb,x+20,y,n,{f:PLEX,w:500,s:n.length>12?16.5:18,c:INK});});
+ // badges (tech)
+ let bx=0;const B=[["build","passing","#7fb79c"],["coverage",`${Math.round(N/50*100)}%`,"#a995dc"],["regions",`${ST.ra}/5`,"#8ea3dc"],["next_stop","TBD","#eea27f"]];
+ const meas=svg.append("text").attr("font-family",MONO).attr("font-size",16).attr("font-weight",600).attr("opacity",0);const ws=B.map(([k,v])=>{meas.text(k);const a1=meas.node().getComputedTextLength()+20;meas.text(v);return [a1,meas.node().getComputedTextLength()+20];});meas.remove();
+ bx=540-(ws.reduce((s,[a1,a2])=>s+a1+a2+10,0)-10)/2;const BYB=1852;
+ B.forEach(([k,v,c],i)=>{const [w1,w2]=ws[i];svg.append("rect").attr("x",bx).attr("y",BYB).attr("width",w1+w2).attr("height",32).attr("rx",6).attr("fill","#5d5362");svg.append("path").attr("d",`M${bx+w1},${BYB} h${w2-6} a6,6 0 0 1 6,6 v20 a6,6 0 0 1 -6,6 h${-(w2-6)}Z`).attr("fill",c);
+  T(svg,bx+10,BYB+22,k,{f:MONO,w:600,s:16,c:"#fff"});T(svg,bx+w1+10,BYB+22,v,{f:MONO,w:600,s:16,c:"#fff"});bx+=w1+w2+10;});
+}
+const FN=[null,null,null,null,null,null,null,null,null,null,null,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22,v23,v24,v25,v26,v27,v28,v29,v30,v31,v32,v33,v34,v35,v36,v37,v38,v39,v40,v41,v42,v43,v44,v45,v46,v47,v48,v49,v50,v51,v52,v53,v54,v55,v56,v57,v58];
+const PRE=["400 20px \"IBM Plex Mono\"","500 20px \"IBM Plex Mono\"","600 20px \"IBM Plex Mono\"","400 20px \"IBM Plex Sans\"","600 20px \"IBM Plex Sans\"","700 20px \"IBM Plex Sans\"","400 20px \"DM Sans\"","500 20px \"DM Sans\"","700 20px \"DM Sans\"","italic 500 20px \"Playfair Display\"","500 20px \"Playfair Display\"","600 20px \"Playfair Display\"","900 20px Fraunces","20px Anton","600 20px \"Big Shoulders Display\"","800 20px \"Big Shoulders Display\"","600 20px Cinzel","20px Limelight"];
+const FEATURED=[[58,"travel-wrapped"],[57,"music-album"],[55,"mba-market-coverage"],[56,"tech-dashboard"],[51,"luxe-sky"],[52,"luxe-cream"],[53,"pop-pink"],[54,"pop-sunset"],[48,"sky-skyline-top"],[49,"lavender-skyline-top"],[47,"sage"],[50,"terracotta"],[45,"travel-map-cream"],[46,"places-blush"]];
+if(!/v=\d+/.test(location.hash)){
+ document.documentElement.style.cssText="width:auto;height:auto;overflow:auto";document.body.style.cssText="margin:0;width:auto;height:auto;overflow:auto;background:#f4efe8;font-family:system-ui,sans-serif;padding:32px";
+ document.getElementById("s").remove();
+ const h=document.createElement("div");h.innerHTML=`<h1 style="font:600 28px system-ui;margin:0 0 6px">US Travel Story — gallery</h1><p style="margin:0 0 24px;color:#6b6070">Edit <code>my-travel.js</code>, refresh, then click a design to open it full size (1080×1920). Use <code>scripts/render.sh</code> to export PNGs.</p>`;document.body.appendChild(h);
+ const g=document.createElement("div");g.style.cssText="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px";document.body.appendChild(g);
+ FEATURED.forEach(([v,n])=>{const a=document.createElement("a");a.href="#v="+v;a.onclick=()=>setTimeout(()=>location.reload(),0);a.style.cssText="text-decoration:none;color:#2c2531;font:500 14px system-ui";
+  a.innerHTML=`<div style="width:216px;height:384px;overflow:hidden;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.12);background:#fff"><iframe src="index.html#v=${v}" style="width:1080px;height:1920px;border:0;transform:scale(.2);transform-origin:0 0;pointer-events:none" loading="lazy"></iframe></div><div style="margin-top:8px">${v} · ${n}</div>`;g.appendChild(a);});
+}else Promise.all(PRE.map(f=>document.fonts.load(f).catch(()=>null))).then(()=>document.fonts.ready).then(()=>FN[V]());
+</script></body></html>
