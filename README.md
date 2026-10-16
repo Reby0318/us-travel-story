@@ -1,11 +1,11 @@
 # US Travel Story 🗺️✨
 
 Turn the US states you've visited into an aesthetic **Instagram Story** (1080 × 1920 px, 9:16).
-14 ready-made designs: soft editorial posters, a "Travel Wrapped" recap, a vinyl album, an MBA-style slide and a developer dashboard. They all come from one small file with your own states and cities.
+18 ready-made designs: a dark luxury collection (noir and gold, midnight, emerald, bordeaux), soft editorial posters, a "Travel Wrapped" recap, a vinyl album, an MBA-style slide and a developer dashboard. They all come from one small file with your own states and cities.
 
 ![Gallery](examples/gallery.jpg)
 
-📘 **[Download the PDF lookbook](US-Travel-Story-Lookbook.pdf)**: all 14 designs at full size, with recommendations.
+📘 **[Download the PDF lookbook](US-Travel-Story-Lookbook.pdf)**: all 18 designs at full size, with recommendations.
 
 ## ✨ No code? Use the online maker
 
@@ -71,14 +71,17 @@ Everything comes from your `states` list, so nothing needs to be typed twice:
 
 | # | Name | Vibe |
 |---|------|------|
-| 58 | travel-wrapped | Year-in-review recap mixing music, MBA and tech cards |
+| 59 | noir-gold | **Most luxurious.** Black, gold-foil states, gold line-art skyline |
+| 58 / 63 | travel-wrapped / wrapped-noir | Recap dashboard (now playing, KPIs, map window, state grid), light or dark |
+| 60 | midnight | Navy with champagne and muted jewel-tone regions |
+| 61 | emerald-velvet | Deep emerald and gold |
+| 62 | bordeaux | Wine and rose gold |
+| 64 | ivory-gold | Quiet luxury: ivory with champagne-gold states |
+| 51 / 52 | luxe-sky / luxe-cream | Gold frame, linen texture, line-art skyline |
 | 57 | music-album | Vinyl, album sleeve, player, Side A / B tracklist |
 | 55 | mba-market-coverage | Consulting slide: KPI cards, annotated map, bar chart |
 | 56 | tech-dashboard | Terminal prompt, badges, state grid, `stats.json` |
-| 51 / 52 | luxe-sky / luxe-cream | Gold frame, linen texture, line-art skyline |
-| 53 / 54 | pop-pink / pop-sunset | Colorful Instagram style with sticker title |
-| 48 / 49 | sky / lavender, skyline on top | Soft editorial |
-| 47 / 50 | sage / terracotta | Soft editorial |
+| 48 / 49 / 47 / 50 | sky / lavender / sage / terracotta | Soft editorial |
 | 45 / 46 | travel-map-cream / places-blush | The originals |
 
 ### City skylines

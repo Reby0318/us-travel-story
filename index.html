@@ -161,7 +161,7 @@ const LANDMARKS=["Seattle","Portland","San Francisco","Las Vegas","Albuquerque",
 const MAXC=12;
 const TITLES=["States I've Been To","Where I've Been","Places I've Been","Coast to Coast","My US Travel Map"];
 const SINCE=[["since I moved to the US","since day one","Since I moved to the US"],["so far","so far","So far"],["year","","Since a year…"]];
-const DESIGNS=[[58,"Travel Wrapped","Top pick"],[51,"Luxe Sky","Luxury"],[57,"Album"],[55,"MBA Slide"],[56,"Tech"],[52,"Luxe Cream"],[53,"Pop Pink"],[54,"Pop Sunset"],[48,"Sky"],[49,"Lavender"],[47,"Sage"],[50,"Terracotta"],[45,"Cream"],[46,"Blush"]];
+const DESIGNS=[[59,"Noir & Gold","Luxury"],[58,"Travel Wrapped","Top pick"],[63,"Wrapped Noir","Dark"],[60,"Midnight","Dark"],[61,"Emerald Velvet","Dark"],[62,"Bordeaux","Dark"],[64,"Ivory Gold"],[51,"Luxe Sky"],[52,"Luxe Cream"],[57,"Album"],[55,"MBA Slide"],[56,"Tech"],[48,"Sky"],[49,"Lavender"],[47,"Sage"],[50,"Terracotta"],[45,"Cream"],[46,"Blush"]];
 
 
 /* ---- city helpers: cities always belong to a visited state ---- */
@@ -172,7 +172,7 @@ function sortCities(){S.cities.sort((a,b)=>lonOf(a)-lonOf(b));}
 function autoCity(s){if(S.cities.some(x=>x.s===s)||S.cities.length>=MAXC)return;const L=DB[s]||[];if(!L.length)return;
  const pick=L.find(([n])=>LANDMARKS.includes(n))||L[0];S.cities.push({c:pick[0],s});sortCities();}
 function dropCities(s){S.cities=S.cities.filter(x=>x.s!==s);}
-const S={states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:58};
+const S={states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:59};
 // restore from a shared link or the last visit
 try{const h=new URLSearchParams(location.hash.slice(1)).get("a");const saved=h?JSON.parse(decodeURIComponent(escape(atob(h)))):JSON.parse(localStorage.getItem("ustravel")||"null");
  if(saved){Object.assign(S,saved);S.states=new Set(saved.states||[]);S.cities=(saved.cities||[]).map(c=>typeof c==="string"?{c,s:stateOf(c,S.states)}:c).filter(x=>x.s&&S.states.has(x.s));}
@@ -266,6 +266,7 @@ $("share").onclick=async()=>{const url=location.href.split("#")[0]+"#a="+enc({..
 $("toPreview").onclick=()=>$("preview").scrollIntoView({behavior:"smooth"});
 
 if("IntersectionObserver" in window)new IntersectionObserver(es=>{document.querySelector(".mobilebar").style.display=es[0].isIntersecting?"none":"";}).observe($("preview"));
+if(!DESIGNS.some(d=>d[0]===S.design))S.design=59;
 drawStates();drawCities();drawTitles();drawSince();drawDesigns();update();
 </script>
 </body>
