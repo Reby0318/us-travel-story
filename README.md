@@ -1,11 +1,11 @@
 # US Travel Story 🗺️✨
 
 Turn the US states you've visited into an aesthetic **Instagram Story** (1080 × 1920 px, 9:16).
-25 ready-made designs: a profession collection (doctor, physician, CEO, teacher, PM, compiler engineer, stylist), a dark luxury collection (noir and gold, midnight, emerald, bordeaux), soft editorial posters, a "Travel Wrapped" recap, a vinyl album, an MBA-style slide and a developer dashboard. They all come from one small file with your own states and cities.
+18 ready-made designs: a new **Sticker Atlas** with hand-drawn state stickers, a Travel Wrapped summary, a dark luxury collection, a profession collection (doctor, physician, CEO, teacher, PM, compiler engineer, stylist), a vinyl album, an MBA slide and a developer dashboard.
 
 ![Gallery](examples/gallery.jpg)
 
-📘 **[Download the PDF lookbook](US-Travel-Story-Lookbook.pdf)**: all 25 designs at full size, with recommendations.
+📘 **[Download the PDF lookbook](US-Travel-Story-Lookbook.pdf)**: all 18 designs at full size, with recommendations.
 
 ## ✨ No code? Use the online maker
 
@@ -71,13 +71,10 @@ Everything comes from your `states` list, so nothing needs to be typed twice:
 
 | # | Name | Vibe |
 |---|------|------|
-| 59 | noir-gold | **Most luxurious.** Black, gold-foil states, gold line-art skyline |
-| 58 / 63 | travel-wrapped / wrapped-noir | Recap dashboard (now playing, KPIs, map window, state grid), light or dark |
-| 60 | midnight | Navy with champagne and muted jewel-tone regions |
-| 61 | emerald-velvet | Deep emerald and gold |
-| 62 | bordeaux | Wine and rose gold |
-| 64 | ivory-gold | Quiet luxury: ivory with champagne-gold states |
-| 51 / 52 | luxe-sky / luxe-cream | Gold frame, linen texture, line-art skyline |
+| 72 / 73 | sticker-atlas / sticker-atlas-night | **New.** Modern Americana: bold condensed type, hand-drawn state stickers around the map, green highway signs for your cities |
+| 58 / 63 | travel-wrapped / wrapped-noir | Summary dashboard (now playing, KPIs, map window, state grid) with stickers in the corners, light or dark |
+| 59 | noir-gold | Black, gold-foil states, gold line-art skyline |
+| 60 / 61 / 62 | midnight / emerald-velvet / bordeaux | Dark luxury in navy, emerald or wine |
 | 65 | doctor | *Travel Health Record*: heartbeat line, vitals, scan, diagnosis and a signed prescription |
 | 66 | physician | Journal article with abstract, Figure 1, Table 1 and an appendix |
 | 67 | ceo | Black-and-gold *Annual Report*: markets entered, regional performance, CEO letter |
@@ -88,8 +85,12 @@ Everything comes from your `states` list, so nothing needs to be typed twice:
 | 57 | music-album | Vinyl, album sleeve, player, Side A / B tracklist |
 | 55 | mba-market-coverage | Consulting slide: KPI cards, annotated map, bar chart |
 | 56 | tech-dashboard | Terminal prompt, badges, state grid, `stats.json` |
-| 48 / 49 / 47 / 50 | sky / lavender / sage / terracotta | Soft editorial |
-| 45 / 46 | travel-map-cream / places-blush | The originals |
+
+**Archived** (still render with `#v=` and `render.sh`, but no longer in the maker): 45–52 soft editorial and gold-frame designs, 64 ivory-gold.
+
+### State stickers
+
+Every state has a hand-drawn sticker (`generator/stickers.js`): a bison for Wyoming, the Statue of Liberty for New York, a saguaro for Arizona, a guitar for Tennessee, a lobster for Maine and so on. Designs show the stickers for **the states you visited**, placed around the map (never on it), most iconic first. Open `generator/index.html#v=999` to see all 50.
 
 ### City skylines
 

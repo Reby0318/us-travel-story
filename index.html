@@ -6,75 +6,81 @@
 <title>Make Your US Travel Story</title>
 <meta name="description" content="Tap the states you've visited and download an aesthetic 1080×1920 Instagram Story. No coding needed.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#f8f2ec;--card:#fffdfa;--ink:#2c2531;--muted:#857a88;--line:#ecdfd6;--accent:#d9728a;--accent2:#eea27f;
- --West:#7fb79c;--Southwest:#eea27f;--Midwest:#efcd78;--Southeast:#e9a0b4;--Northeast:#9fb3e6}
+:root{--paper:#eef1f5;--card:#ffffff;--ink:#17223a;--muted:#5d6a82;--line:#cfd6e1;--accent:#2b4c8c;--amber:#c9761a;--amber-text:#9a5a10;
+ --West:#2f8f8a;--Southwest:#d08a2c;--Midwest:#6b85c9;--Southeast:#c4553d;--Northeast:#2b4c8c;--disp:"Big Shoulders Display","Arial Narrow",sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 "DM Sans",system-ui,sans-serif;
- background-image:radial-gradient(circle at 10% 0%,#f8d6df 0,transparent 40%),radial-gradient(circle at 100% 20%,#fbe3cb 0,transparent 35%),radial-gradient(circle at 90% 100%,#e6e0f5 0,transparent 40%);background-attachment:fixed}
-.wrap{max-width:1180px;margin:0 auto;padding:32px 16px 120px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:32px;align-items:start}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 "IBM Plex Sans",system-ui,sans-serif;
+ background-image:radial-gradient(var(--line) 1px,transparent 1.2px);background-size:28px 28px}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 16px 120px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:28px;align-items:start}
 header{grid-column:1/-1}
-h1{font:italic 500 clamp(40px,7vw,68px)/1.02 "Playfair Display",serif;margin:0 0 8px}
-.sub{color:var(--muted);margin:0;font-size:18px}
-.q{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px 22px 20px;margin-bottom:16px;box-shadow:0 8px 24px rgba(44,37,49,.05)}
-.q h2{font-size:19px;margin:0 0 4px;display:flex;gap:12px;align-items:center}
-.n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;font-size:14px;flex:none}
+.eyebrow{font:500 13px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+h1{font:800 clamp(46px,8vw,86px)/.9 var(--disp);text-transform:uppercase;margin:0 0 12px;letter-spacing:.01em}
+h1 span{color:var(--amber)}
+.sub{color:var(--muted);margin:0;font-size:17px;max-width:70ch}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:14px}
+.q h2{font:700 26px/1.1 var(--disp);text-transform:uppercase;letter-spacing:.02em;margin:0 0 6px;display:flex;gap:12px;align-items:center}
+.n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--ink);color:#fff;font:600 14px var(--mono);flex:none}
 .hint{color:var(--muted);font-size:14px;margin:0 0 14px 42px}
 .body{margin-left:42px}
 @media(max-width:600px){.hint,.body{margin-left:0}}
-input[type=text]{width:100%;font:inherit;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);outline:none}
-input[type=text]:focus{border-color:var(--accent)}
-.pills{display:flex;flex-wrap:wrap;gap:8px}
-.pill{font:500 15px "DM Sans",sans-serif;border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:9px 15px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;min-height:42px}
+input[type=text]{width:100%;font:inherit;padding:11px 13px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);outline:none}
+input[type=text]:focus,select:focus{border-color:var(--accent)}
+.pills{display:flex;flex-wrap:wrap;gap:7px}
+.pill{font:500 15px "IBM Plex Sans",sans-serif;border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;min-height:40px}
+.pill:hover{border-color:#9aa6ba}
 .pill[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
-.pill .dot{width:10px;height:10px;border-radius:50%}
-.pill:focus-visible,.design:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.region{margin-bottom:16px}
+.pill .dot{width:10px;height:10px;border-radius:3px}
+.pill:focus-visible,.design:focus-visible,.btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.region{margin-bottom:14px}
 .region-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
-.region-h b{font-size:15px;display:flex;align-items:center;gap:8px}
-.region-h b i{width:12px;height:12px;border-radius:4px;display:inline-block}
-.link{background:none;border:0;color:var(--accent);font:500 14px "DM Sans";cursor:pointer;padding:4px}
+.region-h b{font:600 15px "IBM Plex Sans";display:flex;align-items:center;gap:8px}
+.region-h b i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.link{background:none;border:0;color:var(--accent);font:500 14px "IBM Plex Sans";cursor:pointer;padding:4px}
 .st[aria-pressed=true]{color:#fff}
-.count{font-weight:700;color:var(--accent)}
+.count{font-weight:700;color:var(--amber-text);font-family:var(--mono)}
 .row{display:flex;gap:8px}
 .row input{flex:1}
-.btn{font:700 16px "DM Sans";border:0;border-radius:14px;padding:12px 18px;cursor:pointer;background:var(--ink);color:#fff}
-.btn.big{width:100%;padding:16px;font-size:18px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.btn{font:700 16px "IBM Plex Sans";border:0;border-radius:8px;padding:12px 18px;cursor:pointer;background:var(--ink);color:#fff}
+.btn.big{width:100%;padding:16px;font:800 24px/1 var(--disp);letter-spacing:.04em;text-transform:uppercase;background:var(--ink)}
+.btn.big:hover{background:var(--accent)}
 .btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
 .btn:disabled{opacity:.6;cursor:default}
 .chosen{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.chip{background:var(--ink);color:#fff;border-radius:999px;padding:7px 8px 7px 14px;font-size:14px;display:inline-flex;align-items:center;gap:6px}
-.chip button{background:rgba(255,255,255,.2);border:0;color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:14px;line-height:1}
+.chip{background:var(--ink);color:#fff;border-radius:8px;padding:6px 8px 6px 12px;font-size:14px;display:inline-flex;align-items:center;gap:6px}
+.chip button{background:rgba(255,255,255,.2);border:0;color:#fff;width:22px;height:22px;border-radius:5px;cursor:pointer;font-size:14px;line-height:1}
 .designs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
-.design{border:2px solid transparent;border-radius:14px;padding:4px;background:none;cursor:pointer;text-align:center;font:500 13px "DM Sans";color:var(--ink)}
-.design img{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:10px;display:block;margin-bottom:6px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
-.design[aria-pressed=true]{border-color:var(--accent)}
-.badge{display:table;margin:3px auto 0;font-size:11px;font-weight:700;color:#fff;background:var(--accent);border-radius:6px;padding:1px 6px}
+.design{border:2px solid transparent;border-radius:10px;padding:4px;background:none;cursor:pointer;text-align:center;font:500 13px "IBM Plex Sans";color:var(--ink)}
+.design img{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:6px;display:block;margin-bottom:6px;box-shadow:0 3px 10px rgba(23,34,58,.12)}
+.design[aria-pressed=true]{border-color:var(--amber)}
+.badge{display:table;margin:3px auto 0;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--ink);border-radius:4px;padding:2px 6px}
+.badge.new{background:var(--amber)}
 aside{position:sticky;top:20px}
-.frame{width:360px;height:640px;border-radius:22px;overflow:hidden;background:#eee;box-shadow:0 16px 40px rgba(44,37,49,.18);position:relative;margin:0 auto}
+.frame{width:360px;height:640px;border-radius:14px;overflow:hidden;background:#dfe4ec;box-shadow:0 14px 34px rgba(23,34,58,.18);position:relative;margin:0 auto}
 .frame iframe{width:1080px;height:1920px;border:0;transform:scale(.3333);transform-origin:0 0;position:absolute;left:0;top:0}
-.loading{position:absolute;inset:0;display:grid;place-items:center;background:rgba(248,242,236,.6);font-weight:500;color:var(--muted);transition:opacity .2s}
+.loading{position:absolute;inset:0;display:grid;place-items:center;background:rgba(238,241,245,.6);font:600 14px var(--mono);color:var(--muted);transition:opacity .2s}
 .loading.off{opacity:0;pointer-events:none}
 .actions{margin-top:16px;display:grid;gap:10px}
-.small{font-size:13px;color:var(--muted);text-align:center;margin:4px 0 0}
-.status{min-height:20px;font-size:14px;text-align:center;color:var(--accent)}
+.small{font:500 12px var(--mono);letter-spacing:.06em;color:var(--muted);text-align:center;margin:4px 0 0}
+.status{min-height:20px;font-size:14px;text-align:center;color:var(--amber-text)}
 .mobilebar{display:none}
 @media(max-width:980px){
  .wrap{grid-template-columns:1fr}
  aside{position:static}
- .mobilebar{display:block;position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(248,242,236,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);z-index:5}
+ .mobilebar{display:block;position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(238,241,245,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);z-index:5}
 }
 @media(max-width:420px){.frame{width:min(360px,calc(100vw - 32px));height:calc(min(360px,calc(100vw - 32px))*16/9)}.frame iframe{transform:scale(calc(min(360px,calc(100vw - 32px))/1080px))}}
-footer{grid-column:1/-1;color:var(--muted);font-size:14px;text-align:center}
+footer{grid-column:1/-1;color:var(--muted);font:500 13px var(--mono);text-align:center}
 footer a{color:var(--accent)}
 </style>
 </head>
 <body>
 <div class="wrap">
  <header>
-  <h1>Make your US Travel Story</h1>
+  <p class="eyebrow">States log · Instagram Story maker</p>
+  <h1>Make your <span>states story</span></h1>
   <p class="sub">Answer a few quick questions, tap the states you've been to, and download a ready-to-post Instagram Story (1080 × 1920). No coding needed.</p>
  </header>
 
@@ -161,7 +167,7 @@ const LANDMARKS=["Seattle","Portland","San Francisco","Las Vegas","Albuquerque",
 const MAXC=12;
 const TITLES=["States I've Been To","Where I've Been","Places I've Been","Coast to Coast","My US Travel Map"];
 const SINCE=[["since I moved to the US","since day one","Since I moved to the US"],["so far","so far","So far"],["year","","Since a year…"]];
-const DESIGNS=[[59,"Noir & Gold","Luxury"],[58,"Travel Wrapped","Top pick"],[63,"Wrapped Noir","Dark"],[60,"Midnight","Dark"],[61,"Emerald Velvet","Dark"],[62,"Bordeaux","Dark"],[64,"Ivory Gold"],[51,"Luxe Sky"],[52,"Luxe Cream"],[65,"Doctor","Pro"],[66,"Physician","Pro"],[67,"CEO","Pro"],[68,"Teacher","Pro"],[69,"Product Manager","Pro"],[70,"Compiler Engineer","Pro"],[71,"Stylist","Pro"],[57,"Album"],[55,"MBA Slide"],[56,"Tech"],[48,"Sky"],[49,"Lavender"],[47,"Sage"],[50,"Terracotta"],[45,"Cream"],[46,"Blush"]];
+const DESIGNS=[[72,"Sticker Atlas","New"],[73,"Sticker Atlas Night","New"],[58,"Travel Wrapped","Top pick"],[63,"Wrapped Noir","Dark"],[59,"Noir & Gold","Luxury"],[60,"Midnight","Dark"],[61,"Emerald Velvet","Dark"],[62,"Bordeaux","Dark"],[65,"Doctor","Pro"],[66,"Physician","Pro"],[67,"CEO","Pro"],[68,"Teacher","Pro"],[69,"Product Manager","Pro"],[70,"Compiler Engineer","Pro"],[71,"Stylist","Pro"],[57,"Album"],[55,"MBA Slide"],[56,"Tech"]];
 
 
 /* ---- city helpers: cities always belong to a visited state ---- */
@@ -172,7 +178,7 @@ function sortCities(){S.cities.sort((a,b)=>lonOf(a)-lonOf(b));}
 function autoCity(s){if(S.cities.some(x=>x.s===s)||S.cities.length>=MAXC)return;const L=DB[s]||[];if(!L.length)return;
  const pick=L.find(([n])=>LANDMARKS.includes(n))||L[0];S.cities.push({c:pick[0],s});sortCities();}
 function dropCities(s){S.cities=S.cities.filter(x=>x.s!==s);}
-const S={states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:59};
+const S={states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:72};
 // restore from a shared link or the last visit
 try{const h=new URLSearchParams(location.hash.slice(1)).get("a");const saved=h?JSON.parse(decodeURIComponent(escape(atob(h)))):JSON.parse(localStorage.getItem("ustravel")||"null");
  if(saved){Object.assign(S,saved);S.states=new Set(saved.states||[]);S.cities=(saved.cities||[]).map(c=>typeof c==="string"?{c,s:stateOf(c,S.states)}:c).filter(x=>x.s&&S.states.has(x.s));}
@@ -234,7 +240,7 @@ $("sinceYear").addEventListener("input",e=>{S.year=e.target.value.replace(/\D/g,
 $("name").value=S.name;$("name").addEventListener("input",e=>{S.name=e.target.value;update();});
 
 /* ---- Q6 designs ---- */
-function drawDesigns(){const g=$("designs");g.innerHTML="";DESIGNS.forEach(([v,n,tag])=>{const b=el("button",{class:"design",type:"button","aria-pressed":S.design===v,"data-v":v},`<img src="maker/thumbs/${v}.jpg" alt="${esc(n)} design preview" loading="lazy">${esc(n)}${tag?`<span class="badge">${tag}</span>`:""}`);g.appendChild(b);});}
+function drawDesigns(){const g=$("designs");g.innerHTML="";DESIGNS.forEach(([v,n,tag])=>{const b=el("button",{class:"design",type:"button","aria-pressed":S.design===v,"data-v":v},`<img src="maker/thumbs/${v}.jpg" alt="${esc(n)} design preview" loading="lazy">${esc(n)}${tag?`<span class="badge${tag==="New"?" new":""}">${tag}</span>`:""}`);g.appendChild(b);});}
 $("designs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.design=+b.dataset.v;drawDesigns();update();});
 
 /* ---- build config + preview ---- */
@@ -266,7 +272,7 @@ $("share").onclick=async()=>{const url=location.href.split("#")[0]+"#a="+enc({..
 $("toPreview").onclick=()=>$("preview").scrollIntoView({behavior:"smooth"});
 
 if("IntersectionObserver" in window)new IntersectionObserver(es=>{document.querySelector(".mobilebar").style.display=es[0].isIntersecting?"none":"";}).observe($("preview"));
-if(!DESIGNS.some(d=>d[0]===S.design))S.design=59;
+if(!DESIGNS.some(d=>d[0]===S.design))S.design=72;
 drawStates();drawCities();drawTitles();drawSince();drawDesigns();update();
 </script>
 </body>
