@@ -793,9 +793,16 @@ function lineSky(g,x0,base,s,col,win,snow,seed=3,INKS="#2e2a26",SW=2.2){
   "NEW YORK":x=>{B(x,56,240);B(x+8,40,280);B(x+14,28,300);spire(x+28,-300,60);B(x+70,40,220);sty(G.append("path").attr("d",`M${x+70},${-220} Q${x+90},${-280} ${x+110},${-220}Z`));spire(x+90,-268,46);B(x+120,30,150);B(x+154,26,120);return x+28;},
   "MIAMI":x=>{const palm=(xx,h)=>{G.append("path").attr("d",`M${xx},0 Q${xx+8},${-h/2} ${xx+2},${-h}`).attr("fill","none").attr("stroke",INKS).attr("stroke-width",SW*1.2/s);[[-40,-10],[40,-10],[-30,14],[30,14],[0,-20]].forEach(([dx,dy])=>G.append("path").attr("d",`M${xx+2},${-h} Q${xx+2+dx/2},${-h+dy-14} ${xx+2+dx},${-h+dy+10}`).attr("fill","none").attr("stroke",INKS).attr("stroke-width",SW*1.2/s).attr("stroke-linecap","round"));};palm(x+20,120);palm(x+60,95);B(x+80,30,90);return x+40;}
  };
- const generic=x=>{B(x,26,90);B(x+28,34,160);spire(x+45,-160,30);B(x+64,24,120);B(x+86,22,70);return x+50;};
+ const hash=k=>[...k].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7);
+ const GEN_V=[
+  x=>{B(x,26,90);B(x+28,34,160);spire(x+45,-160,30);B(x+64,24,120);B(x+86,22,70);return x+50;},
+  x=>{B(x,24,70);sty(G.append("rect").attr("x",x+28).attr("y",-96).attr("width",56).attr("height",96));sty(G.append("rect").attr("x",x+40).attr("y",-118).attr("width",32).attr("height",22));
+   sty(G.append("path").attr("d",`M${x+38},-118 Q${x+56},-170 ${x+74},-118Z`));spire(x+56,-164,22);for(let k=0;k<4;k++)G.append("rect").attr("x",x+34+k*12).attr("y",-84).attr("width",5).attr("height",60).attr("fill",win).attr("opacity",.7);B(x+88,22,80);return x+56;},
+  x=>{B(x,22,80);B(x+26,30,190);B(x+60,30,190);spire(x+41,-190,24);spire(x+75,-190,24);B(x+94,18,96);return x+58;},
+  x=>{B(x,24,84);B(x+28,44,120);B(x+36,28,170);B(x+42,16,210);spire(x+50,-210,36);B(x+76,26,104);return x+50;}];
+ const generic=(x,k)=>GEN_V[hash(k||"")%GEN_V.length](x);
  const fillers=[x=>{B(x,26,70);B(x+30,24,95);},x=>{B(x,30,110);B(x+32,26,80);},x=>{B(x+6,34,140);},x=>{B(x,26,100);B(x+30,24,130);}];
- let x=0;want.forEach((k,i)=>{if(i){fillers[i%4](x);x+=60;}const cx=(L[k]||generic)(x);names.push([cx,k]);x+=WID[k]||GEN;});
+ let x=0;want.forEach((k,i)=>{if(i){fillers[i%4](x);x+=60;}const cx=L[k]?L[k](x):generic(x,k);names.push([cx,k]);x+=WID[k]||GEN;});
  return {w:x*s,names:names.map(([a1,n])=>[x0+a1*s,n])};}
 
 function confetti(g,n,box,cols,seed,avoid){const r=rnd(seed);let made=0,tries=0;while(made<n&&tries<n*20){tries++;const x=box[0]+r()*box[2],y=box[1]+r()*box[3],c=cols[made%cols.length],k=r();if(avoid&&avoid.some(([ax,ay,aw,ah])=>x>ax&&x<ax+aw&&y>ay&&y<ay+ah))continue;made++;

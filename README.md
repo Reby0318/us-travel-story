@@ -14,7 +14,7 @@ Turn the US states you've visited into an aesthetic **Instagram Story** (1080 ×
 It works like a survey, on your phone or laptop:
 
 1. Tap the states you've been to (grouped by region, with search and "select all").
-2. Tap the landmark cities for your skyline, or type any other city.
+2. Pick the cities you visited. The list comes from the states you selected, and each state's best-known city is added automatically. Tap to swap, or type your own (up to 12).
 3. Pick a headline, choose "since when", and add your name (optional).
 4. Choose a design. The preview updates live.
 5. Tap **Download my Story** to get a 1080 × 1920 PNG, ready to post. On phones it opens the share sheet, so you can save it to Photos or send it straight to Instagram.
