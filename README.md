@@ -1,11 +1,11 @@
 # US Travel Story 🗺️✨
 
 Turn the US states you've visited into an aesthetic **Instagram Story** (1080 × 1920 px, 9:16).
-18 ready-made designs: a dark luxury collection (noir and gold, midnight, emerald, bordeaux), soft editorial posters, a "Travel Wrapped" recap, a vinyl album, an MBA-style slide and a developer dashboard. They all come from one small file with your own states and cities.
+25 ready-made designs: a profession collection (doctor, physician, CEO, teacher, PM, compiler engineer, stylist), a dark luxury collection (noir and gold, midnight, emerald, bordeaux), soft editorial posters, a "Travel Wrapped" recap, a vinyl album, an MBA-style slide and a developer dashboard. They all come from one small file with your own states and cities.
 
 ![Gallery](examples/gallery.jpg)
 
-📘 **[Download the PDF lookbook](US-Travel-Story-Lookbook.pdf)**: all 18 designs at full size, with recommendations.
+📘 **[Download the PDF lookbook](US-Travel-Story-Lookbook.pdf)**: all 25 designs at full size, with recommendations.
 
 ## ✨ No code? Use the online maker
 
@@ -78,6 +78,13 @@ Everything comes from your `states` list, so nothing needs to be typed twice:
 | 62 | bordeaux | Wine and rose gold |
 | 64 | ivory-gold | Quiet luxury: ivory with champagne-gold states |
 | 51 / 52 | luxe-sky / luxe-cream | Gold frame, linen texture, line-art skyline |
+| 65 | doctor | *Travel Health Record*: heartbeat line, vitals, scan, diagnosis and a signed prescription |
+| 66 | physician | Journal article with abstract, Figure 1, Table 1 and an appendix |
+| 67 | ceo | Black-and-gold *Annual Report*: markets entered, regional performance, CEO letter |
+| 68 | teacher | *Geography Report Card*: grades by region, gold stars, handwritten comments |
+| 69 | product-manager | Roadmap: travel goals (OKRs), market coverage, Shipped / Next / Backlog |
+| 70 | compiler-engineer | Dark code editor: source file, dot-grid map, build log |
+| 71 | stylist | *VOYAGE* magazine cover with region fabric swatches |
 | 57 | music-album | Vinyl, album sleeve, player, Side A / B tracklist |
 | 55 | mba-market-coverage | Consulting slide: KPI cards, annotated map, bar chart |
 | 56 | tech-dashboard | Terminal prompt, badges, state grid, `stats.json` |

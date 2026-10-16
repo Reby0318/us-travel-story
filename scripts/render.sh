@@ -15,8 +15,9 @@ name_of() { case "$1" in
   51) echo luxe-sky;; 52) echo luxe-cream;; 53) echo pop-pink;; 54) echo pop-sunset;;
   48) echo sky-skyline-top;; 49) echo lavender-skyline-top;; 47) echo sage;; 50) echo terracotta;;
   45) echo travel-map-cream;; 46) echo places-blush;;
-  59) echo noir-gold;; 60) echo midnight;; 61) echo emerald-velvet;; 62) echo bordeaux;; 63) echo wrapped-noir;; 64) echo ivory-gold;; *) echo "design-$1";; esac; }
-if [ $# -gt 0 ]; then IDS=("$@"); else IDS=(58 63 59 60 61 62 64 51 52 57 55 56 48 49 47 50 45 46); fi
+  59) echo noir-gold;; 60) echo midnight;; 61) echo emerald-velvet;; 62) echo bordeaux;; 63) echo wrapped-noir;; 64) echo ivory-gold;;
+  65) echo doctor;; 66) echo physician;; 67) echo ceo;; 68) echo teacher;; 69) echo product-manager;; 70) echo compiler-engineer;; 71) echo stylist;; *) echo "design-$1";; esac; }
+if [ $# -gt 0 ]; then IDS=("$@"); else IDS=(58 63 59 60 61 62 64 51 52 65 66 67 68 69 70 71 57 55 56 48 49 47 50 45 46); fi
 mkdir -p out
 URL="file://$(pwd)/generator/index.html"
 for v in "${IDS[@]}"; do
