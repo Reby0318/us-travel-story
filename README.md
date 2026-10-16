@@ -1,11 +1,11 @@
 # US Travel Story 🗺️✨
 
 Turn the US states you've visited into an aesthetic **Instagram Story** (1080 × 1920 px, 9:16).
-18 ready-made designs: a new **Sticker Atlas** with hand-drawn state stickers, a Travel Wrapped summary, a dark luxury collection, a profession collection (doctor, physician, CEO, teacher, PM, compiler engineer, stylist), a vinyl album, an MBA slide and a developer dashboard.
+20 ready-made designs: a new **Sticker Atlas** with hand-drawn state stickers, a Travel Wrapped summary, a dark luxury collection, a profession collection (doctor, physician, CEO, teacher, PM, compiler engineer, stylist), a vinyl album, an MBA slide and a developer dashboard.
 
 ![Gallery](examples/gallery.jpg)
 
-📘 **[Download the PDF lookbook](US-Travel-Story-Lookbook.pdf)**: all 18 designs at full size, with recommendations.
+📘 **[Download the PDF lookbook](US-Travel-Story-Lookbook.pdf)**: all 20 designs at full size, with recommendations.
 
 ## ✨ No code? Use the online maker
 
@@ -72,6 +72,7 @@ Everything comes from your `states` list, so nothing needs to be typed twice:
 | # | Name | Vibe |
 |---|------|------|
 | 72 / 73 | sticker-atlas / sticker-atlas-night | **New.** Modern Americana: bold condensed type, hand-drawn state stickers around the map, green highway signs for your cities |
+| 74 / 75 | skyline-atlas / skyline-atlas-night | **New.** Sticker Atlas with a line-art skyline of your cities' iconic buildings instead of highway signs |
 | 58 / 63 | travel-wrapped / wrapped-noir | Summary dashboard (now playing, KPIs, map window, state grid) with stickers in the corners, light or dark |
 | 59 | noir-gold | Black, gold-foil states, gold line-art skyline |
 | 60 / 61 / 62 | midnight / emerald-velvet / bordeaux | Dark luxury in navy, emerald or wine |

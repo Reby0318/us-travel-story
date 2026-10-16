@@ -1512,13 +1512,20 @@ function stickerAtlas(P){const ST=STATS(),R=P.R||MOD.R,F=stickerFilter(5);
  lx=540-ws.reduce((a,b)=>a+b,0)/2;REGS.forEach((k,i)=>{svg.append("rect").attr("x",lx).attr("y",my+mh-44).attr("width",14).attr("height",14).attr("rx",3).attr("fill",R[k]);T(svg,lx+22,my+mh-32,k,{f:PLEX,w:600,s:16,c:P.muted});lx+=ws[i];});
  // states list as tiles
  const ly=1266;T(svg,72,ly,"STATES VISITED",{f:DISP,w:800,s:34,c:P.ink});T(svg,1008,ly,`${N} / 50`,{f:MONO,w:500,s:17,ls:2,c:P.amber,a:"end"});
- const cols=3,per=Math.ceil(N/cols),th=Math.min(58,300/Math.max(per,1)),tw=300;
+ const cols=3,per=Math.ceil(N/cols),th=Math.min(58,(P.sky?260:300)/Math.max(per,1)),tw=300;
  ALPHA.forEach((n,i)=>{const c=Math.floor(i/per),r=i%per,x=72+c*(tw+18),y=ly+20+r*th;
   svg.append("rect").attr("x",x).attr("y",y).attr("width",tw).attr("height",th-6).attr("rx",6).attr("fill",P.surf).attr("stroke",P.line);
   svg.append("rect").attr("x",x).attr("y",y).attr("width",5).attr("height",th-6).attr("rx",2).attr("fill",R[REG(n)]);
   fitT(T(svg,x+16,y+(th-6)/2+6,n,{f:PLEX,w:600,s:Math.min(20,th*.45),c:P.ink}),220,20);T(svg,x+tw-12,y+(th-6)/2+5,AB[n]||"",{f:MONO,w:500,s:Math.min(14,th*.38),c:P.muted,a:"end"});});
  // highway signs for the skyline cities
  const nRows=(()=>{const ms2=svg.append("text").attr("font-family",DISP).attr("font-weight",700).attr("font-size",30).attr("letter-spacing",1).attr("opacity",0);let r=1,rw=0;CONFIG.cities.forEach(c=>{ms2.text(c.toUpperCase());const wd=ms2.node().getComputedTextLength()+54;if(rw+wd>936&&rw){r++;rw=0;}rw+=wd;});ms2.remove();return Math.min(3,r);})();
+ if(P.sky){const base=1812;svg.append("circle").attr("cx",560).attr("cy",base-60).attr("r",96).attr("fill",P.amber).attr("opacity",P.dark?.22:.16);
+  const sk=svg.append("g");const S=lineSky(sk,72,base,.6,P.bldg||P.surf,P.amber,false,6,P.ink,2);
+  sk.append("line").attr("x1",60).attr("x2",1020).attr("y1",base).attr("y2",base).attr("stroke",P.ink).attr("stroke-width",2.4);
+  const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length,st={f:MONO,w:500,s:14,ls:2,c:P.muted,a:"middle"};
+  T(svg,540,base+30,nm.slice(0,h).join("  ·  "),st);if(nm.length>6)T(svg,540,base+52,nm.slice(h).join("  ·  "),st);
+  const slots=[[890,240,1.45,8],[1000,390,1.0,-8],[76,700,1.0,-10],[1004,700,1.0,10],[76,900,.95,8],[1004,920,.95,-6],[76,1100,.95,-6],[1004,1130,.95,8]];
+  pickStickers(slots.length).forEach((s,i)=>{const [x,y,k,r]=slots[i];drawSticker(svg,s,x,y,k,r,F);});return;}
  const hy=ly+64+per*th;{const ct=T(svg,72,hy+6,"CITIES",{f:DISP,w:800,s:30,c:P.ink});shield(svg,72+ct.node().getComputedTextLength()+30,hy-4,N,.62);}
  highwaySigns(svg,CONFIG.cities,72,hy+26,936,{maxRows:Math.max(1,Math.min(3,Math.floor((1880-hy-26)/70)))});
  // stickers around the map + top-right corner
@@ -1529,9 +1536,11 @@ const ATLAS={light:{bg:"#eef1f5",surf:"#ffffff",ink:"#17223a",muted:"#5d6a82",li
  dark:{dark:true,bg:"#0e1524",surf:"#151f33",ink:"#e6ebf3",muted:"#95a2bb",line:"#2a3752",amber:"#f2a93b",un:"#1d2940",unS:"#2a3752",unLab:"#56628a",
   R:{West:"#4fb3a9",Southwest:"#f2a93b",Midwest:"#8ea6e8",Southeast:"#e07a5f",Northeast:"#5f86d6"}}};
 function v72(){stickerAtlas(ATLAS.light);}
+function v74(){stickerAtlas(Object.assign({},ATLAS.light,{sky:true}));}
+function v75(){stickerAtlas(Object.assign({},ATLAS.dark,{sky:true,bldg:"#1b2740"}));}
 function v73(){stickerAtlas(ATLAS.dark);}
 
-const FN=[null,null,null,null,null,null,null,null,null,null,null,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22,v23,v24,v25,v26,v27,v28,v29,v30,v31,v32,v33,v34,v35,v36,v37,v38,v39,v40,v41,v42,v43,v44,v45,v46,v47,v48,v49,v50,v51,v52,v53,v54,v55,v56,v57,v58,v59,v60,v61,v62,v63,v64,v65,v66,v67,v68,v69,v70,v71,v72,v73];
+const FN=[null,null,null,null,null,null,null,null,null,null,null,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22,v23,v24,v25,v26,v27,v28,v29,v30,v31,v32,v33,v34,v35,v36,v37,v38,v39,v40,v41,v42,v43,v44,v45,v46,v47,v48,v49,v50,v51,v52,v53,v54,v55,v56,v57,v58,v59,v60,v61,v62,v63,v64,v65,v66,v67,v68,v69,v70,v71,v72,v73,v74,v75];
 const PRE=["400 20px \"IBM Plex Mono\"","500 20px \"IBM Plex Mono\"","600 20px \"IBM Plex Mono\"","400 20px \"IBM Plex Sans\"","600 20px \"IBM Plex Sans\"","700 20px \"IBM Plex Sans\"","400 20px \"DM Sans\"","500 20px \"DM Sans\"","700 20px \"DM Sans\"","italic 500 20px \"Playfair Display\"","500 20px \"Playfair Display\"","600 20px \"Playfair Display\"","900 20px Fraunces","20px Anton","600 20px \"Big Shoulders Display\"","800 20px \"Big Shoulders Display\"","600 20px Cinzel","20px Limelight","700 20px Caveat","500 20px \"Bodoni Moda\"","700 20px \"Bodoni Moda\"","italic 500 20px \"Bodoni Moda\"","400 20px \"Space Mono\""];
 
 /* ---------- in-browser PNG export (used by the maker page) ---------- */
@@ -1552,7 +1561,7 @@ window.exportPNG=async function(scale=1){
 window.addEventListener("message",async e=>{if(!e.data||e.data.type!=="export")return;
  try{const url=await window.exportPNG();e.source.postMessage({type:"png",url,id:e.data.id},"*");}catch(err){e.source.postMessage({type:"png",error:String(err),id:e.data.id},"*");}});
 
-const FEATURED=[[72,"sticker-atlas"],[73,"sticker-atlas-night"],[58,"travel-wrapped"],[63,"wrapped-noir"],[59,"noir-gold"],[60,"midnight"],[61,"emerald-velvet"],[62,"bordeaux"],[64,"ivory-gold"],[51,"luxe-sky"],[52,"luxe-cream"],[65,"doctor"],[66,"physician"],[67,"ceo"],[68,"teacher"],[69,"product-manager"],[70,"compiler-engineer"],[71,"stylist"],[57,"music-album"],[55,"mba-market-coverage"],[56,"tech-dashboard"],[48,"sky-skyline-top"],[49,"lavender-skyline-top"],[47,"sage"],[50,"terracotta"],[45,"travel-map-cream"],[46,"places-blush"]];
+const FEATURED=[[72,"sticker-atlas"],[73,"sticker-atlas-night"],[74,"skyline-atlas"],[75,"skyline-atlas-night"],[58,"travel-wrapped"],[63,"wrapped-noir"],[59,"noir-gold"],[60,"midnight"],[61,"emerald-velvet"],[62,"bordeaux"],[64,"ivory-gold"],[51,"luxe-sky"],[52,"luxe-cream"],[65,"doctor"],[66,"physician"],[67,"ceo"],[68,"teacher"],[69,"product-manager"],[70,"compiler-engineer"],[71,"stylist"],[57,"music-album"],[55,"mba-market-coverage"],[56,"tech-dashboard"],[48,"sky-skyline-top"],[49,"lavender-skyline-top"],[47,"sage"],[50,"terracotta"],[45,"travel-map-cream"],[46,"places-blush"]];
 if(!/[#&]v=\d+/.test(location.hash)){
  document.documentElement.style.cssText="width:auto;height:auto;overflow:auto";document.body.style.cssText="margin:0;width:auto;height:auto;overflow:auto;background:#f4efe8;font-family:system-ui,sans-serif;padding:32px";
  document.getElementById("s").remove();
