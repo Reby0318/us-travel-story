@@ -63,6 +63,14 @@ aside{position:sticky;top:20px}
 .loading{position:absolute;inset:0;display:grid;place-items:center;background:rgba(238,241,245,.6);font:600 14px var(--mono);color:var(--muted);transition:opacity .2s}
 .loading.off{opacity:0;pointer-events:none}
 .actions{margin-top:16px;display:grid;gap:10px}
+.quick{margin-top:14px}
+.quick-h{display:flex;justify-content:space-between;align-items:baseline;font:600 13px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.quick-h span{color:var(--ink);text-transform:none;letter-spacing:0;font:600 14px "IBM Plex Sans"}
+.quick-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory}
+.quick-row button{flex:none;width:62px;border:2px solid transparent;border-radius:8px;padding:2px;background:none;cursor:pointer;scroll-snap-align:start;position:relative}
+.quick-row button[aria-pressed=true]{border-color:var(--amber)}
+.quick-row img{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:5px;display:block}
+.quick-row i{position:absolute;top:4px;left:4px;font:700 8px var(--mono);font-style:normal;background:var(--amber);color:#fff;border-radius:3px;padding:1px 3px}
 .small{font:500 12px var(--mono);letter-spacing:.06em;color:var(--muted);text-align:center;margin:4px 0 0}
 .status{min-height:20px;font-size:14px;text-align:center;color:var(--amber-text)}
 .mobilebar{display:none}
@@ -136,13 +144,14 @@ footer a{color:var(--accent)}
 
   <section class="q">
    <h2><span class="n">6</span>Choose a design</h2>
-   <p class="hint">You can switch any time. The preview updates instantly. Designs tagged <b>Pro</b> are made for your profession.</p>
+   <p class="hint">You can switch any time. The preview updates instantly. <b>New</b> designs add hand-drawn stickers of the states you visited. Designs tagged <b>Pro</b> are made for your profession.</p>
    <div class="body"><div class="designs" id="designs"></div></div>
   </section>
  </main>
 
  <aside id="preview">
   <div class="frame"><iframe id="pv" title="Story preview" loading="eager"></iframe><div class="loading" id="loading">Drawing your map…</div></div>
+  <div class="quick"><div class="quick-h"><b>Style</b><span id="quickName"></span></div><div class="quick-row" id="quick"></div></div>
   <div class="actions">
    <button class="btn big" id="download" type="button">Download my Story ⬇</button>
    <div class="status" id="status" role="status"></div>
@@ -240,7 +249,9 @@ $("sinceYear").addEventListener("input",e=>{S.year=e.target.value.replace(/\D/g,
 $("name").value=S.name;$("name").addEventListener("input",e=>{S.name=e.target.value;update();});
 
 /* ---- Q6 designs ---- */
-function drawDesigns(){const g=$("designs");g.innerHTML="";DESIGNS.forEach(([v,n,tag])=>{const b=el("button",{class:"design",type:"button","aria-pressed":S.design===v,"data-v":v},`<img src="maker/thumbs/${v}.jpg" alt="${esc(n)} design preview" loading="lazy">${esc(n)}${tag?`<span class="badge${tag==="New"?" new":""}">${tag}</span>`:""}`);g.appendChild(b);});}
+function drawQuick(){const q=$("quick");q.innerHTML="";DESIGNS.forEach(([v,n,tag])=>{const b=el("button",{type:"button","aria-pressed":S.design===v,"data-v":v,title:n,"aria-label":n},`<img src="maker/thumbs/${v}.jpg" alt="">${tag==="New"?"<i>NEW</i>":""}`);q.appendChild(b);});const cur=DESIGNS.find(d=>d[0]===S.design);$("quickName").textContent=cur?cur[1]:"";}
+$("quick").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.design=+b.dataset.v;drawDesigns();update();});
+function drawDesigns(){drawQuick();const g=$("designs");g.innerHTML="";DESIGNS.forEach(([v,n,tag])=>{const b=el("button",{class:"design",type:"button","aria-pressed":S.design===v,"data-v":v},`<img src="maker/thumbs/${v}.jpg" alt="${esc(n)} design preview" loading="lazy">${esc(n)}${tag?`<span class="badge${tag==="New"?" new":""}">${tag}</span>`:""}`);g.appendChild(b);});}
 $("designs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.design=+b.dataset.v;drawDesigns();update();});
 
 /* ---- build config + preview ---- */
