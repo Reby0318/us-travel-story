@@ -95,8 +95,7 @@ Every state has a hand-drawn sticker (`generator/stickers.js`): a bison for Wyom
 
 ### City skylines
 
-These cities have hand-drawn landmarks: **Seattle** (Space Needle), **Portland** (Mt. Hood), **San Francisco** (Golden Gate), **Las Vegas** (the welcome sign), **Albuquerque** (adobe and balloons), **Dallas** (Reunion Tower), **Chicago**, **Nashville**, **Philadelphia** (City Hall), **New York** and **Miami** (palms).
-Any other city still shows up, with a generic skyline and its name. The skyline resizes itself to fit however many cities you list.
+Every one of the 168 cities in the maker has its own line drawing of what it is actually known for (`generator/landmarks.js`), for example Salt Lake City's temple spires, Omaha's Desert Dome, the Fargo Theatre, the Gateway Arch, the Memphis Pyramid, Niagara Falls, the Alamo, Old Faithful and Mount Rushmore. State capitals use the real capitol (gold, green, white or pink dome). Cities typed in by hand get a generic skyline that never repeats next to another one. The skyline resizes to fit however many cities you pick. Open `generator/index.html#v=998&pg=0` (pages 0–8) to see them all.
 
 ## Instagram Story tips
 

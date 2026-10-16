@@ -3,7 +3,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=Baloo+2:wght@600;800&family=Bungee&family=Caveat:wght@500;700&family=Shrikhand&family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;1,500&family=DM+Sans:wght@400;500;700&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Pacifico&family=Courier+Prime:wght@400;700&family=Rubik:wght@500;700;800&family=Bangers&family=Luckiest+Guy&family=Permanent+Marker&family=Bebas+Neue&family=Anton&family=Limelight&family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Cinzel:wght@500;600&family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&display=block" rel="stylesheet">
 <style>html,body{margin:0;width:1080px;height:1920px;overflow:hidden}svg{display:block}</style>
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
-<script src="data/us-states.js"></script><script src="data/world-countries.js"></script><script src="stickers.js"></script>
+<script src="data/us-states.js"></script><script src="data/world-countries.js"></script><script src="stickers.js"></script><script src="landmarks.js"></script>
 <script src="../my-travel.js"></script>
 </head><body>
 <svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -763,6 +763,7 @@ function lineSky(g,x0,base,s,col,win,snow,seed=3,INKS="#2e2a26",SW=2.2){
  // widths (in skyline units) of each landmark, used to auto-fit
  const WID={"SEATTLE":100,"PORTLAND":150,"SAN FRANCISCO":230,"LAS VEGAS":190,"ALBUQUERQUE":118,"DALLAS":110,"CHICAGO":80,"NASHVILLE":60,"PHILADELPHIA":112,"NEW YORK":190,"MIAMI":120};
  const FILL=[70,74,40,66];const GEN=110;
+ const EXTW=window.mkLandmarks?window.mkLandmarks({}):{};Object.keys(EXTW).forEach(k=>{if(!WID[k])WID[k]=EXTW[k][0];});
  const total=want.reduce((a2,k)=>a2+(WID[k]||GEN),0)+Math.max(0,want.length-1)*60;
  s=Math.min(.9,(1080-2*x0)/Math.max(total,1));
  const G=g.append("g").attr("transform",`translate(${x0},${base}) scale(${s})`);const names=[];
@@ -800,7 +801,8 @@ function lineSky(g,x0,base,s,col,win,snow,seed=3,INKS="#2e2a26",SW=2.2){
    sty(G.append("path").attr("d",`M${x+38},-118 Q${x+56},-170 ${x+74},-118Z`));spire(x+56,-164,22);for(let k=0;k<4;k++)G.append("rect").attr("x",x+34+k*12).attr("y",-84).attr("width",5).attr("height",60).attr("fill",win).attr("opacity",.7);B(x+88,22,80);return x+56;},
   x=>{B(x,22,80);B(x+26,30,190);B(x+60,30,190);spire(x+41,-190,24);spire(x+75,-190,24);B(x+94,18,96);return x+58;},
   x=>{B(x,24,84);B(x+28,44,120);B(x+36,28,170);B(x+42,16,210);spire(x+50,-210,36);B(x+76,26,104);return x+50;}];
- const generic=(x,k)=>GEN_V[hash(k||"")%GEN_V.length](x);
+ let genN=0;const generic=(x,k)=>GEN_V[(hash(k||"")+genN++)%GEN_V.length](x);
+ if(window.mkLandmarks){const EX=window.mkLandmarks({G,sty,B,spire,win,INKS,SW,s,FC});Object.keys(EX).forEach(k=>{if(!L[k])L[k]=EX[k][1];});}
  const fillers=[x=>{B(x,26,70);B(x+30,24,95);},x=>{B(x,30,110);B(x+32,26,80);},x=>{B(x+6,34,140);},x=>{B(x,26,100);B(x+30,24,130);}];
  let x=0;want.forEach((k,i)=>{if(i){fillers[i%4](x);x+=60;}const cx=L[k]?L[k](x):generic(x,k);names.push([cx,k]);x+=WID[k]||GEN;});
  return {w:x*s,names:names.map(([a1,n])=>[x0+a1*s,n])};}
@@ -1540,6 +1542,12 @@ function v74(){stickerAtlas(Object.assign({},ATLAS.light,{sky:true}));}
 function v75(){stickerAtlas(Object.assign({},ATLAS.dark,{sky:true,bldg:"#1b2740"}));}
 function v73(){stickerAtlas(ATLAS.dark);}
 
+
+function vLand(){bg("#eef1f5");const all=Object.keys(window.mkLandmarks({})).concat(["SEATTLE","PORTLAND","SAN FRANCISCO","LAS VEGAS","ALBUQUERQUE","DALLAS","CHICAGO","NASHVILLE","PHILADELPHIA","NEW YORK","MIAMI"]).sort();
+ const pg=+(location.hash.match(/pg=(\d)/)||[0,0])[1],per=20,list=all.slice(pg*per,pg*per+per);
+ list.forEach((k,i)=>{const c=i%4,r=Math.floor(i/4),x=20+c*265,y=330+r*370;const save=CONFIG.cities;CONFIG.cities=[k];const g=svg.append("g").attr("transform",`translate(${x-40},0)`);
+  g.append("rect").attr("x",40).attr("y",y-300).attr("width",250).attr("height",350).attr("fill","#fff").attr("stroke","#cfd6e1");
+  lineSky(g,40,y,1,"#ffffff","#e2b25c",false,6,"#17223a",2.2);CONFIG.cities=save;T(svg,x+125,y+36,k,{f:"IBM Plex Mono",w:600,s:15,c:"#17223a",a:"middle"});});}
 const FN=[null,null,null,null,null,null,null,null,null,null,null,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22,v23,v24,v25,v26,v27,v28,v29,v30,v31,v32,v33,v34,v35,v36,v37,v38,v39,v40,v41,v42,v43,v44,v45,v46,v47,v48,v49,v50,v51,v52,v53,v54,v55,v56,v57,v58,v59,v60,v61,v62,v63,v64,v65,v66,v67,v68,v69,v70,v71,v72,v73,v74,v75];
 const PRE=["400 20px \"IBM Plex Mono\"","500 20px \"IBM Plex Mono\"","600 20px \"IBM Plex Mono\"","400 20px \"IBM Plex Sans\"","600 20px \"IBM Plex Sans\"","700 20px \"IBM Plex Sans\"","400 20px \"DM Sans\"","500 20px \"DM Sans\"","700 20px \"DM Sans\"","italic 500 20px \"Playfair Display\"","500 20px \"Playfair Display\"","600 20px \"Playfair Display\"","900 20px Fraunces","20px Anton","600 20px \"Big Shoulders Display\"","800 20px \"Big Shoulders Display\"","600 20px Cinzel","20px Limelight","700 20px Caveat","500 20px \"Bodoni Moda\"","700 20px \"Bodoni Moda\"","italic 500 20px \"Bodoni Moda\"","400 20px \"Space Mono\""];
 
@@ -1569,5 +1577,5 @@ if(!/[#&]v=\d+/.test(location.hash)){
  const g=document.createElement("div");g.style.cssText="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px";document.body.appendChild(g);
  FEATURED.forEach(([v,n])=>{const a=document.createElement("a");a.href="#v="+v;a.onclick=()=>setTimeout(()=>location.reload(),0);a.style.cssText="text-decoration:none;color:#2c2531;font:500 14px system-ui";
   a.innerHTML=`<div style="width:216px;height:384px;overflow:hidden;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.12);background:#fff"><iframe src="index.html#v=${v}" style="width:1080px;height:1920px;border:0;transform:scale(.2);transform-origin:0 0;pointer-events:none" loading="lazy"></iframe></div><div style="margin-top:8px">${v} · ${n}</div>`;g.appendChild(a);});
-}else Promise.all(PRE.map(f=>document.fonts.load(f).catch(()=>null))).then(()=>document.fonts.ready).then(()=>{(V===999?vSheet:FN[V])();window.__drawn=true;try{parent.postMessage({type:"drawn"},"*");}catch(e){}});
+}else Promise.all(PRE.map(f=>document.fonts.load(f).catch(()=>null))).then(()=>document.fonts.ready).then(()=>{(V===999?vSheet:V===998?vLand:FN[V])();window.__drawn=true;try{parent.postMessage({type:"drawn"},"*");}catch(e){}});
 </script></body></html>
