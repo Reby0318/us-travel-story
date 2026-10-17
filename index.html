@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Make Your US Travel Story</title>
+<title>Make Your Travel Story</title>
 <meta name="description" content="Tap the states you've visited and download an aesthetic 1080×1920 Instagram Story. No coding needed.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -42,6 +42,9 @@ input[type=text]:focus,select:focus{border-color:var(--accent)}
 .pill .dot{width:10px;height:10px;border-radius:3px}
 .pill:focus-visible,.design:focus-visible,.btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 .region{margin-bottom:14px}
+.mode{display:inline-flex;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:4px;margin:0 0 14px;gap:4px}
+.mode button{font:600 15px "Geist",sans-serif;border:0;background:none;color:var(--muted);padding:10px 16px;border-radius:9px;cursor:pointer}
+.mode button[aria-selected=true]{background:var(--ink);color:#fff}
 .region-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
 .region-h b{font:600 15px "Geist";display:flex;align-items:center;gap:8px}
 .region-h b i{width:12px;height:12px;border-radius:3px;display:inline-block}
@@ -95,12 +98,23 @@ footer a{color:var(--accent)}
 <div class="wrap">
  <header>
   <p class="eyebrow">States log · Instagram Story maker</p>
-  <h1>Make your states <span>story</span></h1>
-  <p class="sub">Answer a few quick questions, tap the states you've been to, and download a ready-to-post Instagram Story (1080 × 1920). No coding needed.</p>
+  <h1>Make your travel <span>story</span></h1>
+  <p class="sub">Answer a few quick questions, tap the states or countries you've been to, and download a ready-to-post Instagram Story (1080 × 1920). No coding needed.</p>
  </header>
 
  <main>
-  <section class="q">
+  <div class="mode" id="modeBar" role="tablist" aria-label="Map"><button type="button" data-m="us">🇺🇸 USA · states</button><button type="button" data-m="world">🌍 World · countries</button></div>
+  <section class="q" id="qCountries" hidden>
+   <h2><span class="n">1</span>Which countries have you been to?</h2>
+   <p class="hint">Tap to select. <span class="count" id="ctyCount">0</span> of 195 selected.</p>
+   <div class="body">
+    <input type="text" id="ctySearch" placeholder="Search countries… (e.g. Japan)" aria-label="Search countries" style="margin-bottom:14px">
+    <div id="continents"></div>
+    <button class="link" id="clearCty" type="button">Clear all countries</button>
+   </div>
+  </section>
+
+  <section class="q us-only">
    <h2><span class="n">1</span>Which states have you been to?</h2>
    <p class="hint">Tap to select. <span class="count" id="count">0</span> of 50 selected.</p>
    <div class="body">
@@ -110,7 +124,7 @@ footer a{color:var(--accent)}
    </div>
   </section>
 
-  <section class="q">
+  <section class="q us-only">
    <h2><span class="n">2</span>Which cities did you visit?</h2>
    <p class="hint">Tap the cities you actually visited. Your skyline shows <b>one city per state</b>, tagged Skyline. Tap ☆ on another selected city to use it instead. <span class="count" id="cityCount">0</span> selected.</p>
    <div class="body">
@@ -172,7 +186,7 @@ footer a{color:var(--accent)}
 </div>
 <div class="mobilebar"><button class="btn big" id="toPreview" type="button">See preview &amp; download ↓</button></div>
 
-<script src="maker/cities.js"></script>
+<script src="maker/cities.js"></script><script src="maker/countries.js"></script>
 <script>
 const REGIONS={
  West:["Washington","Oregon","California","Nevada","Idaho","Montana","Wyoming","Utah","Colorado","Alaska","Hawaii"],
@@ -182,9 +196,11 @@ const REGIONS={
  Northeast:["New York","Pennsylvania","New Jersey","Connecticut","Rhode Island","Massachusetts","Vermont","New Hampshire","Maine"]};
 const LANDMARKS=["Seattle","Portland","San Francisco","Las Vegas","Albuquerque","Dallas","Chicago","Nashville","Philadelphia","New York","Miami"];
 const MAXC=Infinity;
-const TITLES=["States I've Been To","Where I've Been","Places I've Been","Coast to Coast","My US Travel Map"];
+const TITLES_US=["States I've Been To","Where I've Been","Places I've Been","Coast to Coast","My US Travel Map"],TITLES_W=["Countries I've Been To","Where I've Been","Around the World","Passport Pages","My World Map"];let TITLES=TITLES_US;
 const SINCE=[["since I moved to the US","since day one","Since I moved to the US"],["so far","so far","So far"],["year","","Since a year…"]];
-const DESIGNS=[[72,"Sticker Atlas","New"],[73,"Sticker Atlas Night","New"],[74,"Skyline Atlas","New"],[75,"Skyline Atlas Night","New"],[58,"Travel Wrapped","Top pick"],[63,"Wrapped Noir","Dark"],[59,"Noir & Gold","Luxury"],[60,"Midnight","Dark"],[61,"Emerald Velvet","Dark"],[62,"Bordeaux","Dark"],[65,"Doctor","Pro"],[66,"Physician","Pro"],[67,"CEO","Pro"],[68,"Teacher","Pro"],[69,"Product Manager","Pro"],[70,"Compiler Engineer","Pro"],[71,"Stylist","Pro"],[57,"Album"],[55,"MBA Slide"],[56,"Tech"]];
+let DESIGNS;const WDESIGNS=[[80,"World Atlas","New"],[81,"World Atlas Night","New"],[82,"World Wrapped","Top pick"],[83,"Noir & Gold World","Luxury"]];
+const USDESIGNS=[[72,"Sticker Atlas","New"],[73,"Sticker Atlas Night","New"],[74,"Skyline Atlas","New"],[75,"Skyline Atlas Night","New"],[58,"Travel Wrapped","Top pick"],[63,"Wrapped Noir","Dark"],[59,"Noir & Gold","Luxury"],[60,"Midnight","Dark"],[61,"Emerald Velvet","Dark"],[62,"Bordeaux","Dark"],[65,"Doctor","Pro"],[66,"Physician","Pro"],[67,"CEO","Pro"],[68,"Teacher","Pro"],[69,"Product Manager","Pro"],[70,"Compiler Engineer","Pro"],[71,"Stylist","Pro"],[57,"Album"],[55,"MBA Slide"],[56,"Tech"]];
+DESIGNS=USDESIGNS;
 
 
 /* ---- city helpers: cities always belong to a visited state ---- */
@@ -196,10 +212,10 @@ function sortCities(){S.cities.sort((a,b)=>lonOf(a)-lonOf(b));}
 function autoCity(s){if(S.cities.some(x=>x.s===s)||S.cities.length>=MAXC)return;const L=DB[s]||[];if(!L.length)return;
  const pick=L[0];S.cities.push({c:pick[0],s});sortCities();}
 function dropCities(s){S.cities=S.cities.filter(x=>x.s!==s);}
-const S={skyPick:{},stickers:"around",states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:72};
+const S={mode:"us",countries:new Set(),skyPick:{},stickers:"around",states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:72};
 // restore from a shared link or the last visit
 try{const h=new URLSearchParams(location.hash.slice(1)).get("a");const saved=h?JSON.parse(decodeURIComponent(escape(atob(h)))):JSON.parse(localStorage.getItem("ustravel")||"null");
- if(saved){Object.assign(S,saved);S.states=new Set(saved.states||[]);S.cities=(saved.cities||[]).map(c=>typeof c==="string"?{c,s:stateOf(c,S.states)}:c).filter(x=>x.s&&S.states.has(x.s));}
+ if(saved){Object.assign(S,saved);S.states=new Set(saved.states||[]);S.countries=new Set(saved.countries||[]);S.cities=(saved.cities||[]).map(c=>typeof c==="string"?{c,s:stateOf(c,S.states)}:c).filter(x=>x.s&&S.states.has(x.s));}
  else{["California","Nevada","New York","Florida","Illinois","Texas"].forEach(s=>{S.states.add(s);autoCity(s);});}}catch(e){}
 
 const $=id=>document.getElementById(id);
@@ -272,33 +288,61 @@ $("designs").addEventListener("click",e=>{const b=e.target.closest("button");if(
 function config(){const yr=S.year&&S.year.length===4?S.year:"20XX";const since=S.since===2?[`since ${yr}`,`since ${yr}`]:SINCE[S.since].slice(0,2);
  const order=Object.values(REGIONS).flat();
  return {name:S.name.trim()||"Me",title:(S.title==="__custom"?S.titleCustom.trim():S.title)||"States I've Been To",since:since[0],sinceShort:since[1],
-  states:[...S.states].sort((a,b)=>order.indexOf(a)-order.indexOf(b)),cities:S.cities.map(x=>x.c),skyline:S.cities.filter(x=>skyOf(x.s)===x.c).map(x=>x.c),stickers:S.stickers||"around"};}
+  states:[...S.states].sort((a,b)=>order.indexOf(a)-order.indexOf(b)),cities:S.cities.map(x=>x.c),skyline:S.cities.filter(x=>skyOf(x.s)===x.c).map(x=>x.c),stickers:S.stickers||"around",mode:S.mode,countries:[...S.countries]};}
 const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 let tmr=null;
-function update(){try{localStorage.setItem("ustravel",JSON.stringify({...S,states:[...S.states]}));}catch(e){}
+function update(){try{localStorage.setItem("ustravel",JSON.stringify({...S,states:[...S.states],countries:[...S.countries]}));}catch(e){}
  clearTimeout(tmr);tmr=setTimeout(()=>{$("loading").classList.remove("off");$("pv").src=`generator/index.html?r=${Date.now()}#v=${S.design}&cfg=${encodeURIComponent(enc(config()))}`;},350);}
 window.addEventListener("message",e=>{if(e.data&&e.data.type==="drawn")$("loading").classList.add("off");});
 
+
+/* ---- World mode: countries ---- */
+const WDB=window.WORLD_DB||{};
+function drawCountries(){const box=$("continents");box.innerHTML="";const q=$("ctySearch").value.trim().toLowerCase();
+ Object.entries(WDB).forEach(([k,list])=>{const names=list.map(a=>a[0]);const shown=names.filter(s=>!q||s.toLowerCase().includes(q));if(!shown.length)return;
+  const sec=el("div",{class:"region"});const n=names.filter(s=>S.countries.has(s)).length;
+  sec.innerHTML=`<div class="region-h"><b>${esc(k)} <span style="color:var(--muted);font-weight:500">${n}/${names.length}</span></b><button class="link" type="button" data-allc="${esc(k)}">${n===names.length?"Clear":"Select all"}</button></div>`;
+  const pills=el("div",{class:"pills"});shown.forEach(s=>pills.appendChild(el("button",{class:"pill",type:"button","aria-pressed":S.countries.has(s),"data-cty":s},esc(s))));
+  sec.appendChild(pills);box.appendChild(sec);});
+ $("ctyCount").textContent=S.countries.size;}
+$("continents").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+ if(b.dataset.cty){const s=b.dataset.cty;S.countries.has(s)?S.countries.delete(s):S.countries.add(s);}
+ else if(b.dataset.allc){const L=(WDB[b.dataset.allc]||[]).map(a=>a[0]);const all=L.every(s=>S.countries.has(s));L.forEach(s=>all?S.countries.delete(s):S.countries.add(s));}
+ drawCountries();update();});
+$("ctySearch").addEventListener("input",drawCountries);
+$("clearCty").onclick=()=>{S.countries.clear();drawCountries();update();};
+function applyMode(){const w=S.mode==="world";document.querySelectorAll(".us-only").forEach(s=>s.hidden=w);$("qCountries").hidden=!w;
+ document.querySelectorAll("#modeBar button").forEach(b=>b.setAttribute("aria-selected",b.dataset.m===S.mode));
+ TITLES=w?TITLES_W:TITLES_US;DESIGNS=w?WDESIGNS:USDESIGNS;
+ if(S.title!=="__custom"&&!TITLES.includes(S.title))S.title=TITLES[0];
+ if(!DESIGNS.some(d=>d[0]===S.design))S.design=(w?S.designW:S.designUS)||DESIGNS[0][0];
+ let k=0;document.querySelectorAll("main .q").forEach(s=>{if(!s.hidden){const n=s.querySelector(".n");if(n)n.textContent=++k;}});
+ const ey=document.querySelector(".eyebrow");if(ey)ey.textContent=w?"World log · Instagram Story maker":"States log · Instagram Story maker";
+ drawTitles();drawDesigns();}
+$("modeBar").addEventListener("click",e=>{const b=e.target.closest("button[data-m]");if(!b||b.dataset.m===S.mode)return;
+ if(S.mode==="world")S.designW=S.design;else S.designUS=S.design;S.mode=b.dataset.m;
+ if(S.mode==="world"&&!S.countries.size)S.countries.add("United States");applyMode();drawCountries();update();});
+
 /* ---- download ---- */
 let reqId=0;
-$("download").onclick=()=>{const c=config();if(!c.states.length){$("status").textContent="Pick at least one state first.";return;}
+$("download").onclick=()=>{const c=config();if(S.mode==="world"?!c.countries.length:!c.states.length){$("status").textContent=S.mode==="world"?"Pick at least one country first.":"Pick at least one state first.";return;}
  const btn=$("download");btn.disabled=true;btn.textContent="Creating your PNG…";$("status").textContent="";const id=++reqId;
  const done=(msg)=>{btn.disabled=false;btn.textContent="Download my Story ⬇";$("status").textContent=msg||"";};
  const onMsg=e=>{if(!e.data||e.data.type!=="png"||e.data.id!==id)return;window.removeEventListener("message",onMsg);
   if(e.data.error){done("Sorry, that didn't work. Try Chrome or Safari, or screenshot the preview.");return;}
-  fetch(e.data.url).then(r=>r.blob()).then(async blob=>{const file=new File([blob],"my-us-travel-story.png",{type:"image/png"});
+  fetch(e.data.url).then(r=>r.blob()).then(async blob=>{const file=new File([blob],(S.mode==="world"?"my-world-travel-story.png":"my-us-travel-story.png"),{type:"image/png"});
    if(navigator.canShare&&navigator.canShare({files:[file]})&&/iPhone|iPad|Android/i.test(navigator.userAgent)){try{await navigator.share({files:[file],title:"My US Travel Story"});done("Saved! Share it to your Story ✨");return;}catch(err){}}
-   const a=el("a",{href:URL.createObjectURL(blob),download:"my-us-travel-story.png"});document.body.appendChild(a);a.click();a.remove();done("Downloaded ✓ 1080 × 1920 PNG");});};
+   const a=el("a",{href:URL.createObjectURL(blob),download:(S.mode==="world"?"my-world-travel-story.png":"my-us-travel-story.png")});document.body.appendChild(a);a.click();a.remove();done("Downloaded ✓ 1080 × 1920 PNG");});};
  window.addEventListener("message",onMsg);$("pv").contentWindow.postMessage({type:"export",id},"*");
  setTimeout(()=>{if(btn.disabled)done("Still working… if nothing happens, refresh and try again.");},20000);};
 
-$("share").onclick=async()=>{const url=location.href.split("#")[0]+"#a="+enc({...S,states:[...S.states]});
+$("share").onclick=async()=>{const url=location.href.split("#")[0]+"#a="+enc({...S,states:[...S.states],countries:[...S.countries]});
  try{await navigator.clipboard.writeText(url);$("status").textContent="Link copied. Anyone can open your exact Story.";}catch(e){prompt("Copy this link:",url);}};
 $("toPreview").onclick=()=>$("preview").scrollIntoView({behavior:"smooth"});
 
 if("IntersectionObserver" in window)new IntersectionObserver(es=>{document.querySelector(".mobilebar").style.display=es[0].isIntersecting?"none":"";}).observe($("preview"));
 if(!DESIGNS.some(d=>d[0]===S.design))S.design=72;
-drawStates();drawCities();drawTitles();drawSince();drawDesigns();update();
+drawStates();drawCities();drawCountries();drawSince();applyMode();update();
 </script>
 </body>
 </html>

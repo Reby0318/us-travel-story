@@ -3,14 +3,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=Baloo+2:wght@600;800&family=Bungee&family=Caveat:wght@500;700&family=Shrikhand&family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;1,500&family=DM+Sans:wght@400;500;700&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Pacifico&family=Courier+Prime:wght@400;700&family=Rubik:wght@500;700;800&family=Bangers&family=Luckiest+Guy&family=Permanent+Marker&family=Bebas+Neue&family=Anton&family=Limelight&family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Cinzel:wght@500;600&family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=block" rel="stylesheet">
 <style>html,body{margin:0;width:1080px;height:1920px;overflow:hidden}svg{display:block}</style>
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
-<script src="data/us-states.js"></script><script src="data/world-countries.js"></script><script src="stickers.js"></script><script src="landmarks.js"></script><script src="../maker/cities.js"></script>
+<script src="data/us-states.js"></script><script src="data/world-countries.js"></script><script src="stickers.js"></script><script src="landmarks.js"></script><script src="../maker/cities.js"></script><script src="../maker/countries.js"></script>
 <script src="../my-travel.js"></script>
 </head><body>
 <svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
 <script>
 const US=window.US_STATES, WORLD=window.WORLD_COUNTRIES;
 const V=+(location.hash.match(/[#&]v=(\d+)/)||[0,1])[1];
-const CONFIG=Object.assign({name:"Me",title:"States I've Been To",since:"since I moved to the US",sinceShort:"since day one",states:[],cities:[]},window.CONFIG||{});
+const CONFIG=Object.assign({name:"Me",title:"States I've Been To",since:"since I moved to the US",sinceShort:"since day one",states:[],cities:[],countries:[]},window.CONFIG||{});
 /* settings passed from the maker page (#cfg=base64 JSON) override my-travel.js */
 try{const mc=location.hash.match(/[#&]cfg=([^&]+)/);if(mc)Object.assign(CONFIG,JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(mc[1]))))));}catch(e){console.warn("bad cfg",e);}
 const VISITED=CONFIG.states.slice();
@@ -1578,7 +1578,102 @@ function vLand(){bg("#eef1f5");const all=Object.keys(window.mkLandmarks({})).con
  list.forEach((k,i)=>{const c=i%4,r=Math.floor(i/4),x=20+c*265,y=330+r*370;const save=CONFIG.cities;CONFIG.cities=[k];const g=svg.append("g").attr("transform",`translate(${x-40},0)`);
   g.append("rect").attr("x",40).attr("y",y-300).attr("width",250).attr("height",350).attr("fill","#fff").attr("stroke","#cfd6e1");
   lineSky(g,40,y,1,"#ffffff","#e2b25c",false,6,"#17223a",2.2);CONFIG.cities=save;T(svg,x+125,y+36,k,{f:"IBM Plex Mono",w:600,s:15,c:"#17223a",a:"middle"});});}
-const FN=[null,null,null,null,null,null,null,null,null,null,null,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22,v23,v24,v25,v26,v27,v28,v29,v30,v31,v32,v33,v34,v35,v36,v37,v38,v39,v40,v41,v42,v43,v44,v45,v46,v47,v48,v49,v50,v51,v52,v53,v54,v55,v56,v57,v58,v59,v60,v61,v62,v63,v64,v65,v66,v67,v68,v69,v70,v71,v72,v73,v74,v75];
+
+/* ===================== WORLD MODE ===================== */
+const CONTS=["Asia","Europe","Africa","North America","South America","Oceania"];
+const CCOL={"Asia":"#c4553d","Europe":"#2b4c8c","Africa":"#d08a2c","North America":"#2f8f8a","South America":"#6b85c9","Oceania":"#9a6aa8"};
+const CCOL_D={"Asia":"#e07a5f","Europe":"#5f86d6","Africa":"#f2a93b","North America":"#4fb3a9","South America":"#8ea6e8","Oceania":"#c79ad6"};
+function W(){const DBw=window.WORLD_DB||{},by={},mapName={},cont={};
+ CONTS.forEach(k=>(DBw[k]||[]).forEach(([d,m])=>{cont[d]=k;mapName[d]=m||d;}));
+ const list=(CONFIG.countries||[]).filter(c=>cont[c]).sort();const vis=new Set(list.map(c=>mapName[c]));
+ CONTS.forEach(k=>by[k]=[list.filter(c=>cont[c]===k).length,(DBw[k]||[]).length]);
+ const active=CONTS.filter(k=>by[k][0]);let top=CONTS[0],tp=-1;CONTS.forEach(k=>{const p=by[k][0]/Math.max(by[k][1],1);if(p>tp){tp=p;top=k;}});
+ return {list,n:list.length,vis,cont,mapName,by,active:active.length,top,tp,pct:Math.round(list.length/195*100)};}
+function worldMap(par,box,o){const WD=W();const feats=topojson.feature(WORLD,WORLD.objects.countries).features.filter(f=>f.properties.name!=="Antarctica");
+ const proj=d3.geoNaturalEarth1().fitExtent([[box[0],box[1]],[box[0]+box[2],box[1]+box[3]]],{type:"FeatureCollection",features:feats}),path=d3.geoPath(proj);
+ const byMap={};Object.keys(WD.mapName).forEach(d=>byMap[WD.mapName[d]]=d);
+ if(o.glow)par.append("path").datum({type:"FeatureCollection",features:feats}).attr("d",path).attr("fill",o.un).attr("filter",o.glow);
+ par.append("g").selectAll("path").data(feats).join("path").attr("d",path)
+  .attr("fill",f=>{const v=WD.vis.has(f.properties.name);return v?o.fill(WD.cont[byMap[f.properties.name]]||"Asia"):o.un;})
+  .attr("stroke",f=>WD.vis.has(f.properties.name)?o.vStroke:o.unStroke).attr("stroke-width",.6).attr("stroke-linejoin","round");
+ feats.filter(f=>WD.vis.has(f.properties.name)&&path.area(f)<60).forEach(f=>{const [x,y]=path.centroid(f);if(!isFinite(x))return;par.append("circle").attr("cx",x).attr("cy",y).attr("r",6).attr("fill",o.fill(WD.cont[byMap[f.properties.name]]||"Asia")).attr("stroke",o.dotStroke||"#ffffff").attr("stroke-width",2);});
+ return {proj,path,WD};}
+const wTitle=()=>/state/i.test(CONFIG.title)?"Countries I've Been To":CONFIG.title;
+function wHeader(P,WD,eyebrow,title){T(svg,72,146,eyebrow,{f:MONO,w:500,s:19,ls:3,c:P.muted});
+ const [l1,l2]=splitTitle(title);fitT(T(svg,62,300,l1,{f:DISP,w:800,s:136,ls:-5,c:P.ink}),800,136);fitT(T(svg,66,438,l2||"",{f:SERIF2,i:true,w:400,s:168,c:P.amber}),800,168);
+ // dotted flight arc + plane, top right
+ svg.append("path").attr("d","M820,330 C880,250 930,230 1000,180").attr("fill","none").attr("stroke",P.amber).attr("stroke-width",3).attr("stroke-dasharray","2 11").attr("stroke-linecap","round");
+ plane(svg,1006,176,1.8,P.ink,52);}
+function wBoard(P,WD,y,sh){svg.append("rect").attr("x",72).attr("y",y).attr("width",936).attr("height",128).attr("rx",12).attr("fill",P.surf).attr("stroke",P.line).attr("stroke-width",1.5).attr("filter",sh);
+ [["COUNTRIES",`${WD.n}`,"of 195"],["WORLD",`${WD.pct}%`,"explored"],["CONTINENTS",`${WD.active}/6`,WD.active===6?"all six":`${6-WD.active} to go`],["TOP CONTINENT",WD.top,`${Math.round(WD.tp*100)}% covered`]].forEach(([k,v,s],i)=>{const x=72+i*234;
+  if(i)svg.append("line").attr("x1",x).attr("x2",x).attr("y1",y+18).attr("y2",y+110).attr("stroke",P.line).attr("stroke-width",1.5);
+  T(svg,x+22,y+34,k,{f:MONO,w:500,s:14,ls:2,c:P.muted});fitT(T(svg,x+20,y+88,v,{f:DISP,w:700,s:52,c:i===3?P.amber:P.ink}),200,52);T(svg,x+22,y+114,s,{f:PLEX,s:15,c:P.muted});});}
+function wTiles(P,WD,y0,yEnd,cols,colsC){const per=Math.ceil(WD.n/cols),th=Math.min(52,(yEnd-y0)/Math.max(per,1)),tw=(936-(cols-1)*14)/cols;
+ WD.list.forEach((n,i)=>{const c=Math.floor(i/per),r=i%per,x=72+c*(tw+14),y=y0+r*th;
+  svg.append("rect").attr("x",x).attr("y",y).attr("width",tw).attr("height",th-6).attr("rx",6).attr("fill",P.surf).attr("stroke",P.line);
+  svg.append("rect").attr("x",x).attr("y",y).attr("width",5).attr("height",th-6).attr("rx",2).attr("fill",colsC[WD.cont[n]]);
+  fitT(T(svg,x+16,y+(th-6)/2+6,n,{f:PLEX,w:600,s:Math.min(19,th*.45),c:P.ink}),tw-28,19);});}
+function worldAtlas(P){const WD=W(),C=P.dark?CCOL_D:CCOL,sh=shadow(0,8,18,"#0b1220",P.dark?.35:.07);
+ dotBg(P.bg,P.line);wHeader(P,WD,`${CONFIG.name.toUpperCase()}  ·  WORLD LOG  ·  ${CONFIG.sinceShort.toUpperCase()}`,wTitle());wBoard(P,WD,482,sh);
+ svg.append("rect").attr("x",72).attr("y",644).attr("width",936).attr("height",520).attr("rx",14).attr("fill",P.surf).attr("stroke",P.line).attr("stroke-width",1.5).attr("filter",sh);
+ worldMap(svg,[96,672,888,420],{fill:k=>C[k],un:P.un,vStroke:P.surf,unStroke:P.unS});
+ let lx=0;const ms=svg.append("text").attr("font-family",PLEX).attr("font-size",15).attr("font-weight",600).attr("opacity",0);const ws=CONTS.map(k=>{ms.text(k);return ms.node().getComputedTextLength()+38;});ms.remove();
+ lx=540-ws.reduce((a,b)=>a+b,0)/2;CONTS.forEach((k,i)=>{svg.append("rect").attr("x",lx).attr("y",1122).attr("width",13).attr("height",13).attr("rx",3).attr("fill",C[k]);T(svg,lx+20,1134,k,{f:PLEX,w:600,s:15,c:P.muted});lx+=ws[i];});
+ // continents progress
+ T(svg,72,1220,"By continent",{f:DISP,w:700,s:30,ls:-.5,c:P.ink});
+ CONTS.forEach((k,i)=>{const c=i%3,r=Math.floor(i/3),x=72+c*318,y=1244+r*58,[v,tt]=WD.by[k];T(svg,x,y+18,k,{f:PLEX,w:600,s:17,c:P.ink});T(svg,x+300,y+18,`${v}/${tt}`,{f:MONO,w:500,s:14,c:P.muted,a:"end"});
+  svg.append("rect").attr("x",x).attr("y",y+28).attr("width",300).attr("height",10).attr("rx",5).attr("fill",P.un);svg.append("rect").attr("x",x).attr("y",y+28).attr("width",Math.max(v?10:0,300*v/tt)).attr("height",10).attr("rx",5).attr("fill",C[k]);});
+ T(svg,72,1416,"Countries visited",{f:DISP,w:700,s:30,ls:-.5,c:P.ink});T(svg,1008,1416,`${WD.n} / 195`,{f:MONO,w:500,s:17,ls:2,c:P.amber,a:"end"});
+ wTiles(P,WD,1436,1870,WD.n>24?4:3,C);}
+function v80(){worldAtlas(ATLAS.light);}
+function v81(){worldAtlas(ATLAS.dark);}
+/* World Wrapped */
+function v82(){const WD=W(),INK="#17223a",MUT="#5d6a82",AMB="#c9761a",ACC="#2b4c8c",C=CCOL;
+ aura({base:"#eef1f5",blobs:[[120,200,330,"#dce6f3"],[980,240,300,"#f4e4cc"],[960,1000,340,"#e1e7f4"],[100,1050,320,"#d9ebe8"],[560,1750,380,"#e3e9f3"],[1000,1820,240,"#f1e6d2"]]});
+ const sh=shadow(0,12,22,INK,.10),glass=(x,y,w,h,r=22)=>svg.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",r).attr("fill","#ffffff").attr("fill-opacity",.72).attr("stroke","#ffffff").attr("stroke-width",2).attr("filter",sh);
+ T(svg,72,168,"me@world:~$ travel --wrapped",{f:MONO,w:500,s:21,c:MUT});
+ const tw=T(svg,62,282,"World ",{f:DISP,w:800,s:118,ls:-5,c:INK});tw.append("tspan").attr("fill",AMB).attr("font-family",SERIF2).attr("font-style","italic").attr("font-weight",400).attr("font-size",140).attr("letter-spacing",0).text("Wrapped");
+ T(svg,72,316,`Every country ${CONFIG.since}`,{f:PLEX,s:25,c:MUT});
+ glass(72,348,936,160);svg.append("rect").attr("x",96).attr("y",372).attr("width",112).attr("height",112).attr("rx",12).attr("fill",lg(["#2b4c8c","#2f8f8a","#c9761a"],1,1));
+ worldMap(svg,[102,404,100,50],{fill:()=>"#ffffff",un:"rgba(255,255,255,.28)",vStroke:"none",unStroke:"none"});
+ T(svg,236,402,"NOW PLAYING",{f:MONO,w:600,s:14,ls:3,c:ACC});fitT(T(svg,236,446,wTitle(),{f:DISP,w:700,s:38,ls:-1,c:INK}),640,38);T(svg,236,474,`${CONFIG.name}  ·  ${WD.n} tracks  ·  ${CONFIG.sinceShort}`,{f:PLEX,s:18,c:MUT});
+ svg.append("rect").attr("x",236).attr("y",488).attr("width",660).attr("height",6).attr("rx",3).attr("fill","#e1e6ee");svg.append("rect").attr("x",236).attr("y",488).attr("width",660*WD.n/195).attr("height",6).attr("rx",3).attr("fill",ACC);
+ svg.append("circle").attr("cx",958).attr("cy",428).attr("r",30).attr("fill",ACC);svg.append("path").attr("d","M950,414 L972,428 L950,442Z").attr("fill","#fff");
+ [[`${WD.pct}%`,"WORLD","explored"],[`${WD.active}/6`,"CONTINENTS",WD.active===6?"all six":`${6-WD.active} to go`],[`${Math.round(WD.tp*100)}%`,"TOP CONTINENT",WD.top]].forEach(([v,k,s],i)=>{const x=72+i*316;glass(x,530,304,124);
+  T(svg,x+24,564,k,{f:MONO,w:600,s:14,ls:2,c:MUT});T(svg,x+22,618,v,{f:DISP,w:700,s:50,c:i===2?C[WD.top]:INK});T(svg,x+24,642,s,{f:PLEX,s:16,c:MUT});});
+ glass(72,678,936,480);svg.append("path").attr("d","M72,700 a22,22 0 0 1 22,-22 h892 a22,22 0 0 1 22,22 v24 h-936Z").attr("fill","#ffffff").attr("fill-opacity",.6);
+ ["#ff5f57","#febc2e","#28c840"].forEach((c,i)=>svg.append("circle").attr("cx",100+i*22).attr("cy",702).attr("r",7).attr("fill",c));T(svg,540,708,"map.render(world)",{f:MONO,w:500,s:16,c:MUT,a:"middle"});
+ worldMap(svg,[96,744,888,396],{fill:k=>C[k],un:"rgba(255,255,255,.95)",vStroke:"#ffffff",unStroke:"#dfe4ec"});
+ glass(72,1182,452,340);T(svg,98,1228,"Coverage by continent",{f:DISP,w:700,s:26,ls:-.5,c:INK});
+ CONTS.map(k=>[k,...WD.by[k]]).sort((a,b)=>b[1]/b[2]-a[1]/a[2]).forEach(([k,v,tt],i)=>{const y=1258+i*42;T(svg,98,y+12,k,{f:PLEX,w:600,s:16,c:INK});T(svg,498,y+12,`${v}/${tt}`,{f:MONO,w:500,s:14,c:MUT,a:"end"});
+  svg.append("rect").attr("x",98).attr("y",y+20).attr("width",400).attr("height",10).attr("rx",5).attr("fill","#e6eaf0");svg.append("rect").attr("x",98).attr("y",y+20).attr("width",Math.max(v?10:0,400*v/tt)).attr("height",10).attr("rx",5).attr("fill",C[k]);});
+ glass(556,1182,452,340);T(svg,582,1228,"passport.stamps",{f:MONO,w:600,s:20,c:INK});T(svg,982,1228,`${WD.n}`,{f:MONO,w:600,s:16,c:ACC,a:"end"});
+ const r=rnd(WD.n+5);WD.list.slice(0,12).forEach((n,i)=>{const x=622+(i%4)*104,y=1290+Math.floor(i/4)*76,c=C[WD.cont[n]],g=svg.append("g").attr("transform",`translate(${x},${y}) rotate(${(r()-.5)*20})`).attr("opacity",.9);
+  g.append("rect").attr("x",-46).attr("y",-28).attr("width",92).attr("height",56).attr("rx",8).attr("fill","none").attr("stroke",c).attr("stroke-width",2.4);g.append("rect").attr("x",-40).attr("y",-22).attr("width",80).attr("height",44).attr("rx",5).attr("fill","none").attr("stroke",c).attr("stroke-width",.8);
+  fitT(T(g,0,4,n.toUpperCase(),{f:MONO,w:600,s:11,c,a:"middle"}),74,11);T(g,0,18,"ENTRY ✓",{f:MONO,w:500,s:8,ls:1,c,a:"middle"});});
+ if(WD.n>12)T(svg,782,1508,`+${WD.n-12} more stamps`,{f:MONO,s:14,c:MUT,a:"middle"});
+ glass(72,1546,936,290);T(svg,98,1590,"Countries visited",{f:DISP,w:700,s:26,ls:-.5,c:INK});T(svg,982,1590,`${WD.n} of 195`,{f:MONO,w:600,s:16,c:ACC,a:"end"});
+ const per=Math.max(6,Math.ceil(WD.n/4)),rh=Math.min(28,210/per);WD.list.forEach((n,i)=>{const c=Math.floor(i/per),rr=i%per,x=100+c*226,y=1626+rr*rh;svg.append("circle").attr("cx",x+6).attr("cy",y-6).attr("r",6).attr("fill",C[WD.cont[n]]);fitT(T(svg,x+20,y,n,{f:PLEX,w:500,s:Math.min(17,rh*.7),c:INK}),196,17);});
+ shields(1856,[["countries",`${WD.n}`,"#2f8f8a"],["world",`${WD.pct}%`,"#2b4c8c"],["continents",`${WD.active}/6`,"#6b85c9"],["next_stop","TBD","#c9761a"]]);}
+/* Noir & Gold World */
+function v83(){const WD=W(),IV="#f4ece0",MUT="#9d9283",GS="#c9a45c",GOLD=lg(GOLDS,1,1),FOIL=lg(GOLDS,1,.55,[64,560,1016,1080]);
+ svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",lg(["#171514","#0b0a0a"],0,1));noise(.05,.95,[1,.92,.82]);
+ svg.append("rect").attr("x",30).attr("y",30).attr("width",1020).attr("height",1860).attr("rx",24).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",2.2);
+ svg.append("rect").attr("x",42).attr("y",42).attr("width",996).attr("height",1836).attr("rx",16).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",.8).attr("opacity",.8);
+ [[42,42],[1038,42],[42,1878],[1038,1878]].forEach(([x,y])=>svg.append("path").attr("d",`M${x},${y-9}L${x+6},${y}L${x},${y+9}L${x-6},${y}Z`).attr("fill",GOLD));
+ [[150,190,14],[930,210,18],[104,430,9],[978,420,11]].forEach(([x,y,r])=>sparkle(svg,x,y,r,GOLD));
+ T(svg,540,226,"AROUND  THE  WORLD",{f:PLEX,w:500,s:21,ls:8,c:MUT,a:"middle"});
+ fitT(T(svg,540,350,wTitle(),{f:SERIF2,i:true,w:400,s:120,c:IV,a:"middle"}),880,120);diamondRule(svg,540,396,140,GS);
+ svg.append("rect").attr("x",360).attr("y",422).attr("width",360).attr("height",52).attr("rx",26).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",1.6);T(svg,540,456,`${WD.n}  of  195  countries`,{f:PLEX,w:500,s:22,ls:3,c:"#e2c27d",a:"middle"});
+ worldMap(svg,[64,540,952,480],{fill:()=>FOIL,un:"#1f1d1b",vStroke:"#0b0a0a",unStroke:"#33302c",glow:shadow(0,0,22,GS,.25),dotStroke:"#0b0a0a"});
+ const sy=1110;[[`${WD.n}`,"COUNTRIES"],[`${WD.pct}%`,"OF THE WORLD"],[`${WD.active}/6`,"CONTINENTS"]].forEach(([v,k],i)=>{const x=220+i*320;T(svg,x,sy,v,{f:SERIF2,i:true,w:400,s:64,c:IV,a:"middle"});T(svg,x,sy+36,k,{f:PLEX,w:500,s:14,ls:5,c:MUT,a:"middle"});
+  if(i)svg.append("line").attr("x1",x-160).attr("x2",x-160).attr("y1",sy-46).attr("y2",sy+34).attr("stroke",GOLD).attr("stroke-width",1).attr("opacity",.7);});
+ diamondRule(svg,540,1200,400,GS);
+ const cols=WD.n>30?4:3,per=Math.ceil(WD.n/cols),RH=Math.min(36,600/Math.max(per,1)),cw=cols===4?230:292;
+ WD.list.forEach((n,i)=>{const c=Math.floor(i/per),r=i%per,x=(cols===4?88:130)+c*cw,y=1250+r*RH;svg.append("path").attr("d",`M${x},${y-15}L${x+4.5},${y-9}L${x},${y-3}L${x-4.5},${y-9}Z`).attr("fill",GOLD);
+  fitT(T(svg,x+16,y,n,{f:SERIF2,w:400,s:Math.min(28,RH*.82),c:IV}),cw-30,28);});}
+
+const FN=[null,null,null,null,null,null,null,null,null,null,null,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22,v23,v24,v25,v26,v27,v28,v29,v30,v31,v32,v33,v34,v35,v36,v37,v38,v39,v40,v41,v42,v43,v44,v45,v46,v47,v48,v49,v50,v51,v52,v53,v54,v55,v56,v57,v58,v59,v60,v61,v62,v63,v64,v65,v66,v67,v68,v69,v70,v71,v72,v73,v74,v75,null,null,null,null,v80,v81,v82,v83];
 const PRE=["400 20px \"IBM Plex Mono\"","500 20px \"IBM Plex Mono\"","600 20px \"IBM Plex Mono\"","400 20px \"IBM Plex Sans\"","600 20px \"IBM Plex Sans\"","700 20px \"IBM Plex Sans\"","400 20px \"DM Sans\"","500 20px \"DM Sans\"","700 20px \"DM Sans\"","italic 500 20px \"Playfair Display\"","500 20px \"Playfair Display\"","600 20px \"Playfair Display\"","900 20px Fraunces","20px Anton","600 20px \"Big Shoulders Display\"","800 20px \"Big Shoulders Display\"","600 20px Cinzel","20px Limelight","800 20px \"Bricolage Grotesque\"","600 20px \"Bricolage Grotesque\"","italic 400 20px \"Instrument Serif\"","400 20px Geist","500 20px Geist","600 20px Geist","700 20px Geist","400 20px \"Geist Mono\"","500 20px \"Geist Mono\"","600 20px \"Geist Mono\"","700 20px Caveat","500 20px \"Bodoni Moda\"","700 20px \"Bodoni Moda\"","italic 500 20px \"Bodoni Moda\"","400 20px \"Space Mono\""];
 
 /* ---------- in-browser PNG export (used by the maker page) ---------- */
