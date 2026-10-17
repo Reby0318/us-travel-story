@@ -195,7 +195,7 @@ footer a{color:var(--accent)}
 </div>
 <div class="mobilebar"><button class="btn big" id="toPreview" type="button">See preview &amp; download ↓</button></div>
 
-<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="generator/stickers.js"></script><script src="maker/cities.js"></script><script src="maker/countries.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="generator/stickers.js"></script><script src="maker/countries.js"></script><script src="generator/stickers-world.js"></script><script src="maker/cities.js"></script>
 <script>
 const REGIONS={
  West:["Washington","Oregon","California","Nevada","Idaho","Montana","Wyoming","Utah","Colorado","Alaska","Hawaii"],
@@ -334,20 +334,21 @@ $("modeBar").addEventListener("click",e=>{const b=e.target.closest("button[data-
 
 
 /* ---- sticker picker ---- */
-const SPOTS={72:8,73:8,74:8,75:8,58:4,63:4,56:4,69:3,65:4,66:2,67:3,68:3,70:4,71:2,55:3};
-function stickerOrder(){const cs=[];S.cities.forEach(x=>{if(!cs.includes(x.s))cs.push(x.s);});const pr=window.STICKER_PRIORITY||[];
+const SPOTS={80:5,81:5,82:4,83:3,72:8,73:8,74:8,75:8,58:4,63:4,56:4,69:3,65:4,66:2,67:3,68:3,70:4,71:2,55:3};
+function stickerOrder(){if(S.mode==="world"){const have=new Set(window.STICKER_COUNTRIES||[]),L=[...S.countries].sort();return [...L.filter(c=>have.has(c)),...L.filter(c=>!have.has(c))];}const cs=[];S.cities.forEach(x=>{if(!cs.includes(x.s))cs.push(x.s);});const pr=window.STICKER_PRIORITY||[];
  return [...cs,...pr].filter((s,i,a)=>S.states.has(s)&&a.indexOf(s)===i);}
-function stickerPick(){const off=new Set(S.stkOff||[]);return stickerOrder().filter(s=>!off.has(s));}
-function drawStickerGrid(){const wrap=$("stkWrap");const show=S.mode!=="world"&&(S.stickers||"around")!=="off";wrap.hidden=!show;if(!show)return;
+const offKey=s=>S.mode==="world"?"c:"+s:s;
+function stickerPick(){const off=new Set(S.stkOff||[]);return stickerOrder().filter(s=>!off.has(offKey(s)));}
+function drawStickerGrid(){const wrap=$("stkWrap");const show=(S.stickers||"around")!=="off";wrap.hidden=!show;if(!show)return;
  const g=$("stkGrid");g.innerHTML="";const ord=stickerOrder(),pick=stickerPick(),spots=SPOTS[S.design]||0,onMap=S.stickers==="map";
- $("stkHint").innerHTML=!ord.length?"Pick some states to get stickers.":!spots&&!onMap?"This design has no sticker spots. Pick a NEW, Wrapped or Pro design, or choose <b>On the map</b>.":
+ $("stkHint").innerHTML=!ord.length?(S.mode==="world"?"Pick some countries to get stickers.":"Pick some states to get stickers."):!spots&&!onMap?"This design has no sticker spots. Pick a NEW, Wrapped or Pro design, or choose <b>On the map</b>.":
   `Tap to choose which stickers go on your Story. <b>${pick.length}</b> of ${ord.length} picked${onMap?" · all picked stickers are pinned on their states.":` · this design shows the first <b>${spots}</b> around the map.`}`;
  ord.forEach(s=>{const i=pick.indexOf(s),on=i>=0,b=el("button",{class:"stk",type:"button","aria-pressed":on,"data-s":s,title:s});
-  const sv=d3.select(b).append("svg").attr("viewBox","-60 -60 120 120");if(window.drawSticker)drawSticker(sv,s,0,0,1,0,null);
+  const sv=d3.select(b).append("svg").attr("viewBox","-60 -60 120 120");if(window.drawSticker)drawSticker(sv,S.mode==="world"?"c:"+s:s,0,0,1,0,null);
   b.appendChild(document.createTextNode(s));if(on){const n=el("b",{class:!onMap&&i>=spots?"out":""},String(i+1));b.appendChild(n);}g.appendChild(b);});}
-$("stkGrid").addEventListener("click",e=>{const b=e.target.closest(".stk");if(!b)return;const s=b.dataset.s,off=new Set(S.stkOff||[]);off.has(s)?off.delete(s):off.add(s);S.stkOff=[...off];drawStickerGrid();update();});
-$("stkAll").onclick=()=>{S.stkOff=[];drawStickerGrid();update();};
-$("stkNone").onclick=()=>{S.stkOff=stickerOrder();drawStickerGrid();update();};
+$("stkGrid").addEventListener("click",e=>{const b=e.target.closest(".stk");if(!b)return;const s=offKey(b.dataset.s),off=new Set(S.stkOff||[]);off.has(s)?off.delete(s):off.add(s);S.stkOff=[...off];drawStickerGrid();update();});
+$("stkAll").onclick=()=>{const own=new Set(stickerOrder().map(offKey));S.stkOff=(S.stkOff||[]).filter(k=>!own.has(k));drawStickerGrid();update();};
+$("stkNone").onclick=()=>{S.stkOff=[...new Set([...(S.stkOff||[]),...stickerOrder().map(offKey)])];drawStickerGrid();update();};
 
 /* ---- download ---- */
 let reqId=0;

@@ -27,7 +27,7 @@ Nothing you type is uploaded anywhere. Everything runs in your browser. **Copy l
 
 ## 🌍 World mode
 
-Not just the US: switch the maker to **World · countries** at the top, tap the countries you've been to (grouped by continent, with search and "select all"), and pick a world design: **World Atlas** (light and dark), **World Wrapped** and **Noir & Gold World**. Stats are calculated for you: countries (of 195), % of the world, continents (of 6) and your top continent. In `my-travel.js`, list them in `countries` and render designs 80–83.
+Not just the US: switch the maker to **World · countries** at the top, tap the countries you've been to (grouped by continent, with search and "select all"), and pick a world design: **World Atlas** (light and dark), **World Wrapped** and **Noir & Gold World**. Stats are calculated for you: countries (of 195), % of the world, continents (of 6) and your top continent. In `my-travel.js`, list them in `countries` and render designs 80–83. Each country has a sticker of what it's known for (boba tea for Taiwan, ramen for Japan, curry for India, about 100 hand-drawn; the rest get a passport-stamp sticker), and the sticker picker works the same way. Open `generator/index.html#v=997&pg=0` to see them all.
 
 ---
 
