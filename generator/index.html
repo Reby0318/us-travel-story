@@ -1511,15 +1511,15 @@ function card(x,y,w,h,P2,r=14){return svg.append("rect").attr("x",x).attr("y",y)
 function dotBg(c1,c2){bg(c1);const dp=defs.append("pattern").attr("id","dg"+uid).attr("width",28).attr("height",28).attr("patternUnits","userSpaceOnUse");dp.append("circle").attr("cx",14).attr("cy",14).attr("r",1.3).attr("fill",c2);svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",`url(#dg${uid++})`).attr("opacity",.8);}
 const hex7=n=>((hash=>{let h=7;for(const ch of n)h=(h*31+ch.charCodeAt(0))>>>0;return h;})()).toString(16).padStart(8,"0").slice(0,7);
 function highwaySigns(g,cities,x0,y0,w,o={}){if(!cities.length)return y0;const GRN=o.green||"#1f6b45",gap=10,maxR=o.maxRows||3;
- const meas=svg.append("text").attr("font-family",DISP).attr("font-weight",700).attr("letter-spacing",1).attr("opacity",0);
- let fs=30,rows;for(fs of [30,26,22,19,16,14]){const H=fs*1.9;meas.attr("font-size",fs);const items=cities.map(c=>{meas.text(c.toUpperCase());return [c.toUpperCase(),meas.node().getComputedTextLength()+fs*1.4];});
+ const meas=svg.append("text").attr("font-family",PLEX).attr("font-weight",600).attr("letter-spacing",1.5).attr("opacity",0);
+ let fs=20,rows;for(fs of [20,18,16,14,13,12]){const H=fs*1.9;meas.attr("font-size",fs);const items=cities.map(c=>{meas.text(c.toUpperCase());return [c.toUpperCase(),meas.node().getComputedTextLength()+fs*1.4];});
   rows=[];let row=[],rw=0;items.forEach(it=>{if(rw+it[1]>w&&row.length){rows.push([row,rw-gap]);row=[];rw=0;}row.push(it);rw+=it[1]+gap;});rows.push([row,rw-gap]);
   if(rows.length*(H+12)<=maxR*70||fs===14)break;}
  meas.remove();const H=fs*1.9;
  rows.forEach(([r,rwid],ri)=>{let x=x0+(w-rwid)/2;const y=y0+ri*(H+12);r.forEach(([lab,wd])=>{
-  g.append("rect").attr("x",x).attr("y",y).attr("width",wd).attr("height",H).attr("rx",fs*.3).attr("fill",GRN);
-  g.append("rect").attr("x",x+4).attr("y",y+4).attr("width",wd-8).attr("height",H-8).attr("rx",fs*.2).attr("fill","none").attr("stroke","#ffffff").attr("stroke-width",2);
-  T(g,x+wd/2,y+H/2+fs*.36,lab,{f:DISP,w:700,s:fs,ls:1,c:"#ffffff",a:"middle"});x+=wd+gap;});});
+  const col=o.colorFn?o.colorFn(lab):GRN;g.append("rect").attr("x",x).attr("y",y).attr("width",wd).attr("height",H).attr("rx",fs*.35).attr("fill",col);
+  g.append("rect").attr("x",x+4).attr("y",y+4).attr("width",wd-8).attr("height",H-8).attr("rx",fs*.25).attr("fill","none").attr("stroke","#ffffff").attr("stroke-opacity",.7).attr("stroke-width",1.2);
+  T(g,x+wd/2,y+H/2+fs*.36,lab,{f:PLEX,w:600,s:fs,ls:1.5,c:"#ffffff",a:"middle"});x+=wd+gap;});});
  return y0+rows.length*(H+12);}
 function shield(g,x,y,num,s=1,c1="#1d4f91",c2="#d23b3b"){const k=g.append("g").attr("transform",`translate(${x},${y}) scale(${s})`);
  k.append("path").attr("d","M-30,-30 Q0,-40 30,-30 Q34,10 0,36 Q-34,10 -30,-30Z").attr("fill","#ffffff").attr("stroke","#1f2433").attr("stroke-width",2.5);
@@ -1560,7 +1560,7 @@ function stickerAtlas(P){const ST=STATS(),R=P.R||MOD.R,F=stickerFilter(5);
   const slots=[[890,240,1.45,8],[1000,390,1.0,-8],[76,700,1.0,-10],[1004,700,1.0,10],[76,900,.95,8],[1004,920,.95,-6],[76,1100,.95,-6],[1004,1130,.95,8]];
   stickerLayer(m,slots,F,.5);return;}
  const hy=ly+64+per*th;{const ct=T(svg,72,hy+6,"Cities",{f:DISP,w:700,s:28,ls:-.5,c:P.ink});shield(svg,72+ct.node().getComputedTextLength()+30,hy-4,N,.62);}
- highwaySigns(svg,CONFIG.cities,72,hy+26,936,{maxRows:Math.max(1,Math.min(3,Math.floor((1880-hy-26)/70)))});
+ highwaySigns(svg,CONFIG.cities,72,hy+26,936,{colorFn:lab=>{const DBc=window.CITY_DB||{};for(const st in DBc)if(DBc[st].some(([n])=>n.toUpperCase()===lab))return (P.R||MOD.R)[REG(st)];return P.amber;},maxRows:Math.max(1,Math.min(3,Math.floor((1880-hy-26)/70)))});
  // stickers around the map + top-right corner
  const slots=[[890,240,1.45,8],[1000,390,1.0,-8],[76,700,1.0,-10],[1004,700,1.0,10],[76,900,.95,8],[1004,920,.95,-6],[76,1100,.95,-6],[1004,1130,.95,8]];
  stickerLayer(m,slots,F,.5);
