@@ -334,7 +334,7 @@ $("modeBar").addEventListener("click",e=>{const b=e.target.closest("button[data-
 
 
 /* ---- sticker picker ---- */
-const SPOTS={80:5,81:5,82:4,83:3,72:8,73:8,74:8,75:8,58:4,63:4,56:4,69:3,65:4,66:2,67:3,68:3,70:4,71:2,55:3};
+const SPOTS={80:5,81:5,82:4,83:3,72:7,73:7,74:7,75:7,58:4,63:4,56:4,69:3,65:4,66:2,67:3,68:3,70:4,71:2,55:3};
 function stickerOrder(){if(S.mode==="world"){const have=new Set(window.STICKER_COUNTRIES||[]),L=[...S.countries].sort();return [...L.filter(c=>have.has(c)),...L.filter(c=>!have.has(c))];}const cs=[];S.cities.forEach(x=>{if(!cs.includes(x.s))cs.push(x.s);});const pr=window.STICKER_PRIORITY||[];
  return [...cs,...pr].filter((s,i,a)=>S.states.has(s)&&a.indexOf(s)===i);}
 const offKey=s=>S.mode==="world"?"c:"+s:s;

@@ -1525,19 +1525,26 @@ function shield(g,x,y,num,s=1,c1="#1d4f91",c2="#d23b3b"){const k=g.append("g").a
  k.append("path").attr("d","M-30,-30 Q0,-40 30,-30 Q34,10 0,36 Q-34,10 -30,-30Z").attr("fill","#ffffff").attr("stroke","#1f2433").attr("stroke-width",2.5);
  k.append("path").attr("d","M-25,-14 L25,-14 Q24,8 0,28 Q-24,8 -25,-14Z").attr("fill",c1);k.append("path").attr("d","M-26,-26 Q0,-34 26,-26 L25,-16 L-25,-16Z").attr("fill",c2);
  T(k,0,14,`${num}`,{f:DISP,w:800,s:26,c:"#ffffff",a:"middle"});return k;}
+
+/* Editorial header: hero numeral + serif title + hairline stat row */
+function edHeader(P,eyebrow,num,title,sub,stats){
+ const ey=T(svg,72,150,eyebrow,{f:MONO,w:500,s:15,ls:3,c:P.muted});const ew=ey.node().getComputedTextLength();
+ svg.append("line").attr("x1",72+ew+18).attr("x2",1008).attr("y1",145).attr("y2",145).attr("stroke",P.line).attr("stroke-width",1.2);
+ const hn=T(svg,64,420,String(num),{f:SERIF2,w:400,s:290,ls:-6,c:P.amber});const nw=hn.node().getComputedTextLength();
+ const tx=64+nw+40,tw=1008-tx,[l1,l2]=splitTitle(title);
+ const ts=l2?84:96;fitT(T(svg,tx,l2?296:330,l1,{f:SERIF2,w:400,s:ts,ls:-1.5,c:P.ink}),tw,ts);if(l2)fitT(T(svg,tx,374,l2,{f:SERIF2,i:true,w:400,s:ts,ls:-1.5,c:P.ink}),tw,ts);
+ fitT(T(svg,tx+2,420,sub,{f:PLEX,w:500,s:19,c:P.muted}),tw,19);
+ const y0=470,cw=936/stats.length;svg.append("line").attr("x1",72).attr("x2",1008).attr("y1",y0).attr("y2",y0).attr("stroke",P.line).attr("stroke-width",1.2);
+ svg.append("line").attr("x1",72).attr("x2",1008).attr("y1",y0+132).attr("y2",y0+132).attr("stroke",P.line).attr("stroke-width",1.2);
+ stats.forEach(([k,v,s,hi],i)=>{const x=72+i*cw+(i?22:0);if(i)svg.append("line").attr("x1",72+i*cw).attr("x2",72+i*cw).attr("y1",y0+22).attr("y2",y0+110).attr("stroke",P.line).attr("stroke-width",1.2);
+  T(svg,x,y0+40,k,{f:MONO,w:500,s:12,ls:2.4,c:P.muted});fitT(T(svg,x,y0+86,v,{f:PLEX,w:600,s:36,ls:-.5,c:hi?P.amber:P.ink}),cw-34,36);T(svg,x,y0+112,s,{f:PLEX,w:400,s:15,c:P.muted});});}
 function stickerAtlas(P){const ST=STATS(),R=P.R||MOD.R,F=stickerFilter(5);
  bg(P.bg);const dp=defs.append("pattern").attr("id","adots"+uid).attr("width",28).attr("height",28).attr("patternUnits","userSpaceOnUse");dp.append("circle").attr("cx",14).attr("cy",14).attr("r",1.3).attr("fill",P.line);
  svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",`url(#adots${uid++})`).attr("opacity",.8);
  const sh=shadow(0,8,18,"#0b1220",P.dark?.35:.07);
  // header
- T(svg,72,146,`${CONFIG.name.toUpperCase()}  ·  STATES LOG  ·  ${CONFIG.sinceShort.toUpperCase()}`,{f:MONO,w:500,s:19,ls:3,c:P.muted});
- const [l1,l2]=splitTitle(CONFIG.title);
- fitT(T(svg,62,300,l1,{f:DISP,w:800,s:136,ls:-5,c:P.ink}),780,136);fitT(T(svg,66,438,l2||"",{f:SERIF2,i:true,w:400,s:168,c:P.amber}),780,168);
- // board
- const by=482;svg.append("rect").attr("x",72).attr("y",by).attr("width",936).attr("height",128).attr("rx",12).attr("fill",P.surf).attr("stroke",P.line).attr("stroke-width",1.5).attr("filter",sh);
- [["STATES",`${N}`,"of 50"],["COVERAGE",`${ST.pct}%`,"of the US"],["REGIONS",`${ST.ra}/5`,ST.ra===5?"all active":`${5-ST.ra} to go`],["TOP REGION",ST.top,`${Math.round(ST.tp*100)}% covered`]].forEach(([k,v,s],i)=>{const x=72+i*234;
-  if(i)svg.append("line").attr("x1",x).attr("x2",x).attr("y1",by+18).attr("y2",by+110).attr("stroke",P.line).attr("stroke-width",1.5);
-  T(svg,x+22,by+34,k,{f:MONO,w:500,s:14,ls:2,c:P.muted});fitT(T(svg,x+20,by+88,v,{f:DISP,w:700,s:54,c:i===3?P.amber:P.ink}),200,54);T(svg,x+22,by+114,s,{f:PLEX,s:15,c:P.muted});});
+ edHeader(P,`${CONFIG.name.toUpperCase()}  ·  STATES LOG  ·  ${CONFIG.sinceShort.toUpperCase()}`,N,CONFIG.title,`of 50 states  ·  ${CONFIG.since}`,
+  [["COVERAGE",`${ST.pct}%`,"of the US"],["REGIONS",`${ST.ra} of 5`,ST.ra===5?"all active":`${5-ST.ra} to go`],["TOP REGION",ST.top,`${Math.round(ST.tp*100)}% covered`,true],["CITIES",`${CONFIG.cities.length}`,"logged"]]);
  // map card (narrower so stickers live in the margins, never on the map)
  const my=644,mh=560;svg.append("rect").attr("x",150).attr("y",my).attr("width",780).attr("height",mh).attr("rx",14).attr("fill",P.surf).attr("stroke",P.line).attr("stroke-width",1.5).attr("filter",sh);
  const m=map(svg,[176,my+34,728,mh-110],{fill:(n,v)=>v?R[REG(n)]:P.un,stroke:(n,v)=>v?P.surf:P.unS,sw:(n,v)=>v?1.8:1.1});allLabels(m,"#ffffff",P.unLab,PLEX,12);
@@ -1557,12 +1564,12 @@ function stickerAtlas(P){const ST=STATS(),R=P.R||MOD.R,F=stickerFilter(5);
   sk.append("line").attr("x1",60).attr("x2",1020).attr("y1",base).attr("y2",base).attr("stroke",P.ink).attr("stroke-width",2.4);
   const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length,st={f:MONO,w:500,s:14,ls:2,c:P.muted,a:"middle"};
   nameLines(nm,base+30,22,st);
-  const slots=[[890,240,1.45,8],[1000,390,1.0,-8],[76,700,1.0,-10],[1004,700,1.0,10],[76,900,.95,8],[1004,920,.95,-6],[76,1100,.95,-6],[1004,1130,.95,8]];
+  const slots=[[1000,196,.9,8],[76,700,1.0,-10],[1004,700,1.0,10],[76,900,.95,8],[1004,920,.95,-6],[76,1100,.95,-6],[1004,1130,.95,8]];
   stickerLayer(m,slots,F,.5);return;}
  const hy=ly+64+per*th;{const ct=T(svg,72,hy+6,"Cities",{f:DISP,w:700,s:28,ls:-.5,c:P.ink});shield(svg,72+ct.node().getComputedTextLength()+30,hy-4,N,.62);}
  highwaySigns(svg,CONFIG.cities,72,hy+26,936,{colorFn:lab=>{const DBc=window.CITY_DB||{};for(const st in DBc)if(DBc[st].some(([n])=>n.toUpperCase()===lab))return (P.R||MOD.R)[REG(st)];return P.amber;},maxRows:Math.max(1,Math.min(3,Math.floor((1880-hy-26)/70)))});
  // stickers around the map + top-right corner
- const slots=[[890,240,1.45,8],[1000,390,1.0,-8],[76,700,1.0,-10],[1004,700,1.0,10],[76,900,.95,8],[1004,920,.95,-6],[76,1100,.95,-6],[1004,1130,.95,8]];
+ const slots=[[1000,196,.9,8],[76,700,1.0,-10],[1004,700,1.0,10],[76,900,.95,8],[1004,920,.95,-6],[76,1100,.95,-6],[1004,1130,.95,8]];
  stickerLayer(m,slots,F,.5);
 }
 const ATLAS={light:{bg:"#eef1f5",surf:"#ffffff",ink:"#17223a",muted:"#5d6a82",line:"#cfd6e1",amber:"#c9761a",un:"#eef1f6",unS:"#d6dce6",unLab:"#a3adbd"},
@@ -1615,7 +1622,8 @@ function wTiles(P,WD,y0,yEnd,cols,colsC){const per=Math.ceil(WD.n/cols),th=Math.
   svg.append("rect").attr("x",x).attr("y",y).attr("width",5).attr("height",th-6).attr("rx",2).attr("fill",colsC[WD.cont[n]]);
   fitT(T(svg,x+16,y+(th-6)/2+6,n,{f:PLEX,w:600,s:Math.min(19,th*.45),c:P.ink}),tw-28,19);});}
 function worldAtlas(P){const WD=W(),C=P.dark?CCOL_D:CCOL,sh=shadow(0,8,18,"#0b1220",P.dark?.35:.07);
- dotBg(P.bg,P.line);wHeader(P,WD,`${CONFIG.name.toUpperCase()}  ·  WORLD LOG  ·  ${CONFIG.sinceShort.toUpperCase()}`,wTitle());wBoard(P,WD,482,sh);
+ dotBg(P.bg,P.line);edHeader(P,`${CONFIG.name.toUpperCase()}  ·  WORLD LOG  ·  ${CONFIG.sinceShort.toUpperCase()}`,WD.n,wTitle(),`of 195 countries  ·  ${CONFIG.since}`,
+  [["WORLD",`${WD.pct}%`,"explored"],["CONTINENTS",`${WD.active} of 6`,WD.active===6?"all six":`${6-WD.active} to go`],["TOP CONTINENT",WD.top,`${Math.round(WD.tp*100)}% covered`,true]]);
  svg.append("rect").attr("x",72).attr("y",644).attr("width",936).attr("height",520).attr("rx",14).attr("fill",P.surf).attr("stroke",P.line).attr("stroke-width",1.5).attr("filter",sh);
  const wm=worldMap(svg,[96,672,888,420],{fill:k=>C[k],un:P.un,vStroke:P.surf,unStroke:P.unS});
  let lx=0;const ms=svg.append("text").attr("font-family",PLEX).attr("font-size",15).attr("font-weight",600).attr("opacity",0);const ws=CONTS.map(k=>{ms.text(k);return ms.node().getComputedTextLength()+38;});ms.remove();
@@ -1626,7 +1634,7 @@ function worldAtlas(P){const WD=W(),C=P.dark?CCOL_D:CCOL,sh=shadow(0,8,18,"#0b12
   svg.append("rect").attr("x",x).attr("y",y+28).attr("width",300).attr("height",10).attr("rx",5).attr("fill",P.un);svg.append("rect").attr("x",x).attr("y",y+28).attr("width",Math.max(v?10:0,300*v/tt)).attr("height",10).attr("rx",5).attr("fill",C[k]);});
  T(svg,72,1416,"Countries visited",{f:DISP,w:700,s:30,ls:-.5,c:P.ink});T(svg,1008,1416,`${WD.n} / 195`,{f:MONO,w:500,s:17,ls:2,c:P.amber,a:"end"});
  wTiles(P,WD,1436,1870,WD.n>24?4:3,C);
- wStickerLayer(wm,[[1006,672,.85,10],[74,690,.85,-8],[1006,1130,.8,-6],[74,1126,.8,8],[940,250,1.0,8]],.36);}
+ wStickerLayer(wm,[[1000,196,.9,8],[1006,672,.85,10],[74,690,.85,-8],[1006,1130,.8,-6],[74,1126,.8,8]],.36);}
 
 function vSheetW(){bg("#eef1f5");const F=stickerFilter(5);const all=[...STICKER_COUNTRIES.slice().sort(),"Kazakhstan","Estonia","Uruguay","Samoa"];
  const pg=+(location.hash.match(/pg=(\d)/)||[0,0])[1],per=50,list=all.slice(pg*per,pg*per+per);
