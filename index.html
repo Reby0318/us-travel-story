@@ -36,6 +36,9 @@ input[type=text]:focus,select:focus{border-color:var(--accent)}
 .pill .sky{font:600 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;background:var(--amber);color:#fff;border-radius:4px;padding:2px 5px}
 .pill[aria-pressed=true] .sky{background:#fff;color:var(--ink)}
 .also{font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);align-self:center;margin:0 4px 0 10px}
+.pill .star{font-size:15px;color:var(--amber);opacity:.85;padding:0 2px;margin-right:-4px}
+.pill .star:hover{opacity:1}
+.pill[aria-pressed=true] .star{color:#f2c14e}
 .pill .dot{width:10px;height:10px;border-radius:3px}
 .pill:focus-visible,.design:focus-visible,.btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 .region{margin-bottom:14px}
@@ -109,7 +112,7 @@ footer a{color:var(--accent)}
 
   <section class="q">
    <h2><span class="n">2</span>Which cities did you visit?</h2>
-   <p class="hint">Each state's <b>main city</b> (tagged Skyline) is added for you and appears in your skyline. Other cities you tap are listed on your Story but not drawn in the skyline. <span class="count" id="cityCount">0</span> selected.</p>
+   <p class="hint">Tap the cities you actually visited. Your skyline shows <b>one city per state</b>, tagged Skyline. Tap ☆ on another selected city to use it instead. <span class="count" id="cityCount">0</span> selected.</p>
    <div class="body">
     <div id="cityStates"></div>
     <p class="hint" id="noStates" style="margin:0">Pick some states above first ✨</p>
@@ -186,13 +189,14 @@ const DESIGNS=[[72,"Sticker Atlas","New"],[73,"Sticker Atlas Night","New"],[74,"
 
 /* ---- city helpers: cities always belong to a visited state ---- */
 const DB=window.CITY_DB||{};
+const skyOf=s=>{const sel=S.cities.filter(x=>x.s===s);if(!sel.length)return null;const p=(S.skyPick||{})[s];if(sel.some(x=>x.c===p))return p;return (DB[s]||[]).map(a=>a[0]).find(c=>sel.some(x=>x.c===c))||sel[0].c;};
 const lonOf=x=>{const L=DB[x.s]||[];const f=L.find(([n])=>n===x.c);return f?f[1]:(L[0]?L[0][1]:-90);};
 function stateOf(c,within){for(const s of within||Object.keys(DB))if((DB[s]||[]).some(([n])=>n===c))return s;return null;}
 function sortCities(){S.cities.sort((a,b)=>lonOf(a)-lonOf(b));}
 function autoCity(s){if(S.cities.some(x=>x.s===s)||S.cities.length>=MAXC)return;const L=DB[s]||[];if(!L.length)return;
  const pick=L[0];S.cities.push({c:pick[0],s});sortCities();}
 function dropCities(s){S.cities=S.cities.filter(x=>x.s!==s);}
-const S={stickers:"around",states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:72};
+const S={skyPick:{},stickers:"around",states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:72};
 // restore from a shared link or the last visit
 try{const h=new URLSearchParams(location.hash.slice(1)).get("a");const saved=h?JSON.parse(decodeURIComponent(escape(atob(h)))):JSON.parse(localStorage.getItem("ustravel")||"null");
  if(saved){Object.assign(S,saved);S.states=new Set(saved.states||[]);S.cities=(saved.cities||[]).map(c=>typeof c==="string"?{c,s:stateOf(c,S.states)}:c).filter(x=>x.s&&S.states.has(x.s));}
@@ -223,13 +227,13 @@ function drawCities(){const box=$("cityStates");box.innerHTML="";const sts=order
  sts.forEach(s=>{const row=el("div",{class:"region"});const r=Object.keys(REGIONS).find(k=>REGIONS[k].includes(s));
   row.innerHTML=`<div class="region-h"><b><i style="background:var(--${r})"></i>${esc(s)}</b></div>`;const p=el("div",{class:"pills"});
   const extra=S.cities.filter(x=>x.s===s&&!(DB[s]||[]).some(([n])=>n===x.c)).map(x=>[x.c]);
-  [...(DB[s]||[]),...extra].forEach(([c],i)=>{const on=S.cities.some(x=>x.c===c&&x.s===s);const main=i===0&&(DB[s]||[]).length>0;
-   if(i===1)p.appendChild(el("span",{class:"also"},"Also visited"));
-   const b=el("button",{class:"pill"+(main?" main":""),type:"button","aria-pressed":on,"data-c":c,"data-st":s},`${esc(c)}${main?' <span class="sky">Skyline</span>':''}`);p.appendChild(b);});
+  const sk=skyOf(s);[...(DB[s]||[]),...extra].forEach(([c])=>{const on=S.cities.some(x=>x.c===c&&x.s===s),isSky=on&&sk===c;
+   const b=el("button",{class:"pill"+(isSky?" main":""),type:"button","aria-pressed":on,"data-c":c,"data-st":s},`${esc(c)}${isSky?' <span class="sky">Skyline</span>':on?` <span class="star" role="button" title="Use ${esc(c)} in the skyline" data-star="1">☆</span>`:''}`);p.appendChild(b);});
   row.appendChild(p);box.appendChild(row);});
  $("cityState").innerHTML=sts.length?sts.map(s=>`<option>${esc(s)}</option>`).join(""):'<option value="">Pick states first</option>';
  $("cityCount").textContent=S.cities.length;}
-$("cityStates").addEventListener("click",e=>{const b=e.target.closest("button[data-c]");if(!b)return;const c=b.dataset.c,s=b.dataset.st;const i=S.cities.findIndex(x=>x.c===c&&x.s===s);
+$("cityStates").addEventListener("click",e=>{const b=e.target.closest("button[data-c]");if(!b)return;const c=b.dataset.c,s=b.dataset.st;
+ if(e.target.closest("[data-star]")){S.skyPick=Object.assign({},S.skyPick,{[s]:c});drawCities();update();return;}const i=S.cities.findIndex(x=>x.c===c&&x.s===s);
  if(i>=0)S.cities.splice(i,1);else{S.cities.push({c,s});sortCities();}
  $("cityMsg").textContent="";drawCities();update();});
 const addCity=()=>{let v=$("cityInput").value.trim().replace(/\s+/g," ");const s=$("cityState").value;if(!v)return;if(!s){$("cityMsg").textContent="Pick the state(s) you visited first.";return;}
@@ -268,7 +272,7 @@ $("designs").addEventListener("click",e=>{const b=e.target.closest("button");if(
 function config(){const yr=S.year&&S.year.length===4?S.year:"20XX";const since=S.since===2?[`since ${yr}`,`since ${yr}`]:SINCE[S.since].slice(0,2);
  const order=Object.values(REGIONS).flat();
  return {name:S.name.trim()||"Me",title:(S.title==="__custom"?S.titleCustom.trim():S.title)||"States I've Been To",since:since[0],sinceShort:since[1],
-  states:[...S.states].sort((a,b)=>order.indexOf(a)-order.indexOf(b)),cities:S.cities.map(x=>x.c),skyline:S.cities.filter(x=>((DB[x.s]||[])[0]||[])[0]===x.c).map(x=>x.c),stickers:S.stickers||"around"};}
+  states:[...S.states].sort((a,b)=>order.indexOf(a)-order.indexOf(b)),cities:S.cities.map(x=>x.c),skyline:S.cities.filter(x=>skyOf(x.s)===x.c).map(x=>x.c),stickers:S.stickers||"around"};}
 const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 let tmr=null;
 function update(){try{localStorage.setItem("ustravel",JSON.stringify({...S,states:[...S.states]}));}catch(e){}
