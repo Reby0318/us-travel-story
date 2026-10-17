@@ -102,7 +102,7 @@ Every state has a hand-drawn sticker (`generator/stickers.js`): a bison for Wyom
 
 ### Stickers setting
 
-In the maker (step 6) choose **Around the map** (stickers in the margins), **On the map** (each visited state gets its sticker pinned on it) or **Off**. Stickers follow your choices: states of the cities you picked come first. In `my-travel.js` set `stickers: "around" | "map" | "off"`.
+Below it, the **sticker picker** lists a sticker for every state you selected (states of your chosen cities first). Tap to turn any of them off; numbers show the order they are placed in. In the maker (step 6) choose **Around the map** (stickers in the margins), **On the map** (each visited state gets its sticker pinned on it) or **Off**. Stickers follow your choices: states of the cities you picked come first. In `my-travel.js` set `stickers: "around" | "map" | "off"`.
 
 ### Fonts
 

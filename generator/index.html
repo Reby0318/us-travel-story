@@ -1494,6 +1494,7 @@ function vSheet(){bg("#eef1f5");const F=stickerFilter(5);T(svg,540,90,"STATE STI
 /* ===================== MODERN · STICKER ATLAS ===================== */
 const MOD={R:{West:"#2f8f8a",Southwest:"#d08a2c",Midwest:"#6b85c9",Southeast:"#c4553d",Northeast:"#2b4c8c"}};
 function pickStickers(n){const vis=new Set(VISITED),DBc=window.CITY_DB||{},cs=[];
+ if(Array.isArray(CONFIG.stickerPick))return CONFIG.stickerPick.filter((s,i,a)=>vis.has(s)&&a.indexOf(s)===i).slice(0,n);
  (CONFIG.cities||[]).forEach(c=>{for(const st in DBc)if(DBc[st].some(([nm])=>nm===c)&&!cs.includes(st))cs.push(st);});
  return [...cs,...STICKER_PRIORITY].filter((s,i,a)=>vis.has(s)&&a.indexOf(s)===i).slice(0,n);}
 function stickerLayer(m,slots,F,k=.48){const mode=CONFIG.stickers||"around";if(mode==="off")return;F=F||stickerFilter(5);

@@ -42,6 +42,13 @@ input[type=text]:focus,select:focus{border-color:var(--accent)}
 .pill .dot{width:10px;height:10px;border-radius:3px}
 .pill:focus-visible,.design:focus-visible,.btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 .region{margin-bottom:14px}
+.stk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
+.stk{position:relative;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:6px 4px 4px;cursor:pointer;text-align:center;font:500 11px "Geist",sans-serif;color:var(--ink)}
+.stk svg{width:58px;height:58px;display:block;margin:0 auto 2px;filter:drop-shadow(0 2px 2px rgba(23,34,58,.18))}
+.stk[aria-pressed=false]{opacity:.38;background:#f4f6f9}
+.stk[aria-pressed=true]{border-color:var(--amber)}
+.stk b{position:absolute;top:4px;left:4px;font:700 10px "Geist Mono",monospace;background:var(--amber);color:#fff;border-radius:4px;padding:1px 4px}
+.stk b.out{background:#9aa6ba}
 .mode{display:inline-flex;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:4px;margin:0 0 14px;gap:4px}
 .mode button{font:600 15px "Geist",sans-serif;border:0;background:none;color:var(--muted);padding:10px 16px;border-radius:9px;cursor:pointer}
 .mode button[aria-selected=true]{background:var(--ink);color:#fff}
@@ -167,7 +174,9 @@ footer a{color:var(--accent)}
    <h2><span class="n">6</span>Choose a design</h2>
    <p class="hint">You can switch any time. The preview updates instantly. <b>New</b> designs add hand-drawn stickers of the states you visited. Designs tagged <b>Pro</b> are made for your profession.</p>
    <div class="body"><div class="designs" id="designs"></div>
-    <p class="hint" style="margin:18px 0 8px">Stickers <span style="opacity:.7">(on designs that have them)</span></p><div class="pills" id="stkPills"></div></div>
+    <p class="hint" style="margin:18px 0 8px">Stickers <span style="opacity:.7">(on designs that have them)</span></p><div class="pills" id="stkPills"></div>
+    <div id="stkWrap"><p class="hint" id="stkHint" style="margin:16px 0 8px"></p><div class="stk-grid" id="stkGrid"></div>
+    <div class="row" style="margin-top:8px"><button class="link" id="stkAll" type="button">Select all</button><button class="link" id="stkNone" type="button">Clear</button></div></div></div>
   </section>
  </main>
 
@@ -186,7 +195,7 @@ footer a{color:var(--accent)}
 </div>
 <div class="mobilebar"><button class="btn big" id="toPreview" type="button">See preview &amp; download ↓</button></div>
 
-<script src="maker/cities.js"></script><script src="maker/countries.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="generator/stickers.js"></script><script src="maker/cities.js"></script><script src="maker/countries.js"></script>
 <script>
 const REGIONS={
  West:["Washington","Oregon","California","Nevada","Idaho","Montana","Wyoming","Utah","Colorado","Alaska","Hawaii"],
@@ -212,7 +221,7 @@ function sortCities(){S.cities.sort((a,b)=>lonOf(a)-lonOf(b));}
 function autoCity(s){if(S.cities.some(x=>x.s===s)||S.cities.length>=MAXC)return;const L=DB[s]||[];if(!L.length)return;
  const pick=L[0];S.cities.push({c:pick[0],s});sortCities();}
 function dropCities(s){S.cities=S.cities.filter(x=>x.s!==s);}
-const S={mode:"us",countries:new Set(),skyPick:{},stickers:"around",states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:72};
+const S={stkOff:[],mode:"us",countries:new Set(),skyPick:{},stickers:"around",states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:72};
 // restore from a shared link or the last visit
 try{const h=new URLSearchParams(location.hash.slice(1)).get("a");const saved=h?JSON.parse(decodeURIComponent(escape(atob(h)))):JSON.parse(localStorage.getItem("ustravel")||"null");
  if(saved){Object.assign(S,saved);S.states=new Set(saved.states||[]);S.countries=new Set(saved.countries||[]);S.cities=(saved.cities||[]).map(c=>typeof c==="string"?{c,s:stateOf(c,S.states)}:c).filter(x=>x.s&&S.states.has(x.s));}
@@ -288,10 +297,10 @@ $("designs").addEventListener("click",e=>{const b=e.target.closest("button");if(
 function config(){const yr=S.year&&S.year.length===4?S.year:"20XX";const since=S.since===2?[`since ${yr}`,`since ${yr}`]:SINCE[S.since].slice(0,2);
  const order=Object.values(REGIONS).flat();
  return {name:S.name.trim()||"Me",title:(S.title==="__custom"?S.titleCustom.trim():S.title)||"States I've Been To",since:since[0],sinceShort:since[1],
-  states:[...S.states].sort((a,b)=>order.indexOf(a)-order.indexOf(b)),cities:S.cities.map(x=>x.c),skyline:S.cities.filter(x=>skyOf(x.s)===x.c).map(x=>x.c),stickers:S.stickers||"around",mode:S.mode,countries:[...S.countries]};}
+  states:[...S.states].sort((a,b)=>order.indexOf(a)-order.indexOf(b)),cities:S.cities.map(x=>x.c),skyline:S.cities.filter(x=>skyOf(x.s)===x.c).map(x=>x.c),stickers:S.stickers||"around",stickerPick:stickerPick(),mode:S.mode,countries:[...S.countries]};}
 const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 let tmr=null;
-function update(){try{localStorage.setItem("ustravel",JSON.stringify({...S,states:[...S.states],countries:[...S.countries]}));}catch(e){}
+function update(){try{drawStickerGrid();}catch(e){}try{localStorage.setItem("ustravel",JSON.stringify({...S,states:[...S.states],countries:[...S.countries]}));}catch(e){}
  clearTimeout(tmr);tmr=setTimeout(()=>{$("loading").classList.remove("off");$("pv").src=`generator/index.html?r=${Date.now()}#v=${S.design}&cfg=${encodeURIComponent(enc(config()))}`;},350);}
 window.addEventListener("message",e=>{if(e.data&&e.data.type==="drawn")$("loading").classList.add("off");});
 
@@ -322,6 +331,23 @@ function applyMode(){const w=S.mode==="world";document.querySelectorAll(".us-onl
 $("modeBar").addEventListener("click",e=>{const b=e.target.closest("button[data-m]");if(!b||b.dataset.m===S.mode)return;
  if(S.mode==="world")S.designW=S.design;else S.designUS=S.design;S.mode=b.dataset.m;
  if(S.mode==="world"&&!S.countries.size)S.countries.add("United States");applyMode();drawCountries();update();});
+
+
+/* ---- sticker picker ---- */
+const SPOTS={72:8,73:8,74:8,75:8,58:4,63:4,56:4,69:3,65:4,66:2,67:3,68:3,70:4,71:2,55:3};
+function stickerOrder(){const cs=[];S.cities.forEach(x=>{if(!cs.includes(x.s))cs.push(x.s);});const pr=window.STICKER_PRIORITY||[];
+ return [...cs,...pr].filter((s,i,a)=>S.states.has(s)&&a.indexOf(s)===i);}
+function stickerPick(){const off=new Set(S.stkOff||[]);return stickerOrder().filter(s=>!off.has(s));}
+function drawStickerGrid(){const wrap=$("stkWrap");const show=S.mode!=="world"&&(S.stickers||"around")!=="off";wrap.hidden=!show;if(!show)return;
+ const g=$("stkGrid");g.innerHTML="";const ord=stickerOrder(),pick=stickerPick(),spots=SPOTS[S.design]||0,onMap=S.stickers==="map";
+ $("stkHint").innerHTML=!ord.length?"Pick some states to get stickers.":!spots&&!onMap?"This design has no sticker spots. Pick a NEW, Wrapped or Pro design, or choose <b>On the map</b>.":
+  `Tap to choose which stickers go on your Story. <b>${pick.length}</b> of ${ord.length} picked${onMap?" · all picked stickers are pinned on their states.":` · this design shows the first <b>${spots}</b> around the map.`}`;
+ ord.forEach(s=>{const i=pick.indexOf(s),on=i>=0,b=el("button",{class:"stk",type:"button","aria-pressed":on,"data-s":s,title:s});
+  const sv=d3.select(b).append("svg").attr("viewBox","-60 -60 120 120");if(window.drawSticker)drawSticker(sv,s,0,0,1,0,null);
+  b.appendChild(document.createTextNode(s));if(on){const n=el("b",{class:!onMap&&i>=spots?"out":""},String(i+1));b.appendChild(n);}g.appendChild(b);});}
+$("stkGrid").addEventListener("click",e=>{const b=e.target.closest(".stk");if(!b)return;const s=b.dataset.s,off=new Set(S.stkOff||[]);off.has(s)?off.delete(s):off.add(s);S.stkOff=[...off];drawStickerGrid();update();});
+$("stkAll").onclick=()=>{S.stkOff=[];drawStickerGrid();update();};
+$("stkNone").onclick=()=>{S.stkOff=stickerOrder();drawStickerGrid();update();};
 
 /* ---- download ---- */
 let reqId=0;
