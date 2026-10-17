@@ -978,12 +978,8 @@ function v55(){const ST=STATS();
  const NAVY="#2b3550",TEAL="#6fa79d",CORAL="#e3907c",MUT="#6b7a90",LINE="#e3e8ef",BG="#f7f4ef";
  bg(BG);const sh=shadow(0,6,14,"#2b3550",.06);
  svg.append("rect").attr("x",0).attr("y",0).attr("width",1080).attr("height",10).attr("fill",NAVY);svg.append("rect").attr("x",0).attr("y",10).attr("width",360).attr("height",6).attr("fill",TEAL);
- T(svg,72,200,`TRAVEL PORTFOLIO REVIEW  ·  ${CONFIG.sinceShort.toUpperCase()}`,{f:MONO,w:600,s:20,ls:3,c:TEAL});
- fitT(T(svg,68,292,"US Market Coverage",{f:SANS,w:700,s:86,c:NAVY,ls:-1}),940,86);
- T(svg,72,345,`A footprint across ${N} of 50 states, with presence in ${ST.ra===5?"all 5":ST.ra+" of 5"} regions`,{f:PLEX,s:25,c:MUT});
- const K=[[`${Math.round(N/50*100)}%`,"COVERAGE","of 50 states"],[`${N}`,"STATES ENTERED","coast to coast"],[`${ST.ra}/5`,"REGIONS ACTIVE",ST.ra===5?"full presence":`${5-ST.ra} to go`],[`${CONFIG.cities.length}`,"KEY CITIES",(CONFIG.cities.length?`${CONFIG.cities[0]} → ${CONFIG.cities[CONFIG.cities.length-1]}`:"add some!")]];
- K.forEach(([v,k,s],i)=>{const x=72+i*238,g=svg.append("g");cardBox(g,x,388,222,170,{sh});g.append("rect").attr("x",x).attr("y",388).attr("width",6).attr("height",170).attr("rx",3).attr("fill",i===0?CORAL:TEAL);
-  T(g,x+26,428,k,{f:MONO,w:600,s:14,ls:2,c:MUT});T(g,x+24,500,v,{f:SANS,w:700,s:62,c:NAVY});T(g,x+26,536,s,{f:PLEX,s:17,c:MUT});});
+ edTop({muted:MUT,line:"#dcd6cc",amber:CORAL,ink:NAVY},`TRAVEL PORTFOLIO REVIEW  ·  ${CONFIG.sinceShort.toUpperCase()}`,N,"US Market","Coverage",`of 50 states  ·  ${ST.ra===5?"all 5":ST.ra+" of 5"} regions`);
+ edStats({muted:MUT,line:"#dcd6cc",amber:CORAL,ink:NAVY},404,[["COVERAGE",`${ST.pct}%`,"of 50 states"],["REGIONS",`${ST.ra} of 5`,ST.ra===5?"full presence":`${5-ST.ra} to go`],["TOP REGION",ST.top,`${Math.round(ST.tp*100)}% covered`,true],["KEY CITIES",`${CONFIG.cities.length}`,"logged"]]);
  const mg=svg.append("g");cardBox(mg,72,590,936,580,{sh});
  T(mg,100,634,"Coverage map",{f:SANS,w:700,s:26,c:NAVY});T(mg,980,634,"Lower 48 shown",{f:MONO,s:15,c:MUT,a:"end"});
  const m=map(mg,[96,660,888,450],{fill:(n,v)=>v?(REG(n)===ST.top?CORAL:TEAL):"#ebe6df",stroke:"#ffffff",sw:(n,v)=>v?1.8:1.2});
@@ -1005,11 +1001,8 @@ function v55(){const ST=STATS();
 /* 56. TECH — travel dashboard */
 function v56(){const ST=STATS(),R=MOD.R,INK="#17223a",MUT="#5d6a82",AMB="#c9761a",P2={surf:"#ffffff",line:"#cfd6e1",sh:shadow(0,8,18,"#0b1220",.07)};
  dotBg("#eef1f5","#cfd6e1");
- T(svg,72,150,"~/states-log  on  main  ✓",{f:MONO,w:500,s:20,c:MUT});
- const tl=T(svg,64,250,"states",{f:MONO,w:600,s:100,c:INK});tl.append("tspan").attr("fill",AMB).text(".log");
- const tw=tl.node().getComputedTextLength();svg.append("rect").attr("x",64+tw+10).attr("y",176).attr("width",26).attr("height",78).attr("fill",AMB);
- T(svg,72,300,`${N} commits  ·  ${ST.pct}% coverage  ·  ${ST.ra}/5 regions  ·  ${CONFIG.sinceShort}`,{f:MONO,s:19,c:MUT});
- shields(326,[["build","passing","#2f8f8a"],["coverage",`${ST.pct}%`,"#2b4c8c"],["regions",`${ST.ra}/5`,"#6b85c9"],["release",`v${N}.0`,AMB]],72);
+ edTop({muted:MUT,line:"#cfd6e1",amber:AMB,ink:INK},`~/STATES-LOG  ·  MAIN  ✓  ·  ${CONFIG.sinceShort.toUpperCase()}`,N,"states","shipped.",`commits  ·  ${ST.pct}% coverage  ·  ${ST.ra}/5 regions`);
+ shields(344,[["build","passing","#2f8f8a"],["coverage",`${ST.pct}%`,"#2b4c8c"],["regions",`${ST.ra}/5`,"#6b85c9"],["release",`v${N}.0`,AMB]],72);
  // repo card
  card(72,390,936,620,P2);
  T(svg,100,438,`${CONFIG.name.toLowerCase().replace(/\s+/g,"-")} / states-log`,{f:MONO,w:600,s:22,c:INK});
@@ -1085,9 +1078,7 @@ function v58(){const ST=STATS();
  const INK="#17223a",MUT="#5d6a82",R=MOD.R,ACC="#2b4c8c",AMB="#c9761a";
  aura({base:"#eef1f5",blobs:[[120,200,330,"#dce6f3"],[980,240,300,"#f4e4cc"],[960,1000,340,"#e1e7f4"],[100,1050,320,"#d9ebe8"],[560,1750,380,"#e3e9f3"],[1000,1820,240,"#f1e6d2"]]});
  const sh=shadow(0,12,22,INK,.10),glass=(g,x,y,w,h,r=26)=>g.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",r).attr("fill","#ffffff").attr("fill-opacity",.72).attr("stroke","#ffffff").attr("stroke-width",2).attr("filter",sh);
- T(svg,72,168,"me@usa:~$ travel --wrapped",{f:MONO,w:500,s:21,c:MUT});
- const tw=T(svg,62,282,"Travel ",{f:DISP,w:800,s:118,ls:-5,c:INK});tw.append("tspan").attr("fill",AMB).attr("font-family",SERIF2).attr("font-style","italic").attr("font-weight",400).attr("font-size",140).attr("letter-spacing",0).text("Wrapped");
- T(svg,72,316,`Every state ${CONFIG.since}`,{f:PLEX,s:25,c:MUT});
+ edTop({muted:MUT,line:"#cfd6e1",amber:AMB,ink:INK},`${CONFIG.name.toUpperCase()}  ·  TRAVEL WRAPPED  ·  ${CONFIG.sinceShort.toUpperCase()}`,N,"Travel","Wrapped",`states  ·  every one ${CONFIG.since}`);
  // now playing (music) — same card, shifted up
  const np=svg.append("g").attr("transform","translate(0,-32)");glass(np,72,380,936,190);
  np.append("rect").attr("x",96).attr("y",404).attr("width",142).attr("height",142).attr("rx",14).attr("fill",lg(["#2b4c8c","#2f8f8a","#c9761a"],1,1));
@@ -1146,17 +1137,10 @@ function luxDark(P){
  svg.append("rect").attr("x",30).attr("y",30).attr("width",1020).attr("height",1860).attr("rx",24).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",2.2);
  svg.append("rect").attr("x",42).attr("y",42).attr("width",996).attr("height",1836).attr("rx",16).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",.8).attr("opacity",.8);
  [[42,42],[1038,42],[42,1878],[1038,1878]].forEach(([x,y])=>svg.append("path").attr("d",`M${x},${y-9}L${x+6},${y}L${x},${y+9}L${x-6},${y}Z`).attr("fill",GOLD));
- // sparkles (kept clear of text)
- [[150,190,14],[930,210,18],[104,430,9],[978,420,11],[872,150,7],[210,120,7]].forEach(([x,y,r])=>sparkle(svg,x,y,r,GOLD).attr("opacity",.9));
- // header
- T(svg,540,226,P.eyebrow||"THE  UNITED  STATES",{f:"DM Sans",w:500,s:21,ls:8,c:P.muted,a:"middle"});
- fitT(T(svg,540,350,CONFIG.title,{f:"Playfair Display",i:true,w:500,s:118,c:P.ink,a:"middle"}),860,118);
- diamondRule(svg,540,396,140,GS);
- const pill=svg.append("g");pill.append("rect").attr("x",380).attr("y",422).attr("width",320).attr("height",52).attr("rx",26).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",1.6);
- T(pill,540,456,`${N}  of  50  states`,{f:"DM Sans",w:500,s:22,ls:3,c:P.accent,a:"middle"});
+ edTop({muted:P.muted,line:P.unStroke,amber:GOLD,ink:P.ink},`${(P.eyebrow||"THE UNITED STATES").replace(/  /g," ")}  ·  ${CONFIG.sinceShort.toUpperCase()}`,N,...splitTitle(CONFIG.title),`of 50 states  ·  ${CONFIG.since}`);
  // map
  const glow=shadow(0,0,22,P.glow||GS,P.glowOp??.28);
- const m=map(svg,[64,540,952,520],{fill:(n,v)=>v?(P.foil?FOIL:P.R[REG(n)]):P.un,stroke:(n,v)=>v?P.vStroke:P.unStroke,sw:(n,v)=>v?1.3:1,
+ const m=map(svg,[64,400,952,640],{fill:(n,v)=>v?(P.foil?FOIL:P.R[REG(n)]):P.un,stroke:(n,v)=>v?P.vStroke:P.unStroke,sw:(n,v)=>v?1.3:1,
   under:(g,path)=>{g.append("path").datum({type:"FeatureCollection",features:STATES}).attr("d",path).attr("fill",P.un).attr("filter",glow);}});
  allLabels(m,P.vLab,P.unLab,"DM Sans",13);
  // stats row
@@ -1199,9 +1183,7 @@ function v63(){const ST=STATS();
  const INK="#f3ece2",MUT="#a39788",R={West:"#6aa894",Southwest:"#d48e64",Midwest:"#dcb862",Southeast:"#c9818f",Northeast:"#8296cf"};
  aura({base:"#100e13",blobs:[[120,200,330,"#3a1f2c"],[980,240,300,"#3a2c16"],[960,1000,340,"#1f2442"],[100,1050,320,"#12302a"],[560,1750,380,"#2e1a28"],[1000,1820,240,"#3a3018"]]});
  const sh=shadow(0,12,22,INK,.10),glass=(g,x,y,w,h,r=26)=>g.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",r).attr("fill","#ffffff").attr("fill-opacity",.055).attr("stroke","#e8c98a").attr("stroke-opacity",.28).attr("stroke-width",1.2).attr("filter",sh);
- T(svg,72,168,"me@usa:~$ travel --wrapped",{f:MONO,w:500,s:21,c:MUT});
- T(svg,64,272,"Travel Wrapped",{f:"Playfair Display",i:true,w:500,s:118,c:INK});
- T(svg,72,316,`Every state ${CONFIG.since}`,{f:PLEX,s:25,c:MUT});
+ edTop({muted:MUT,line:"#3a3430",amber:"#e8c98a",ink:INK},`${CONFIG.name.toUpperCase()}  ·  TRAVEL WRAPPED  ·  ${CONFIG.sinceShort.toUpperCase()}`,N,"Travel","Wrapped",`states  ·  every one ${CONFIG.since}`);
  // now playing (music) — same card, shifted up
  const np=svg.append("g").attr("transform","translate(0,-32)");glass(np,72,380,936,190);
  np.append("rect").attr("x",96).attr("y",404).attr("width",142).attr("height",142).attr("rx",14).attr("fill",lg(["#d8b56e","#a8803c","#9d86c9"],1,1));
@@ -1261,18 +1243,14 @@ function v65(){const ST=STATS(),INK="#12313a",TEAL="#2a8c82",CORAL="#e07a6a",MUT
  const R={West:"#3f9c8f",Southwest:"#e0937a",Midwest:"#7fbfb3",Southeast:"#5aa7c4",Northeast:"#2f6f8a"};
  bg("#f3f8f7");noise(.035,.9,[.2,.4,.4]);const sh=shadow(0,8,18,INK,.06);
  svg.append("rect").attr("width",1080).attr("height",12).attr("fill",TEAL);
- T(svg,72,168,"PATIENT CHART  ·  TRAVEL MEDICINE",{f:MONO,w:600,s:18,ls:3,c:TEAL});T(svg,1008,168,"MRN 0050-USA",{f:MONO,s:17,c:MUT,a:"end"});
- fitT(T(svg,68,262,"Travel Health Record",{f:SERIF2,i:true,w:500,s:94,c:INK}),940,94);
- T(svg,72,308,`Patient: ${who("Me")}   ·   History: every state ${CONFIG.since}`,{f:PLEX,s:22,c:MUT});
+ edTop({muted:MUT,line:LINE,amber:TEAL,ink:INK},`PATIENT CHART  ·  TRAVEL MEDICINE  ·  MRN 0050-USA`,N,"Travel Health","Record",`states  ·  patient ${who("Me")}  ·  ${CONFIG.since}`);
  // ECG
  let d="M72,392";const pts=[[140,0],[160,-8],[178,0],[196,0],[206,14],[222,-46],[238,20],[252,0],[300,0],[318,-10],[340,0]];
  for(let k=0;k<3;k++)pts.forEach(([x,y])=>d+=` L${72+k*300+x},${392+y}`);d+=" L1008,392";
  svg.append("path").attr("d",d).attr("fill","none").attr("stroke",TEAL).attr("stroke-width",3.5).attr("stroke-linejoin","round").attr("stroke-linecap","round");
  heart(svg,1000,396,2.2,CORAL);
  // vitals
- [[`${N}`,"/50","STATES VISITED",INK],[`${ST.pct}`,"%","COVERAGE",INK],[`${ST.ra}`,"/5","REGIONS",INK],["HIGH","↑","WANDERLUST",CORAL]].forEach(([v,u,k,c],i)=>{const x=72+i*238,g=svg.append("g");
-  cardBox(g,x,430,222,140,{r:18,stroke:LINE,sh});g.append("rect").attr("x",x).attr("y",430).attr("width",222).attr("height",6).attr("fill",i===3?CORAL:TEAL);
-  T(g,x+22,474,k,{f:MONO,w:600,s:14,ls:2,c:MUT});const tv=T(g,x+20,544,v,{f:"DM Sans",w:700,s:52,c});tv.append("tspan").attr("font-size",24).attr("fill",MUT).text(" "+u);});
+ edStats({muted:MUT,line:LINE,amber:CORAL,ink:INK},430,[["STATES VISITED",`${N} / 50`,"confirmed"],["COVERAGE",`${ST.pct}%`,"of the US"],["REGIONS",`${ST.ra} / 5`,ST.ra===5?"all active":`${5-ST.ra} to go`],["WANDERLUST","High ↑","chronic",true]]);
  // imaging
  const mg=svg.append("g");cardBox(mg,72,600,936,560,{r:22,stroke:LINE,sh});
  T(mg,100,644,"Imaging  ·  full-body scan",{f:"DM Sans",w:700,s:24,c:INK});T(mg,980,644,"contiguous US",{f:MONO,s:15,c:MUT,a:"end"});
@@ -1334,12 +1312,8 @@ function v66(){const ST=STATS(),INK="#1c1b1a",MUT="#6b6660",BUR="#8b1e2d",RULE="
 function v67(){const ST=STATS(),IV="#f3ece0",MUT="#9a9083",GS="#c9a45c";const GOLD=lg(GOLDS,1,1),FOIL=lg(GOLDS,1,.55,[72,700,1008,1150]);
  svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",lg(["#151413","#0b0a0a"],0,1));noise(.05,.95,[1,.92,.82]);
  svg.append("rect").attr("x",0).attr("y",0).attr("width",1080).attr("height",8).attr("fill",GOLD);
- T(svg,72,170,"ANNUAL  REPORT",{f:"DM Sans",w:500,s:20,ls:8,c:GS});T(svg,1008,170,CONFIG.sinceShort.toUpperCase(),{f:"DM Sans",w:500,s:16,ls:4,c:MUT,a:"end"});
- fitT(T(svg,68,272,"Expansion Footprint",{f:SERIF2,i:true,w:500,s:92,c:IV}),940,92);
- T(svg,72,318,"Every market entered across the United States",{f:"DM Sans",w:400,s:23,c:MUT});
- const big=T(svg,64,560,`${N}`,{f:SERIF2,w:600,s:250,c:GOLD});const bw=big.node().getComputedTextLength();
- T(svg,64+bw+28,470,"markets entered",{f:SERIF2,i:true,w:500,s:42,c:IV});T(svg,64+bw+30,516,`${ST.pct}% national coverage`,{f:"DM Sans",w:500,s:22,c:GS});
- T(svg,64+bw+30,550,`${50-N} untapped markets`,{f:"DM Sans",w:400,s:20,c:MUT});
+ edTop({muted:MUT,line:"#3a342c",amber:GOLD,ink:IV},`ANNUAL REPORT  ·  EXPANSION  ·  ${CONFIG.sinceShort.toUpperCase()}`,N,"Expansion","Footprint",`markets entered  ·  ${CONFIG.since}`);
+ edStats({muted:MUT,line:"#3a342c",amber:GS,ink:IV},408,[["NATIONAL COVERAGE",`${ST.pct}%`,"of the US"],["UNTAPPED",`${50-N}`,"markets left"],["CITIES",`${CONFIG.cities.length}`,"key offices",true]]);
  svg.append("line").attr("x1",72).attr("x2",1008).attr("y1",612).attr("y2",612).attr("stroke",GOLD).attr("stroke-width",1.2);
  const m=map(svg,[72,650,936,500],{fill:(n,v)=>v?FOIL:"#1e1c1a",stroke:(n,v)=>v?"#0b0a0a":"#302d29",sw:(n,v)=>v?1.2:1,
   under:(g,path)=>{g.append("path").datum({type:"FeatureCollection",features:STATES}).attr("d",path).attr("fill","#1e1c1a").attr("filter",shadow(0,0,22,GS,.25));}});
@@ -1391,9 +1365,7 @@ function v68(){const ST=STATS(),NAVY="#2c3e66",RED="#d24b4b",MUT="#7b829a",PAPER
 /* 69 · Product Manager — Roadmap */
 function v69(){const ST=STATS(),R=MOD.R,INK="#17223a",MUT="#5d6a82",AMB="#c9761a",GRN="#2f8f8a",P2={surf:"#ffffff",line:"#cfd6e1",sh:shadow(0,8,18,"#0b1220",.07)};
  dotBg("#eef1f5","#cfd6e1");
- T(svg,72,150,"PRODUCT  /  ROADMAPS  /  USA",{f:MONO,w:500,s:18,ls:2,c:MUT});
- const tl=T(svg,62,262,"USA ",{f:DISP,w:800,s:120,ls:-5,c:INK});tl.append("tspan").attr("fill",AMB).attr("font-family",SERIF2).attr("font-style","italic").attr("font-weight",400).attr("font-size",140).attr("letter-spacing",0).text("Roadmap");
- let cx=72;[[`Owner · ${CONFIG.name}`,"#e4e9f6","#2b4c8c"],["● On track","#e2f1ee",GRN],[`Since · ${CONFIG.sinceShort}`,"#f6ecdc","#9a5a10"]].forEach(([l,b,c])=>{const tm=T(svg,0,-50,l,{f:PLEX,w:600,s:17});const w=tm.node().getComputedTextLength()+28;tm.remove();svg.append("rect").attr("x",cx).attr("y",288).attr("width",w).attr("height",34).attr("rx",17).attr("fill",b);T(svg,cx+14,311,l,{f:PLEX,w:600,s:17,c});cx+=w+10;});
+ edTop({muted:MUT,line:"#cfd6e1",amber:AMB,ink:INK},`PRODUCT  ·  ROADMAP  ·  OWNER ${CONFIG.name.toUpperCase()}`,N,"USA","Roadmap",`states shipped  ·  ● on track  ·  since ${CONFIG.sinceShort}`);
  // progress ring + OKRs
  card(72,346,300,200,P2);const rcx=222,rcy=446,RR=70;svg.append("circle").attr("cx",rcx).attr("cy",rcy).attr("r",RR).attr("fill","none").attr("stroke","#e6eaf0").attr("stroke-width",16);
  svg.append("path").attr("d",d3.arc()({innerRadius:RR-8,outerRadius:RR+8,startAngle:0,endAngle:2*Math.PI*N/50,cornerRadius:8})).attr("transform",`translate(${rcx},${rcy})`).attr("fill",AMB);
@@ -1527,6 +1499,18 @@ function shield(g,x,y,num,s=1,c1="#1d4f91",c2="#d23b3b"){const k=g.append("g").a
  T(k,0,14,`${num}`,{f:DISP,w:800,s:26,c:"#ffffff",a:"middle"});return k;}
 
 /* Editorial header: hero numeral + serif title + hairline stat row */
+function edTop(P,eyebrow,num,l1,l2,sub){
+ const ey=T(svg,72,150,eyebrow,{f:MONO,w:500,s:15,ls:3,c:P.muted});const ew=ey.node().getComputedTextLength();
+ svg.append("line").attr("x1",72+ew+18).attr("x2",1008).attr("y1",145).attr("y2",145).attr("stroke",P.line).attr("stroke-width",1.2);
+ const hn=T(svg,62,318,String(num),{f:SERIF2,w:400,s:200,ls:-4,c:P.amber});const nw=hn.node().getComputedTextLength();
+ const tx=62+nw+34,tw=1008-tx;
+ if(l2){fitT(T(svg,tx,228,l1,{f:SERIF2,w:400,s:72,ls:-1.2,c:P.ink}),tw,72);fitT(T(svg,tx,290,l2,{f:SERIF2,i:true,w:400,s:72,ls:-1.2,c:P.ink}),tw,72);}
+ else fitT(T(svg,tx,272,l1,{f:SERIF2,w:400,s:84,ls:-1.5,c:P.ink}),tw,84);
+ fitT(T(svg,tx+2,322,sub,{f:PLEX,w:500,s:18,c:P.muted}),tw,18);}
+function edStats(P,y0,stats){const cw=936/stats.length;
+ [y0,y0+132].forEach(y=>svg.append("line").attr("x1",72).attr("x2",1008).attr("y1",y).attr("y2",y).attr("stroke",P.line).attr("stroke-width",1.2));
+ stats.forEach(([k,v,s,hi],i)=>{const x=72+i*cw+(i?22:0);if(i)svg.append("line").attr("x1",72+i*cw).attr("x2",72+i*cw).attr("y1",y0+22).attr("y2",y0+110).attr("stroke",P.line).attr("stroke-width",1.2);
+  T(svg,x,y0+40,k,{f:MONO,w:500,s:12,ls:2.4,c:P.muted});fitT(T(svg,x,y0+86,v,{f:PLEX,w:600,s:36,ls:-.5,c:hi?P.amber:P.ink}),cw-34,36);T(svg,x,y0+112,s,{f:PLEX,w:400,s:15,c:P.muted});});}
 function edHeader(P,eyebrow,num,title,sub,stats){
  const ey=T(svg,72,150,eyebrow,{f:MONO,w:500,s:15,ls:3,c:P.muted});const ew=ey.node().getComputedTextLength();
  svg.append("line").attr("x1",72+ew+18).attr("x2",1008).attr("y1",145).attr("y2",145).attr("stroke",P.line).attr("stroke-width",1.2);
@@ -1655,9 +1639,7 @@ function v81(){worldAtlas(ATLAS.dark);}
 function v82(){const WD=W(),INK="#17223a",MUT="#5d6a82",AMB="#c9761a",ACC="#2b4c8c",C=CCOL;
  aura({base:"#eef1f5",blobs:[[120,200,330,"#dce6f3"],[980,240,300,"#f4e4cc"],[960,1000,340,"#e1e7f4"],[100,1050,320,"#d9ebe8"],[560,1750,380,"#e3e9f3"],[1000,1820,240,"#f1e6d2"]]});
  const sh=shadow(0,12,22,INK,.10),glass=(x,y,w,h,r=22)=>svg.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",r).attr("fill","#ffffff").attr("fill-opacity",.72).attr("stroke","#ffffff").attr("stroke-width",2).attr("filter",sh);
- T(svg,72,168,"me@world:~$ travel --wrapped",{f:MONO,w:500,s:21,c:MUT});
- const tw=T(svg,62,282,"World ",{f:DISP,w:800,s:118,ls:-5,c:INK});tw.append("tspan").attr("fill",AMB).attr("font-family",SERIF2).attr("font-style","italic").attr("font-weight",400).attr("font-size",140).attr("letter-spacing",0).text("Wrapped");
- T(svg,72,316,`Every country ${CONFIG.since}`,{f:PLEX,s:25,c:MUT});
+ edTop({muted:MUT,line:"#cfd6e1",amber:AMB,ink:INK},`${CONFIG.name.toUpperCase()}  ·  WORLD WRAPPED  ·  ${CONFIG.sinceShort.toUpperCase()}`,WD.n,"World","Wrapped",`countries  ·  ${WD.active} of 6 continents  ·  ${CONFIG.since}`);
  glass(72,348,936,160);svg.append("rect").attr("x",96).attr("y",372).attr("width",112).attr("height",112).attr("rx",12).attr("fill",lg(["#2b4c8c","#2f8f8a","#c9761a"],1,1));
  worldMap(svg,[102,404,100,50],{fill:()=>"#ffffff",un:"rgba(255,255,255,.28)",vStroke:"none",unStroke:"none"});
  T(svg,236,402,"NOW PLAYING",{f:MONO,w:600,s:14,ls:3,c:ACC});fitT(T(svg,236,446,wTitle(),{f:DISP,w:700,s:38,ls:-1,c:INK}),640,38);T(svg,236,474,`${CONFIG.name}  ·  ${WD.n} tracks  ·  ${CONFIG.sinceShort}`,{f:PLEX,s:18,c:MUT});
@@ -1686,11 +1668,8 @@ function v83(){const WD=W(),IV="#f4ece0",MUT="#9d9283",GS="#c9a45c",GOLD=lg(GOLD
  svg.append("rect").attr("x",30).attr("y",30).attr("width",1020).attr("height",1860).attr("rx",24).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",2.2);
  svg.append("rect").attr("x",42).attr("y",42).attr("width",996).attr("height",1836).attr("rx",16).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",.8).attr("opacity",.8);
  [[42,42],[1038,42],[42,1878],[1038,1878]].forEach(([x,y])=>svg.append("path").attr("d",`M${x},${y-9}L${x+6},${y}L${x},${y+9}L${x-6},${y}Z`).attr("fill",GOLD));
- [[150,190,14],[930,210,18],[104,430,9],[978,420,11]].forEach(([x,y,r])=>sparkle(svg,x,y,r,GOLD));
- T(svg,540,226,"AROUND  THE  WORLD",{f:PLEX,w:500,s:21,ls:8,c:MUT,a:"middle"});
- fitT(T(svg,540,350,wTitle(),{f:SERIF2,i:true,w:400,s:120,c:IV,a:"middle"}),880,120);diamondRule(svg,540,396,140,GS);
- svg.append("rect").attr("x",360).attr("y",422).attr("width",360).attr("height",52).attr("rx",26).attr("fill","none").attr("stroke",GOLD).attr("stroke-width",1.6);T(svg,540,456,`${WD.n}  of  195  countries`,{f:PLEX,w:500,s:22,ls:3,c:"#e2c27d",a:"middle"});
- const wm=worldMap(svg,[64,540,952,480],{fill:()=>FOIL,un:"#1f1d1b",vStroke:"#0b0a0a",unStroke:"#33302c",glow:shadow(0,0,22,GS,.25),dotStroke:"#0b0a0a"});
+ edTop({muted:MUT,line:"#3a342c",amber:GOLD,ink:IV},`AROUND THE WORLD  ·  ${CONFIG.sinceShort.toUpperCase()}`,WD.n,...splitTitle(wTitle()),`of 195 countries  ·  ${WD.active} of 6 continents`);
+ const wm=worldMap(svg,[64,400,952,600],{fill:()=>FOIL,un:"#1f1d1b",vStroke:"#0b0a0a",unStroke:"#33302c",glow:shadow(0,0,22,GS,.25),dotStroke:"#0b0a0a"});
  const sy=1110;[[`${WD.n}`,"COUNTRIES"],[`${WD.pct}%`,"OF THE WORLD"],[`${WD.active}/6`,"CONTINENTS"]].forEach(([v,k],i)=>{const x=220+i*320;T(svg,x,sy,v,{f:SERIF2,i:true,w:400,s:64,c:IV,a:"middle"});T(svg,x,sy+36,k,{f:PLEX,w:500,s:14,ls:5,c:MUT,a:"middle"});
   if(i)svg.append("line").attr("x1",x-160).attr("x2",x-160).attr("y1",sy-46).attr("y2",sy+34).attr("stroke",GOLD).attr("stroke-width",1).attr("opacity",.7);});
  diamondRule(svg,540,1200,400,GS);
