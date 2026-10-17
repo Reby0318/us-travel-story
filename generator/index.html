@@ -759,7 +759,7 @@ function lineSky(g,x0,base,s,col,win,snow,seed=3,INKS="#2e2a26",SW=2.2){
  const r=rnd(seed);const FC=typeof col==="function"?col:()=>col;
  const ALIAS={"NYC":"NEW YORK","NEW YORK CITY":"NEW YORK","SF":"SAN FRANCISCO","SAN FRAN":"SAN FRANCISCO","VEGAS":"LAS VEGAS","PHILLY":"PHILADELPHIA","ABQ":"ALBUQUERQUE"};
  const norm=c=>{let k=c.toUpperCase().replace(/,.*$/,"").trim();return ALIAS[k]||k;};
- const want=(CONFIG.cities||[]).map(norm);
+ const want=(CONFIG.skyline||CONFIG.cities||[]).map(norm);
  // widths (in skyline units) of each landmark, used to auto-fit
  const WID={"SEATTLE":100,"PORTLAND":150,"SAN FRANCISCO":230,"LAS VEGAS":190,"ALBUQUERQUE":118,"DALLAS":110,"CHICAGO":80,"NASHVILLE":60,"PHILADELPHIA":112,"NEW YORK":190,"MIAMI":120};
  const FILL=[70,74,40,66];const GEN=110;
