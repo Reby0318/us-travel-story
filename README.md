@@ -93,6 +93,14 @@ Everything comes from your `states` list, so nothing needs to be typed twice:
 
 Every state has a hand-drawn sticker (`generator/stickers.js`): a bison for Wyoming, the Statue of Liberty for New York, a saguaro for Arizona, a guitar for Tennessee, a lobster for Maine and so on. Designs show the stickers for **the states you visited**, placed around the map (never on it), most iconic first. Open `generator/index.html#v=999` to see all 50.
 
+
+### Stickers setting
+
+In the maker (step 6) choose **Around the map** (stickers in the margins), **On the map** (each visited state gets its sticker pinned on it) or **Off**. Stickers follow your choices: states of the cities you picked come first. In `my-travel.js` set `stickers: "around" | "map" | "off"`.
+
+### Fonts
+
+Bricolage Grotesque (headlines), Instrument Serif italic (accent words), Geist and Geist Mono (body and data).
 ### City skylines
 
 Every one of the 168 cities in the maker has its own line drawing of what it is actually known for (`generator/landmarks.js`), for example Salt Lake City's temple spires, Omaha's Desert Dome, the Fargo Theatre, the Gateway Arch, the Memphis Pyramid, Niagara Falls, the Alamo, Old Faithful and Mount Rushmore. State capitals use the real capitol (gold, green, white or pink dome). Cities typed in by hand get a generic skyline that never repeats next to another one. The skyline resizes to fit however many cities you pick. Open `generator/index.html#v=998&pg=0` (pages 0–8) to see them all.

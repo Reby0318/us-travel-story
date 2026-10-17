@@ -1,9 +1,9 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><title>US Travel Story</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=Baloo+2:wght@600;800&family=Bungee&family=Caveat:wght@500;700&family=Shrikhand&family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;1,500&family=DM+Sans:wght@400;500;700&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Pacifico&family=Courier+Prime:wght@400;700&family=Rubik:wght@500;700;800&family=Bangers&family=Luckiest+Guy&family=Permanent+Marker&family=Bebas+Neue&family=Anton&family=Limelight&family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Cinzel:wght@500;600&family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=Baloo+2:wght@600;800&family=Bungee&family=Caveat:wght@500;700&family=Shrikhand&family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;1,500&family=DM+Sans:wght@400;500;700&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Pacifico&family=Courier+Prime:wght@400;700&family=Rubik:wght@500;700;800&family=Bangers&family=Luckiest+Guy&family=Permanent+Marker&family=Bebas+Neue&family=Anton&family=Limelight&family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Cinzel:wght@500;600&family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=block" rel="stylesheet">
 <style>html,body{margin:0;width:1080px;height:1920px;overflow:hidden}svg{display:block}</style>
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
-<script src="data/us-states.js"></script><script src="data/world-countries.js"></script><script src="stickers.js"></script><script src="landmarks.js"></script>
+<script src="data/us-states.js"></script><script src="data/world-countries.js"></script><script src="stickers.js"></script><script src="landmarks.js"></script><script src="../maker/cities.js"></script>
 <script src="../my-travel.js"></script>
 </head><body>
 <svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -593,7 +593,7 @@ function v39(){
 }
 
 /* ---------- flight-log family (40-42) ---------- */
-const DISP="Big Shoulders Display",PLEX="IBM Plex Sans",MONO="IBM Plex Mono";
+const DISP="Bricolage Grotesque",PLEX="Geist",MONO="Geist Mono",SERIF2="Instrument Serif";
 const PLANE="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z";
 function plane(g,x,y,s,c,rot=90){g.append("path").attr("d",PLANE).attr("transform",`translate(${x},${y}) rotate(${rot}) scale(${s}) translate(-12,-12)`).attr("fill",c);}
 function puff(g,x,y,s,c="#fff",op=1){const k=g.append("g").attr("transform",`translate(${x},${y}) scale(${s})`).attr("opacity",op);[[0,0,22],[24,-12,27],[52,0,20],[26,8,22]].forEach(([a,b,r])=>k.append("circle").attr("cx",a).attr("cy",b).attr("r",r).attr("fill",c));}
@@ -842,12 +842,13 @@ function v45(P){
  confetti(svg,16,[90,1540,900,110],conf,12,[[380,1520,360,200]]);
  const sk=svg.append("g");const S=lineSky(sk,92,1808,.87,P.paper,P.sun,false,6,P.ink,2);
  sk.append("line").attr("x1",60).attr("x2",1020).attr("y1",1808).attr("y2",1808).attr("stroke",P.ink).attr("stroke-width",2);
- {const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length;T(svg,540,nm.length>6?1846:1856,nm.slice(0,h).join("  ·  "),{f:"DM Sans",w:500,s:15,ls:2.4,c:P.muted,a:"middle"});if(nm.length>6)T(svg,540,1872,nm.slice(h).join("  ·  "),{f:"DM Sans",w:500,s:15,ls:2.4,c:P.muted,a:"middle"});}
+ {const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length;nameLines(nm,nm.length>6?1846:1856,22,{f:"DM Sans",w:500,s:15,ls:2.4,c:P.muted,a:"middle"});}
 }
 function v46(){v45({paper:"#fbf1ee",ink:"#3a2d33",muted:"#a48c92",un:"#f1e3df",unInk:"#c7aeb0",acc:"#d0697f",sun:"#f8d7c4",
  R:{West:"#9fb8a0",Southwest:"#f0a07a",Midwest:"#eec27a",Southeast:"#e89aae",Northeast:"#a3b5dc"},title:"Places I've Been",eyebrow:"MY  USA  TRAVEL  MAP"});}
 
 
+function nameLines(nm,y,dy,st){const k=Math.max(1,Math.ceil(nm.length/7)),per=Math.ceil(nm.length/k);for(let i=0;i<k;i++)fitT(T(svg,540,y+i*dy,nm.slice(i*per,(i+1)*per).join("  ·  "),st),950,st.s||15);}
 function fitT(sel,maxW,s){const w=sel.node().getComputedTextLength();if(w>maxW)sel.attr("font-size",s*maxW/w);return sel;}
 function edLegend(P,y){const meas=svg.append("text").attr("font-family","DM Sans").attr("font-weight",500).attr("font-size",19).attr("opacity",0);
  const widths=REGS.map(k=>{meas.text(k);return meas.node().getComputedTextLength()+64;});meas.remove();let lx=540-widths.reduce((a,b)=>a+b,0)/2;
@@ -859,7 +860,7 @@ function edSkyTop(P){
  confetti(svg,40,[70,130,940,330],conf,5,[[380,250,360,200]]);
  const sk=svg.append("g");const S=lineSky(sk,92,470,.87,P.paper,P.sun,false,6,P.ink,2);
  sk.append("line").attr("x1",60).attr("x2",1020).attr("y1",470).attr("y2",470).attr("stroke",P.ink).attr("stroke-width",2);
- {const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length;T(svg,540,nm.length>6?505:512,nm.slice(0,h).join("  ·  "),{f:"DM Sans",w:500,s:15,ls:2.4,c:P.muted,a:"middle"});if(nm.length>6)T(svg,540,531,nm.slice(h).join("  ·  "),{f:"DM Sans",w:500,s:15,ls:2.4,c:P.muted,a:"middle"});}
+ {const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length;nameLines(nm,nm.length>6?505:512,22,{f:"DM Sans",w:500,s:15,ls:2.4,c:P.muted,a:"middle"});}
  T(svg,540,600,P.eyebrow,{f:"DM Sans",w:500,s:22,ls:8,c:P.muted,a:"middle"});
  fitT(T(svg,540,720,P.title,{f:"Playfair Display",i:true,w:500,s:124,c:P.ink,a:"middle"}),930,124);
  const pill=svg.append("g");pill.append("rect").attr("x",380).attr("y",752).attr("width",320).attr("height",54).attr("rx",27).attr("fill","none").attr("stroke",P.acc).attr("stroke-width",1.8);
@@ -904,7 +905,7 @@ function edLux(P){
  confetti(svg,40,[80,120,920,340],conf,5,[[380,250,360,200]]);
  const sk=svg.append("g");const S=lineSky(sk,76,476,.565,P.paper,P.sun,false,6,P.ink,2);
  sk.append("line").attr("x1",72).attr("x2",1008).attr("y1",476).attr("y2",476).attr("stroke",P.ink).attr("stroke-width",2);
- {const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length;T(svg,540,nm.length>6?512:525,nm.slice(0,h).join("  ·  "),{f:"DM Sans",w:500,s:15,ls:2.6,c:P.muted,a:"middle"});if(nm.length>6)T(svg,540,538,nm.slice(h).join("  ·  "),{f:"DM Sans",w:500,s:15,ls:2.6,c:P.muted,a:"middle"});}
+ {const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length;nameLines(nm,nm.length>6?512:525,22,{f:"DM Sans",w:500,s:15,ls:2.6,c:P.muted,a:"middle"});}
  diamondRule(svg,540,576,90,"#c9a45c");
  T(svg,540,616,P.eyebrow,{f:"DM Sans",w:500,s:22,ls:8,c:P.muted,a:"middle"});
  fitT(T(svg,540,734,P.title,{f:"Playfair Display",i:true,w:500,s:124,c:P.ink,a:"middle"}),850,124);
@@ -936,7 +937,7 @@ function vIG(P){
  svg.append("circle").attr("cx",560).attr("cy",392).attr("r",106).attr("fill",lg(P.sunG,0,1)).attr("opacity",.95);
  const sk=svg.append("g");const S=lineSky(sk,76,476,.565,cycler(P.bld,4),"#ffffff",false,6,INK,2.2);
  sk.append("line").attr("x1",60).attr("x2",1020).attr("y1",476).attr("y2",476).attr("stroke",INK).attr("stroke-width",2.4);
- {const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length;T(svg,540,nm.length>6?512:525,nm.slice(0,h).join("  ·  "),{f:"DM Sans",w:700,s:15,ls:2.4,c:INK,a:"middle",op:.8});if(nm.length>6)T(svg,540,538,nm.slice(h).join("  ·  "),{f:"DM Sans",w:700,s:15,ls:2.4,c:INK,a:"middle",op:.8});}
+ {const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length;nameLines(nm,nm.length>6?512:525,22,{f:"DM Sans",w:700,s:15,ls:2.4,c:INK,a:"middle",op:.8});}
  T(svg,540,610,P.eyebrow,{f:"DM Sans",w:700,s:22,ls:7,c:INK,a:"middle",op:.85});
  stickerText(svg,540,730,P.title,{f:"Fraunces",w:900,s:118,ls:3,fill:P.titleC,ink:INK,sw:6,off:6,maxW:880});
  const pill=svg.append("g").attr("transform","translate(540,800) rotate(-4)");pill.append("rect").attr("x",-165).attr("y",-34).attr("width",330).attr("height",64).attr("rx",32).attr("fill",P.pill).attr("stroke",INK).attr("stroke-width",3.5);
@@ -969,7 +970,7 @@ function v54(){vIG(IGP.sunset);}
 
 
 /* ===== persona versions: MBA / TECH / MUSIC ===== */
-const SANS="DM Sans";
+const SANS="Geist";
 function cardBox(g,x,y,w,h,o={}){return g.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",o.r??18).attr("fill",o.fill||"#fff").attr("stroke",o.stroke||"#e3e8ef").attr("stroke-width",o.sw??1.5).attr("filter",o.sh||null);}
 
 /* 55. MBA — US Market Coverage */
@@ -998,32 +999,41 @@ function v55(){const ST=STATS();
  const rg=svg.append("g");cardBox(rg,72,1560,936,262,{sh});T(rg,100,1602,"State roster",{f:SANS,w:700,s:26,c:NAVY});T(rg,980,1602,`n = ${N}`,{f:MONO,s:15,c:MUT,a:"end"});
  ALPHA.forEach((n,i)=>{const c=Math.floor(i/6),r=i%6,x=100+c*228,y=1640+r*29;T(rg,x,y,"✓",{f:PLEX,w:700,s:17,c:TEAL});T(rg,x+22,y,n,{f:PLEX,s:18,c:NAVY});});
  T(svg,72,1866,"Source: personal travel log. Map shows the contiguous US.",{f:MONO,s:14,c:MUT});T(svg,1008,1866,"01",{f:MONO,w:600,s:16,c:NAVY,a:"end"});
+ stickerLayer(m,[[990,200,1.0,8],[1012,604,.75,10],[66,1210,.75,-8]],null,.46);
 }
 
 /* 56. TECH — travel dashboard */
-function v56(){const ST=STATS();
- const BG="#f7f4ef",INK="#1f2328",MUT="#656d76",LINE="#d0d7de",GRN=["#cfe5d6","#9fcdb2","#74b493","#4f8f72"],BLUE="#7d93cf",ORG="#d9906f",PURP="#a58fd3";
- bg(BG);const dp=defs.append("pattern").attr("id","tdots").attr("width",24).attr("height",24).attr("patternUnits","userSpaceOnUse");dp.append("circle").attr("cx",12).attr("cy",12).attr("r",1.1).attr("fill",LINE);svg.append("rect").attr("width",1080).attr("height",1920).attr("fill","url(#tdots)");
- const RG={West:GRN[2],Southwest:GRN[3],Midwest:GRN[1],Southeast:GRN[2],Northeast:GRN[1]};
- T(svg,72,196,"me@usa:~$ travel --stats",{f:MONO,w:500,s:24,c:MUT});
- const tl=T(svg,68,290,"states_visited ",{f:MONO,w:600,s:72,c:INK});tl.append("tspan").attr("fill",GRN[2]).text(`= ${N}`);
- T(svg,72,338,`// ${N} of 50 · ${Math.round(N/50*100)}% complete · ${ST.ra===5?"all regions unlocked":ST.ra+"/5 regions"}`,{f:MONO,s:21,c:MUT});
- let bx=72;[["build","passing",GRN[2]],["regions",`${ST.ra}/5`,BLUE],["coverage",`${Math.round(N/50*100)}%`,PURP],["next_stop","TBD",ORG]].forEach(([k,v,c])=>{const meas=svg.append("text").attr("font-family",MONO).attr("font-size",17).attr("font-weight",600).attr("opacity",0);meas.text(k);const w1=meas.node().getComputedTextLength()+22;meas.text(v);const w2=meas.node().getComputedTextLength()+22;meas.remove();
-  svg.append("rect").attr("x",bx).attr("y",370).attr("width",w1+w2).attr("height",34).attr("rx",6).attr("fill","#555");svg.append("path").attr("d",`M${bx+w1},370 h${w2-6} a6,6 0 0 1 6,6 v22 a6,6 0 0 1 -6,6 h${-(w2-6)}Z`).attr("fill",c);
-  T(svg,bx+11,393,k,{f:MONO,w:600,s:17,c:"#fff"});T(svg,bx+w1+11,393,v,{f:MONO,w:600,s:17,c:"#fff"});bx+=w1+w2+12;});
- const win=(y,h,title)=>{const g=svg.append("g");cardBox(g,72,y,936,h,{r:14,stroke:LINE});g.append("path").attr("d",`M72,${y+14} a14,14 0 0 1 14,-14 h908 a14,14 0 0 1 14,14 v34 h-936Z`).attr("fill","#eef1f4");g.append("line").attr("x1",72).attr("x2",1008).attr("y1",y+48).attr("y2",y+48).attr("stroke",LINE);
-  ["#ff5f57","#febc2e","#28c840"].forEach((c,i)=>g.append("circle").attr("cx",98+i*22).attr("cy",y+24).attr("r",7).attr("fill",c));T(g,540,y+30,title,{f:MONO,w:500,s:17,c:MUT,a:"middle"});return g;};
- const mg=win(440,560,"map.render(visited)");
- const m=map(mg,[100,510,880,460],{fill:(n,v)=>v?RG[REG(n)]:"#ece7e1",stroke:"#ffffff",sw:(n,v)=>v?1.8:1.2});allLabels(m,"#ffffff","#a3aab3",MONO,13);
- const gg=win(1030,500,"state_contributions.grid");
- const all=STATES.map(d=>d.properties.name).concat(["Alaska","Hawaii"]).sort();const cw=82,gap=8,x0=72+(936-(10*cw+9*gap))/2;
- all.forEach((n,i)=>{const c=i%10,r=Math.floor(i/10),x=x0+c*(cw+gap),y=1100+r*(cw-6+gap),v=VIS.has(n);gg.append("rect").attr("x",x).attr("y",y).attr("width",cw).attr("height",cw-6).attr("rx",10).attr("fill",v?RG[REG(n)]:"#ece7e1");
-  T(gg,x+cw/2,y+(cw-6)/2+7,AB[n]||(n==="Alaska"?"AK":"HI"),{f:MONO,w:600,s:20,c:v?"#ffffff":"#9aa3ad",a:"middle"});});
- 
- const jg=win(1560,290,"stats.json");
- const L=[["{"],["  ",["\"visited\"",BLUE],": ",[`${N}`,GRN[3]],","],["  ",["\"remaining\"",BLUE],": ",[`${50-N}`,GRN[3]],","],["  ",["\"regions\"",BLUE],": ",[`${ST.ra}`,GRN[3]],","],["  ",["\"coasts\"",BLUE],": [",...ST.coasts.flatMap((c,i)=>i?[", ",[`"${c}"`,ORG]]:[[`"${c}"`,ORG]]),"],"],["  ",["\"next_stop\"",BLUE],": ",["null",PURP]],["}"]];
- L.forEach((parts,i)=>{const tx=jg.append("text").attr("x",104).attr("y",1640+i*30).attr("font-family",MONO).attr("font-size",21).attr("fill",INK).attr("xml:space","preserve");parts.forEach(p=>{if(Array.isArray(p))tx.append("tspan").attr("fill",p[1]).text(p[0]);else tx.append("tspan").text(p);});});
- T(jg,980,1830,"✓ 0 errors",{f:MONO,w:600,s:16,c:GRN[2],a:"end"});
+function v56(){const ST=STATS(),R=MOD.R,INK="#17223a",MUT="#5d6a82",AMB="#c9761a",P2={surf:"#ffffff",line:"#cfd6e1",sh:shadow(0,8,18,"#0b1220",.07)};
+ dotBg("#eef1f5","#cfd6e1");
+ T(svg,72,150,"~/states-log  on  main  ✓",{f:MONO,w:500,s:20,c:MUT});
+ const tl=T(svg,64,250,"states",{f:MONO,w:600,s:100,c:INK});tl.append("tspan").attr("fill",AMB).text(".log");
+ const tw=tl.node().getComputedTextLength();svg.append("rect").attr("x",64+tw+10).attr("y",176).attr("width",26).attr("height",78).attr("fill",AMB);
+ T(svg,72,300,`${N} commits  ·  ${ST.pct}% coverage  ·  ${ST.ra}/5 regions  ·  ${CONFIG.sinceShort}`,{f:MONO,s:19,c:MUT});
+ shields(326,[["build","passing","#2f8f8a"],["coverage",`${ST.pct}%`,"#2b4c8c"],["regions",`${ST.ra}/5`,"#6b85c9"],["release",`v${N}.0`,AMB]],72);
+ // repo card
+ card(72,390,936,620,P2);
+ T(svg,100,438,`${CONFIG.name.toLowerCase().replace(/\s+/g,"-")} / states-log`,{f:MONO,w:600,s:22,c:INK});
+ svg.append("rect").attr("x",930).attr("y",418).attr("width",58).attr("height",26).attr("rx",13).attr("fill","none").attr("stroke","#cfd6e1");T(svg,959,436,"Public",{f:PLEX,w:600,s:13,c:MUT,a:"middle"});
+ let tx=100;[["<> Code",true],[`Issues ${50-N}`],["Pull requests 1"],["Actions"],["Insights"]].forEach(([l,on])=>{const tt=T(svg,tx,482,l,{f:PLEX,w:on?700:500,s:16,c:on?INK:MUT});const w=tt.node().getComputedTextLength();if(on)svg.append("rect").attr("x",tx-4).attr("y",492).attr("width",w+8).attr("height",3).attr("fill",AMB);tx+=w+30;});
+ svg.append("line").attr("x1",72).attr("x2",1008).attr("y1",495).attr("y2",495).attr("stroke","#e3e7ee");
+ const m=map(svg,[100,516,880,420],{fill:(n,v)=>v?R[REG(n)]:"#eef1f6",stroke:(n,v)=>v?"#ffffff":"#d6dce6",sw:(n,v)=>v?1.8:1.1});allLabels(m,"#ffffff","#a3adbd",PLEX,12);
+ let lx=100;REGS.forEach(k=>{svg.append("circle").attr("cx",lx+6).attr("cy",982).attr("r",6).attr("fill",R[k]);const tt=T(svg,lx+18,988,`${k} ${RVIS[k]||0}`,{f:PLEX,w:500,s:15,c:MUT});lx+=tt.node().getComputedTextLength()+40;});
+ // contributions
+ card(72,1036,452,420,P2);T(svg,98,1080,"Contributions",{f:PLEX,w:700,s:22,c:INK});T(svg,498,1080,`${N}/50`,{f:MONO,w:600,s:16,c:AMB,a:"end"});
+ const all=STATES.map(d=>d.properties.name).concat(["Alaska","Hawaii"]).sort(),cw=36,ch=50,gp=5,gx0=72+(452-(10*cw+9*gp))/2;
+ all.forEach((n,i)=>{const c=i%10,r=Math.floor(i/10),x=gx0+c*(cw+gp),y=1104+r*(ch+8),v=VIS.has(n);svg.append("rect").attr("x",x).attr("y",y).attr("width",cw).attr("height",ch).attr("rx",7).attr("fill",v?R[REG(n)]:"#edf0f4");T(svg,x+cw/2,y+ch/2+5,AB[n]||(n==="Alaska"?"AK":"HI"),{f:MONO,w:600,s:12,c:v?"#fff":"#a3adbd",a:"middle"});});
+ T(svg,gx0,1424,"Less",{f:MONO,s:13,c:MUT});["#edf0f4","#6b85c9","#2f8f8a","#2b4c8c"].forEach((c,i)=>svg.append("rect").attr("x",gx0+44+i*18).attr("y",1412).attr("width",14).attr("height",14).attr("rx",3).attr("fill",c));T(svg,gx0+120,1424,"More",{f:MONO,s:13,c:MUT});
+ // languages
+ card(556,1036,452,420,P2);T(svg,582,1080,"Languages",{f:PLEX,w:700,s:22,c:INK});
+ let bx=582;const tot=Math.max(N,1);REGS.forEach(k=>{const w=400*(RVIS[k]||0)/tot;if(w>0){svg.append("rect").attr("x",bx).attr("y",1102).attr("width",Math.max(w-2,1)).attr("height",12).attr("fill",R[k]);}bx+=w;});
+ REGS.map(k=>[k,RVIS[k]||0]).sort((a,b)=>b[1]-a[1]).forEach(([k,v],i)=>{const y=1160+i*52;svg.append("circle").attr("cx",590).attr("cy",y-6).attr("r",7).attr("fill",R[k]);T(svg,606,y,k,{f:PLEX,w:600,s:19,c:INK});T(svg,982,y,`${(v/tot*100).toFixed(1)}%`,{f:MONO,w:500,s:16,c:MUT,a:"end"});});
+ T(svg,582,1430,`${CONFIG.cities.length} cities · top: ${ST.top}`,{f:MONO,s:14,c:MUT});
+ // git log
+ card(72,1482,936,360,P2);T(svg,98,1526,"$ git log --oneline",{f:MONO,w:600,s:20,c:INK});T(svg,982,1526,`${N} commits`,{f:MONO,s:15,c:MUT,a:"end"});
+ const per=Math.ceil(N/2),rh=Math.min(28,286/Math.max(per,1)),fs=Math.min(17,rh*.66);
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/per),r=i%per,x=98+c*456,y=1566+r*rh;const tt=T(svg,x,y,"",{f:MONO,s:fs,c:INK}).attr("xml:space","preserve");
+  tt.append("tspan").attr("fill",AMB).text(hex7(n)+" ");tt.append("tspan").attr("fill",R[REG(n)]).text(`visit(${(AB[n]||"").toLowerCase()})`);tt.append("tspan").attr("fill",INK).text(": "+n);});
+ stickerLayer(m,[[962,190,1.2,8],[1012,1008,.85,10],[62,1040,.8,-10],[1012,1478,.8,-8]],null,.5);
 }
 
 /* 57. MUSIC — the album */
@@ -1049,7 +1059,7 @@ function v57(){const ST=STATS();
  sg.append("rect").attr("x",520).attr("y",300).attr("width",100).attr("height",40).attr("rx",6).attr("fill","#ffffff");T(sg,570,327,`${N} TRACKS`,{f:MONO,w:600,s:15,c:INK,a:"middle"});
  sg.append("rect").attr("x",560).attr("y",788).attr("width",62).attr("height",34).attr("rx",4).attr("fill","none").attr("stroke","#fff").attr("stroke-width",2);T(sg,591,811,"USA",{f:MONO,w:700,s:15,c:"#fff",a:"middle"});
  // player
- fitT(T(svg,70,944,CONFIG.title.toUpperCase(),{f:DISP,w:800,s:72,c:INK}),860,72);T(svg,72,980,`${CONFIG.name}  ·  Album  ·  ${N} tracks  ·  ${CONFIG.since}`,{f:PLEX,s:24,c:MUT});
+ fitT(T(svg,68,944,CONFIG.title,{f:DISP,w:800,s:68,ls:-2,c:INK}),860,68);T(svg,72,980,`${CONFIG.name}  ·  Album  ·  ${N} tracks  ·  ${CONFIG.since}`,{f:PLEX,s:24,c:MUT});
  heart(svg,990,940,2.2,"#c9761a");
  const py=1030;svg.append("rect").attr("x",72).attr("y",py).attr("width",936).attr("height",8).attr("rx",4).attr("fill","#dfe4ec");svg.append("rect").attr("x",72).attr("y",py).attr("width",936*N/50).attr("height",8).attr("rx",4).attr("fill",lg(["#c9761a","#2b4c8c"],1,0));
  svg.append("circle").attr("cx",72+936*N/50).attr("cy",py+4).attr("r",13).attr("fill","#ffffff").attr("stroke","#c9761a").attr("stroke-width",4);
@@ -1076,7 +1086,7 @@ function v58(){const ST=STATS();
  aura({base:"#eef1f5",blobs:[[120,200,330,"#dce6f3"],[980,240,300,"#f4e4cc"],[960,1000,340,"#e1e7f4"],[100,1050,320,"#d9ebe8"],[560,1750,380,"#e3e9f3"],[1000,1820,240,"#f1e6d2"]]});
  const sh=shadow(0,12,22,INK,.10),glass=(g,x,y,w,h,r=26)=>g.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",r).attr("fill","#ffffff").attr("fill-opacity",.72).attr("stroke","#ffffff").attr("stroke-width",2).attr("filter",sh);
  T(svg,72,168,"me@usa:~$ travel --wrapped",{f:MONO,w:500,s:21,c:MUT});
- const tw=T(svg,66,282,"TRAVEL ",{f:DISP,w:800,s:128,c:INK});tw.append("tspan").attr("fill",AMB).text("WRAPPED");
+ const tw=T(svg,62,282,"Travel ",{f:DISP,w:800,s:118,ls:-5,c:INK});tw.append("tspan").attr("fill",AMB).attr("font-family",SERIF2).attr("font-style","italic").attr("font-weight",400).attr("font-size",140).attr("letter-spacing",0).text("Wrapped");
  T(svg,72,316,`Every state ${CONFIG.since}`,{f:PLEX,s:25,c:MUT});
  // now playing (music) — same card, shifted up
  const np=svg.append("g").attr("transform","translate(0,-32)");glass(np,72,380,936,190);
@@ -1084,7 +1094,7 @@ function v58(){const ST=STATS();
  map(np,[106,440,122,72],{fill:(n,v)=>v?"#ffffff":"rgba(255,255,255,.25)",stroke:"rgba(0,0,0,0)",sw:0});
  [10,18,13,22,9].forEach((h,i)=>np.append("rect").attr("x",266+i*7).attr("y",432-h).attr("width",4.5).attr("height",h).attr("rx",2).attr("fill",ACC));
  T(np,310,431,"NOW PLAYING",{f:MONO,w:600,s:15,ls:3,c:ACC});
- fitT(T(np,266,482,CONFIG.title.toUpperCase(),{f:DISP,w:800,s:44,c:INK}),600,44);T(np,266,510,`${CONFIG.name}  ·  ${N} tracks  ·  ${CONFIG.sinceShort}`,{f:PLEX,s:19,c:MUT});
+ fitT(T(np,266,482,CONFIG.title,{f:DISP,w:700,s:40,ls:-1,c:INK}),600,40);T(np,266,510,`${CONFIG.name}  ·  ${N} tracks  ·  ${CONFIG.sinceShort}`,{f:PLEX,s:19,c:MUT});
  np.append("rect").attr("x",266).attr("y",528).attr("width",640).attr("height",6).attr("rx",3).attr("fill","#e1e6ee");np.append("rect").attr("x",266).attr("y",528).attr("width",640*N/50).attr("height",6).attr("rx",3).attr("fill",lg([ACC,"#2f8f8a"],1,0));
  np.append("circle").attr("cx",266+640*N/50).attr("cy",531).attr("r",9).attr("fill","#fff").attr("stroke",ACC).attr("stroke-width",3);
  T(np,266,558,`${N}`,{f:MONO,s:15,c:MUT});T(np,906,558,"50",{f:MONO,s:15,c:MUT,a:"end"});
@@ -1102,7 +1112,7 @@ function v58(){const ST=STATS();
  allLabels(m,"#ffffff","#a9b3c3",SANS,13);
  // row A: region bars (MBA) + state grid (tech)
  const AY=1186,AH=372;
- const L=svg.append("g");glass(L,72,AY,452,AH,22);T(L,98,AY+46,"COVERAGE BY REGION",{f:DISP,w:800,s:30,c:INK});
+ const L=svg.append("g");glass(L,72,AY,452,AH,22);T(L,98,AY+46,"Coverage by region",{f:DISP,w:700,s:28,ls:-.5,c:INK});
  REGS.map(k=>[k,RVIS[k]||0,RTOT[k]]).sort((a,b)=>b[1]/b[2]-a[1]/a[2]).forEach(([k,v,tt],i)=>{const y=AY+82+i*56;T(L,98,y+4,k,{f:PLEX,w:600,s:18,c:INK});T(L,498,y+4,`${v}/${tt}`,{f:MONO,w:600,s:16,c:MUT,a:"end"});
   L.append("rect").attr("x",98).attr("y",y+14).attr("width",400).attr("height",16).attr("rx",8).attr("fill","#e6eaf0");L.append("rect").attr("x",98).attr("y",y+14).attr("width",400*v/tt).attr("height",16).attr("rx",8).attr("fill",R[k]);});
  const G=svg.append("g");glass(G,556,AY,452,AH,22);T(G,582,AY+46,"state_grid",{f:MONO,w:600,s:22,c:INK});T(G,982,AY+44,`${N}/50`,{f:MONO,w:600,s:17,c:ACC,a:"end"});
@@ -1111,7 +1121,7 @@ function v58(){const ST=STATS();
   T(G,x+cw/2,y+ch/2+5,AB[n]||(n==="Alaska"?"AK":"HI"),{f:MONO,w:600,s:13,c:v?"#ffffff":"#a3adbd",a:"middle"});});
  // row B: full state names
  const BY=1582,BH=250;const Lb=svg.append("g");glass(Lb,72,BY,936,BH,22);
- T(Lb,98,BY+46,"STATES VISITED",{f:DISP,w:800,s:30,c:INK});T(Lb,982,BY+44,`${N} of 50`,{f:MONO,w:600,s:17,c:ACC,a:"end"});
+ T(Lb,98,BY+46,"States visited",{f:DISP,w:700,s:28,ls:-.5,c:INK});T(Lb,982,BY+44,`${N} of 50`,{f:MONO,w:600,s:17,c:ACC,a:"end"});
  const per=Math.max(6,Math.ceil(N/4)),rh=Math.min(28,168/per);ALPHA.forEach((n,i)=>{const c=Math.floor(i/per),r=i%per,x=100+c*226,y=BY+86+r*rh;Lb.append("circle").attr("cx",x+6).attr("cy",y-6).attr("r",6).attr("fill",R[REG(n)]);T(Lb,x+20,y,n,{f:PLEX,w:500,s:n.length>12?16.5:18,c:INK});});
  // badges (tech)
  let bx=0;const B=[["build","passing","#2f8f8a"],["coverage",`${Math.round(N/50*100)}%`,"#2b4c8c"],["regions",`${ST.ra}/5`,"#6b85c9"],["next_stop","TBD","#c9761a"]];
@@ -1120,11 +1130,7 @@ function v58(){const ST=STATS();
  B.forEach(([k,v,c],i)=>{const [w1,w2]=ws[i];svg.append("rect").attr("x",bx).attr("y",BYB).attr("width",w1+w2).attr("height",32).attr("rx",6).attr("fill","#2c3a55");svg.append("path").attr("d",`M${bx+w1},${BYB} h${w2-6} a6,6 0 0 1 6,6 v20 a6,6 0 0 1 -6,6 h${-(w2-6)}Z`).attr("fill",c);
   T(svg,bx+10,BYB+22,k,{f:MONO,w:600,s:16,c:"#fff"});T(svg,bx+w1+10,BYB+22,v,{f:MONO,w:600,s:16,c:"#fff"});bx+=w1+w2+10;});
  // stickers (around, never on the map)
- {const F=stickerFilter(5),ST2=pickStickers(4);
-  if(ST2[0])drawSticker(svg,ST2[0],972,160,1.15,9,F);
-  if(ST2[1])drawSticker(svg,ST2[1],1004,1572,.95,-10,F);
-  if(ST2[2])drawSticker(svg,ST2[2],60,1178,.8,-12,F);
-  if(ST2[3])drawSticker(svg,ST2[3],1010,712,.8,10,F);}
+ stickerLayer(m,[[972,160,1.15,9],[1004,1572,.95,-10],[60,1178,.8,-12],[1010,712,.8,10]],null,.5);
 }
 
 /* ===================== LUXE / DARK COLLECTION ===================== */
@@ -1168,7 +1174,7 @@ function luxDark(P){
  window.BALLOONS=[[P.line,P.win],[P.bld,P.win],[P.win,P.bld]];const sk=svg.append("g");const S=lineSky(sk,80,1788,.6,P.bld,P.win,false,6,P.line,1.8);window.BALLOONS=null;
  sk.append("line").attr("x1",64).attr("x2",1016).attr("y1",1788).attr("y2",1788).attr("stroke",GOLD).attr("stroke-width",1.6);
  {const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length;const st={f:"DM Sans",w:500,s:13.5,ls:2.4,c:P.muted,a:"middle"};
-  T(svg,540,nm.length>6?1820:1830,nm.slice(0,h).join("  ·  "),st);if(nm.length>6)T(svg,540,1844,nm.slice(h).join("  ·  "),st);}
+  nameLines(nm,nm.length>6?1820:1830,22,st);}
 }
 const GOLDS=["#a07a35","#f3dc9b","#c19a4b","#f7e6b0","#8f6a2b"];
 const LUX={
@@ -1237,11 +1243,7 @@ function v63(){const ST=STATS();
  bx=540-(ws.reduce((s,[a1,a2])=>s+a1+a2+10,0)-10)/2;const BYB=1852;
  B.forEach(([k,v,c],i)=>{const [w1,w2]=ws[i];svg.append("rect").attr("x",bx).attr("y",BYB).attr("width",w1+w2).attr("height",32).attr("rx",6).attr("fill","#2c2832");svg.append("path").attr("d",`M${bx+w1},${BYB} h${w2-6} a6,6 0 0 1 6,6 v20 a6,6 0 0 1 -6,6 h${-(w2-6)}Z`).attr("fill",c);
   T(svg,bx+10,BYB+22,k,{f:MONO,w:600,s:16,c:"#fff"});T(svg,bx+w1+10,BYB+22,v,{f:MONO,w:600,s:16,c:"#fff"});bx+=w1+w2+10;});
- {const F=stickerFilter(5),ST2=pickStickers(4);
-  if(ST2[0])drawSticker(svg,ST2[0],972,160,1.15,9,F);
-  if(ST2[1])drawSticker(svg,ST2[1],1004,1572,.95,-10,F);
-  if(ST2[2])drawSticker(svg,ST2[2],60,1178,.8,-12,F);
-  if(ST2[3])drawSticker(svg,ST2[3],1010,712,.8,10,F);}
+ stickerLayer(m,[[972,160,1.15,9],[1004,1572,.95,-10],[60,1178,.8,-12],[1010,712,.8,10]],null,.5);
 }
 
 
@@ -1260,7 +1262,7 @@ function v65(){const ST=STATS(),INK="#12313a",TEAL="#2a8c82",CORAL="#e07a6a",MUT
  bg("#f3f8f7");noise(.035,.9,[.2,.4,.4]);const sh=shadow(0,8,18,INK,.06);
  svg.append("rect").attr("width",1080).attr("height",12).attr("fill",TEAL);
  T(svg,72,168,"PATIENT CHART  ·  TRAVEL MEDICINE",{f:MONO,w:600,s:18,ls:3,c:TEAL});T(svg,1008,168,"MRN 0050-USA",{f:MONO,s:17,c:MUT,a:"end"});
- fitT(T(svg,68,262,"Travel Health Record",{f:"Playfair Display",i:true,w:500,s:94,c:INK}),940,94);
+ fitT(T(svg,68,262,"Travel Health Record",{f:SERIF2,i:true,w:500,s:94,c:INK}),940,94);
  T(svg,72,308,`Patient: ${who("Me")}   ·   History: every state ${CONFIG.since}`,{f:PLEX,s:22,c:MUT});
  // ECG
  let d="M72,392";const pts=[[140,0],[160,-8],[178,0],[196,0],[206,14],[222,-46],[238,20],[252,0],[300,0],[318,-10],[340,0]];
@@ -1277,17 +1279,18 @@ function v65(){const ST=STATS(),INK="#12313a",TEAL="#2a8c82",CORAL="#e07a6a",MUT
  const m=map(mg,[100,672,880,440],{fill:(n,v)=>v?R[REG(n)]:"#e6efed",stroke:"#ffffff",sw:(n,v)=>v?1.8:1.2});allLabels(m,"#ffffff","#a9bcbc","DM Sans",13);
  // diagnosis + Rx
  const dg=svg.append("g");cardBox(dg,72,1190,452,250,{r:22,stroke:LINE,sh});
- T(dg,98,1234,"DIAGNOSIS",{f:MONO,w:600,s:15,ls:3,c:TEAL});T(dg,98,1290,"Chronic wanderlust",{f:"Playfair Display",i:true,w:500,s:38,c:INK});
+ T(dg,98,1234,"DIAGNOSIS",{f:MONO,w:600,s:15,ls:3,c:TEAL});T(dg,98,1290,"Chronic wanderlust",{f:SERIF2,i:true,w:500,s:38,c:INK});
  wrapT(dg,98,1336,`Presents with ${N} states across ${ST.ra} regions. Strongest response in the ${ST.top}.`,400,{f:PLEX,s:19,c:MUT},28);
  T(dg,98,1418,"Prognosis: excellent",{f:PLEX,w:600,s:19,c:TEAL});
  const rx=svg.append("g");cardBox(rx,556,1190,452,250,{r:22,stroke:LINE,sh});
- T(rx,580,1262,"℞",{f:"Playfair Display",i:true,w:500,s:64,c:CORAL});T(rx,640,1236,"PRESCRIPTION",{f:MONO,w:600,s:15,ls:3,c:TEAL});
- T(rx,640,1270,`Visit ${50-N} more states`,{f:"Playfair Display",i:true,w:500,s:30,c:INK});T(rx,582,1322,"Sig: one road trip, as needed.",{f:PLEX,s:19,c:MUT});T(rx,582,1352,"Refills: unlimited",{f:PLEX,s:19,c:MUT});
+ T(rx,580,1262,"℞",{f:SERIF2,i:true,w:500,s:64,c:CORAL});T(rx,640,1236,"PRESCRIPTION",{f:MONO,w:600,s:15,ls:3,c:TEAL});
+ T(rx,640,1270,`Visit ${50-N} more states`,{f:SERIF2,i:true,w:500,s:30,c:INK});T(rx,582,1322,"Sig: one road trip, as needed.",{f:PLEX,s:19,c:MUT});T(rx,582,1352,"Refills: unlimited",{f:PLEX,s:19,c:MUT});
  rx.append("line").attr("x1",582).attr("x2",980).attr("y1",1406).attr("y2",1406).attr("stroke",LINE).attr("stroke-width",1.5);
  T(rx,590,1398,`Dr. ${who("Wanderlust")}`,{f:"Caveat",w:700,s:34,c:INK});
  // visit log
  const lg2=svg.append("g");cardBox(lg2,72,1470,936,370,{r:22,stroke:LINE,sh});T(lg2,100,1514,"Visit log",{f:"DM Sans",w:700,s:24,c:INK});T(lg2,980,1514,`${N} entries`,{f:MONO,s:15,c:MUT,a:"end"});
  stateList(lg2,104,1560,3,300,270,{f:PLEX,s:20,c:INK,rh:31,indent:22},(x,y,n)=>T(lg2,x,y,"✓",{f:PLEX,w:700,s:18,c:R[REG(n)]}));
+ stickerLayer(m,[[990,262,1.0,8],[1012,604,.8,10],[66,1186,.8,-10],[1012,1468,.8,-8]],null,.46);
 }
 
 /* 66 · Physician — journal article */
@@ -1297,8 +1300,8 @@ function v66(){const ST=STATS(),INK="#1c1b1a",MUT="#6b6660",BUR="#8b1e2d",RULE="
  T(svg,540,150,"THE  JOURNAL  OF  AMERICAN  TRAVEL",{f:"Cinzel",w:600,s:28,ls:4,c:INK,a:"middle"});
  svg.append("line").attr("x1",72).attr("x2",1008).attr("y1",172).attr("y2",172).attr("stroke",RULE).attr("stroke-width",2.5);svg.append("line").attr("x1",72).attr("x2",1008).attr("y1",178).attr("y2",178).attr("stroke",RULE).attr("stroke-width",.8);
  T(svg,72,206,`VOL. ${N}  ·  ORIGINAL ARTICLE`,{f:PLEX,w:600,s:16,ls:2,c:BUR});T(svg,1008,206,"OPEN ACCESS",{f:PLEX,w:600,s:16,ls:2,c:MUT,a:"end"});
- let y=wrapT(svg,72,276,"Prevalence of State Visits in a Single Traveler: A Longitudinal Cohort Study",936,{f:"Playfair Display",w:600,s:46,c:INK},56);
- T(svg,72,y+46,`${who("A. Traveler")}, MD`,{f:"Playfair Display",i:true,w:500,s:24,c:MUT});
+ let y=wrapT(svg,72,276,"Prevalence of State Visits in a Single Traveler: A Longitudinal Cohort Study",936,{f:SERIF2,w:600,s:46,c:INK},56);
+ T(svg,72,y+46,`${who("A. Traveler")}, MD`,{f:SERIF2,i:true,w:500,s:24,c:MUT});
  // abstract
  const ay=y+76;svg.append("rect").attr("x",72).attr("y",ay).attr("width",936).attr("height",236).attr("fill","#f3eee4");svg.append("rect").attr("x",72).attr("y",ay).attr("width",6).attr("height",236).attr("fill",BUR);
  T(svg,100,ay+38,"ABSTRACT",{f:PLEX,w:700,s:16,ls:3,c:BUR});
@@ -1319,11 +1322,12 @@ function v66(){const ST=STATS(),INK="#1c1b1a",MUT="#6b6660",BUR="#8b1e2d",RULE="
  const ey=ty+94+5*34;svg.append("line").attr("x1",72).attr("x2",1008).attr("y1",ey-18).attr("y2",ey-18).attr("stroke",RULE).attr("stroke-width",1.6);
  T(svg,72,ey+14,`Total: ${N} of 50 states (${ST.pct}%).`,{f:PLEX,w:600,s:18,c:INK});
  const dy=ey+66;T(svg,72,dy,"DISCUSSION",{f:PLEX,w:700,s:16,ls:3,c:BUR});
- const dy2=wrapT(svg,72,dy+32,`The ${ST.top} was fully explored, while the ${ST.low} remains the largest opportunity. No adverse events were reported beyond mild jet lag.`,936,{f:"Playfair Display",i:true,w:500,s:21,c:INK},30);
+ const dy2=wrapT(svg,72,dy+32,`The ${ST.top} was fully explored, while the ${ST.low} remains the largest opportunity. No adverse events were reported beyond mild jet lag.`,936,{f:SERIF2,i:true,w:500,s:21,c:INK},30);
  T(svg,72,dy2+52,"SUPPLEMENTARY APPENDIX · STATES VISITED",{f:PLEX,w:700,s:15,ls:3,c:BUR});
  stateList(svg,72,dy2+86,4,236,Math.max(60,1810-(dy2+86)),{f:PLEX,s:17,c:INK,rh:26,indent:16},(x,y,n)=>svg.append("rect").attr("x",x).attr("y",y-11).attr("width",8).attr("height",8).attr("fill",R[REG(n)]));
  svg.append("line").attr("x1",72).attr("x2",1008).attr("y1",1838).attr("y2",1838).attr("stroke",RULE).attr("stroke-width",.8);
  T(svg,72,1866,`J Am Travel · doi:10.0050/states.${N}`,{f:PLEX,s:15,c:MUT});T(svg,1008,1866,"1",{f:PLEX,w:600,s:15,c:INK,a:"end"});
+ stickerLayer(m,[[1004,fy+40,.8,10],[96,fy+452,.8,-8]],null,.46);
 }
 
 /* 67 · CEO — Annual Report */
@@ -1331,10 +1335,10 @@ function v67(){const ST=STATS(),IV="#f3ece0",MUT="#9a9083",GS="#c9a45c";const GO
  svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",lg(["#151413","#0b0a0a"],0,1));noise(.05,.95,[1,.92,.82]);
  svg.append("rect").attr("x",0).attr("y",0).attr("width",1080).attr("height",8).attr("fill",GOLD);
  T(svg,72,170,"ANNUAL  REPORT",{f:"DM Sans",w:500,s:20,ls:8,c:GS});T(svg,1008,170,CONFIG.sinceShort.toUpperCase(),{f:"DM Sans",w:500,s:16,ls:4,c:MUT,a:"end"});
- fitT(T(svg,68,272,"Expansion Footprint",{f:"Playfair Display",i:true,w:500,s:92,c:IV}),940,92);
+ fitT(T(svg,68,272,"Expansion Footprint",{f:SERIF2,i:true,w:500,s:92,c:IV}),940,92);
  T(svg,72,318,"Every market entered across the United States",{f:"DM Sans",w:400,s:23,c:MUT});
- const big=T(svg,64,560,`${N}`,{f:"Playfair Display",w:600,s:250,c:GOLD});const bw=big.node().getComputedTextLength();
- T(svg,64+bw+28,470,"markets entered",{f:"Playfair Display",i:true,w:500,s:42,c:IV});T(svg,64+bw+30,516,`${ST.pct}% national coverage`,{f:"DM Sans",w:500,s:22,c:GS});
+ const big=T(svg,64,560,`${N}`,{f:SERIF2,w:600,s:250,c:GOLD});const bw=big.node().getComputedTextLength();
+ T(svg,64+bw+28,470,"markets entered",{f:SERIF2,i:true,w:500,s:42,c:IV});T(svg,64+bw+30,516,`${ST.pct}% national coverage`,{f:"DM Sans",w:500,s:22,c:GS});
  T(svg,64+bw+30,550,`${50-N} untapped markets`,{f:"DM Sans",w:400,s:20,c:MUT});
  svg.append("line").attr("x1",72).attr("x2",1008).attr("y1",612).attr("y2",612).attr("stroke",GOLD).attr("stroke-width",1.2);
  const m=map(svg,[72,650,936,500],{fill:(n,v)=>v?FOIL:"#1e1c1a",stroke:(n,v)=>v?"#0b0a0a":"#302d29",sw:(n,v)=>v?1.2:1,
@@ -1342,14 +1346,15 @@ function v67(){const ST=STATS(),IV="#f3ece0",MUT="#9a9083",GS="#c9a45c";const GO
  allLabels(m,"#2a2116","#5d5750","DM Sans",13);
  const ky=1200;[[`${ST.ra}/5`,"REGIONS ACTIVE"],[ST.top,"TOP REGION"],[`${Math.round(ST.tp*100)}%`,"TOP-REGION SHARE"]].forEach(([v,k],i)=>{const x=72+i*316;
   svg.append("rect").attr("x",x).attr("y",ky).attr("width",300).attr("height",120).attr("fill","#ffffff").attr("fill-opacity",.04).attr("stroke",GS).attr("stroke-opacity",.4);
-  T(svg,x+22,ky+36,k,{f:"DM Sans",w:500,s:14,ls:3,c:MUT});fitT(T(svg,x+20,ky+92,v,{f:"Playfair Display",i:true,w:500,s:44,c:IV}),260,44);});
- T(svg,72,1380,"Regional performance",{f:"Playfair Display",i:true,w:500,s:30,c:IV});
+  T(svg,x+22,ky+36,k,{f:"DM Sans",w:500,s:14,ls:3,c:MUT});fitT(T(svg,x+20,ky+92,v,{f:SERIF2,i:true,w:500,s:44,c:IV}),260,44);});
+ T(svg,72,1380,"Regional performance",{f:SERIF2,i:true,w:500,s:30,c:IV});
  sortedRegions().forEach(([k,v,tt],i)=>{const y=1414+i*44;T(svg,72,y+18,k,{f:"DM Sans",w:500,s:18,c:IV});svg.append("rect").attr("x",250).attr("y",y+4).attr("width",620).attr("height",16).attr("fill","#2a2724");
   svg.append("rect").attr("x",250).attr("y",y+4).attr("width",620*v/tt).attr("height",16).attr("fill",GOLD);T(svg,1008,y+18,`${v}/${tt}`,{f:MONO,w:500,s:17,c:GS,a:"end"});});
  svg.append("line").attr("x1",72).attr("x2",1008).attr("y1",1660).attr("y2",1660).attr("stroke",GOLD).attr("stroke-width",.8);
- T(svg,72,1718,"“We go where the opportunity is.”",{f:"Playfair Display",i:true,w:500,s:36,c:IV});
+ T(svg,72,1718,"“We go where the opportunity is.”",{f:SERIF2,i:true,w:500,s:36,c:IV});
  T(svg,72,1790,who("The Traveler"),{f:"Caveat",w:700,s:44,c:GS});T(svg,72,1830,"CHIEF EXPLORATION OFFICER",{f:"DM Sans",w:500,s:15,ls:4,c:MUT});
  T(svg,1008,1830,`FY · ${CONFIG.sinceShort}`,{f:"DM Sans",w:500,s:15,ls:3,c:MUT,a:"end"});
+ stickerLayer(m,[[976,270,1.0,8],[1012,660,.8,10],[66,1150,.8,-10]],null,.46);
 }
 
 /* 68 · Teacher — Geography Report Card */
@@ -1362,13 +1367,13 @@ function v68(){const ST=STATS(),NAVY="#2c3e66",RED="#d24b4b",MUT="#7b829a",PAPER
  const ap=svg.append("g").attr("transform","translate(960,170)");ap.append("path").attr("d","M0,-26 C-30,-40 -48,-10 -38,16 C-30,40 -12,46 0,38 C12,46 30,40 38,16 C48,-10 30,-40 0,-26Z").attr("fill",RED);
  ap.append("path").attr("d","M0,-26 Q2,-44 10,-52").attr("stroke","#6b4a2b").attr("stroke-width",4).attr("fill","none");ap.append("path").attr("d","M6,-40 Q26,-54 34,-38 Q18,-30 6,-40Z").attr("fill","#7fb08f");
  T(svg,130,176,"GEOGRAPHY  REPORT  CARD",{f:"DM Sans",w:700,s:22,ls:5,c:NAVY});
- fitT(T(svg,126,266,CONFIG.title,{f:"Playfair Display",i:true,w:500,s:76,c:NAVY}),780,76);
+ fitT(T(svg,126,266,CONFIG.title,{f:SERIF2,i:true,w:500,s:76,c:NAVY}),780,76);
  T(svg,130,316,`Student: ${who("Me")}  ·  Term: ${CONFIG.since}`,{f:"Caveat",w:700,s:34,c:NAVY});
  // grade
  const gr=svg.append("g").attr("transform","translate(890,378) rotate(-8)");gr.append("circle").attr("r",84).attr("fill","none").attr("stroke",RED).attr("stroke-width",5);
  gr.append("circle").attr("r",72).attr("fill","none").attr("stroke",RED).attr("stroke-width",1.5);T(gr,0,26,N>=40?"A+":N>=25?"A":N>=15?"A-":N>=8?"B+":"B",{f:"Caveat",w:700,s:96,c:RED,a:"middle"});
  const m=map(svg,[110,430,900,520],{fill:(n,v)=>v?R[REG(n)]:"#ffffff",stroke:(n,v)=>v?"#fbf7ee":"#c7cfdf",sw:(n,v)=>v?2:1.2});allLabels(m,"#ffffff","#aab3c7","DM Sans",13);
- [[1010,560],[1000,1040],[960,1300]].forEach(([x,y],i)=>{star(svg,x,y,24,"#f2c14e",i*.3).attr("stroke","#d9a531").attr("stroke-width",2);});
+ 
  // subjects table
  const grade=p=>p>=.9?"A+":p>=.6?"A":p>=.4?"B+":p>=.25?"B":p>0?"C":"Inc.";
  T(svg,130,1018,"Subject",{f:"DM Sans",w:700,s:18,ls:2,c:MUT});T(svg,620,1018,"Visited",{f:"DM Sans",w:700,s:18,ls:2,c:MUT,a:"end"});T(svg,820,1018,"Grade",{f:"DM Sans",w:700,s:18,ls:2,c:MUT,a:"end"});
@@ -1380,35 +1385,41 @@ function v68(){const ST=STATS(),NAVY="#2c3e66",RED="#d24b4b",MUT="#7b829a",PAPER
  // spelling list
  T(svg,130,1524,"States learned",{f:"DM Sans",w:700,s:20,c:MUT});
  stateList(svg,134,1568,3,290,276,{f:"Caveat",w:700,s:34,c:NAVY,rh:46,indent:26},(x,y,n)=>T(svg,x,y,"✓",{f:"DM Sans",w:700,s:20,c:R[REG(n)]}));
+ stickerLayer(m,[[1010,560,.95,8],[1004,1040,.9,-8],[964,1300,.9,10]],null,.46);
 }
 
 /* 69 · Product Manager — Roadmap */
-function v69(){const ST=STATS(),INK="#1f2328",MUT="#6e7781",LINE="#e3e5e8",BG="#f7f7f5",BLUE="#4f6bed",GRN="#2f9e6f",AMB="#e0a030";
- const R={West:"#7cbfa5",Southwest:"#f0a27a",Midwest:"#f2cd6e",Southeast:"#ee9fb5",Northeast:"#93a7ee"};
- bg(BG);const sh=shadow(0,4,12,INK,.05);
- T(svg,72,168,"🗺  Product  /  Roadmaps  /  USA",{f:"DM Sans",w:500,s:19,c:MUT});
- fitT(T(svg,68,262,"USA Roadmap",{f:"DM Sans",w:700,s:84,c:INK,ls:-2}),940,84);
- let bx=72;[["Owner: "+who("Me"),"#eef0fb",BLUE],["Status: On track","#e8f5ee",GRN],["Since: "+CONFIG.sinceShort,"#f6efe0","#9a6b12"]].forEach(([l,b,c])=>{const tm=T(svg,0,0,l,{f:"DM Sans",w:500,s:18});const w=tm.node().getComputedTextLength()+28;tm.remove();
-  svg.append("rect").attr("x",bx).attr("y",292).attr("width",w).attr("height",36).attr("rx",8).attr("fill",b);T(svg,bx+14,316,l,{f:"DM Sans",w:500,s:18,c});bx+=w+10;});
- // OKRs
- const ok=svg.append("g");cardBox(ok,72,356,936,250,{r:14,stroke:LINE,sh});T(ok,98,396,"Objective: See all 50 states",{f:"DM Sans",w:700,s:24,c:INK});
- [["KR1  States visited",N/50,`${N}/50`],["KR2  Regions active",ST.ra/5,`${ST.ra}/5`],["KR3  Skyline cities",Math.min(1,CONFIG.cities.length/12),`${CONFIG.cities.length}/12`]].forEach(([k,p,v],i)=>{const y=444+i*52;
-  T(ok,98,y,k,{f:"DM Sans",w:500,s:19,c:INK});ok.append("rect").attr("x",420).attr("y",y-14).attr("width",460).attr("height",12).attr("rx",6).attr("fill","#eceef1");
-  ok.append("rect").attr("x",420).attr("y",y-14).attr("width",460*p).attr("height",12).attr("rx",6).attr("fill",p>=1?GRN:BLUE);T(ok,980,y,v,{f:MONO,w:500,s:17,c:MUT,a:"end"});});
+function v69(){const ST=STATS(),R=MOD.R,INK="#17223a",MUT="#5d6a82",AMB="#c9761a",GRN="#2f8f8a",P2={surf:"#ffffff",line:"#cfd6e1",sh:shadow(0,8,18,"#0b1220",.07)};
+ dotBg("#eef1f5","#cfd6e1");
+ T(svg,72,150,"PRODUCT  /  ROADMAPS  /  USA",{f:MONO,w:500,s:18,ls:2,c:MUT});
+ const tl=T(svg,62,262,"USA ",{f:DISP,w:800,s:120,ls:-5,c:INK});tl.append("tspan").attr("fill",AMB).attr("font-family",SERIF2).attr("font-style","italic").attr("font-weight",400).attr("font-size",140).attr("letter-spacing",0).text("Roadmap");
+ let cx=72;[[`Owner · ${CONFIG.name}`,"#e4e9f6","#2b4c8c"],["● On track","#e2f1ee",GRN],[`Since · ${CONFIG.sinceShort}`,"#f6ecdc","#9a5a10"]].forEach(([l,b,c])=>{const tm=T(svg,0,-50,l,{f:PLEX,w:600,s:17});const w=tm.node().getComputedTextLength()+28;tm.remove();svg.append("rect").attr("x",cx).attr("y",288).attr("width",w).attr("height",34).attr("rx",17).attr("fill",b);T(svg,cx+14,311,l,{f:PLEX,w:600,s:17,c});cx+=w+10;});
+ // progress ring + OKRs
+ card(72,346,300,200,P2);const rcx=222,rcy=446,RR=70;svg.append("circle").attr("cx",rcx).attr("cy",rcy).attr("r",RR).attr("fill","none").attr("stroke","#e6eaf0").attr("stroke-width",16);
+ svg.append("path").attr("d",d3.arc()({innerRadius:RR-8,outerRadius:RR+8,startAngle:0,endAngle:2*Math.PI*N/50,cornerRadius:8})).attr("transform",`translate(${rcx},${rcy})`).attr("fill",AMB);
+ T(svg,rcx,rcy+10,`${N}`,{f:DISP,w:800,s:56,c:INK,a:"middle"});T(svg,rcx,rcy+34,"of 50 shipped",{f:MONO,s:13,c:MUT,a:"middle"});
+ card(392,346,616,200,P2);T(svg,418,388,"OKR · See all 50 states",{f:PLEX,w:700,s:21,c:INK});
+ [["KR1  States visited",N/50,`${N}/50`],["KR2  Regions active",ST.ra/5,`${ST.ra}/5`],["KR3  Cities logged",Math.min(1,CONFIG.cities.length/12),`${CONFIG.cities.length}/12`]].forEach(([k,p,v],i)=>{const y=432+i*40;T(svg,418,y+4,k,{f:PLEX,w:500,s:16,c:INK});svg.append("rect").attr("x",640).attr("y",y-8).attr("width",280).attr("height",12).attr("rx",6).attr("fill","#e6eaf0");svg.append("rect").attr("x",640).attr("y",y-8).attr("width",Math.max(12,280*p)).attr("height",12).attr("rx",6).attr("fill",p>=1?GRN:"#2b4c8c");T(svg,982,y+4,v,{f:MONO,w:500,s:15,c:MUT,a:"end"});});
  // map
- const mg=svg.append("g");cardBox(mg,72,630,936,470,{r:14,stroke:LINE,sh});T(mg,98,670,"Market coverage",{f:"DM Sans",w:700,s:22,c:INK});T(mg,980,670,`${ST.pct}% shipped`,{f:MONO,s:16,c:GRN,a:"end"});
- const m=map(mg,[98,694,884,380],{fill:(n,v)=>v?R[REG(n)]:"#eef0f2",stroke:"#ffffff",sw:(n,v)=>v?1.8:1.2});allLabels(m,"#ffffff","#b0b7bf","DM Sans",12);
+ card(72,572,936,430,P2);T(svg,98,612,"Market coverage",{f:PLEX,w:700,s:20,c:INK});T(svg,982,612,`${ST.pct}% shipped`,{f:MONO,w:600,s:15,c:GRN,a:"end"});
+ const m=map(svg,[110,628,860,360],{fill:(n,v)=>v?R[REG(n)]:"#eef1f6",stroke:(n,v)=>v?"#ffffff":"#d6dce6",sw:(n,v)=>v?1.8:1.1});allLabels(m,"#ffffff","#a3adbd",PLEX,12);
+ // epics
+ card(72,1028,936,282,P2);T(svg,98,1068,"Epics",{f:PLEX,w:700,s:20,c:INK});T(svg,982,1068,"by region",{f:MONO,s:15,c:MUT,a:"end"});
+ sortedRegions().forEach(([k,v,tt],i)=>{const y=1100+i*40;svg.append("rect").attr("x",98).attr("y",y).attr("width",10).attr("height",26).attr("rx",3).attr("fill",R[k]);T(svg,118,y+19,`EPIC · ${k}`,{f:PLEX,w:600,s:17,c:INK});
+  svg.append("rect").attr("x",330).attr("y",y+7).attr("width",440).attr("height",12).attr("rx",6).attr("fill","#e6eaf0");svg.append("rect").attr("x",330).attr("y",y+7).attr("width",Math.max(12,440*v/tt)).attr("height",12).attr("rx",6).attr("fill",R[k]);
+  const [lab,bgc,fg]=v===tt?["Done","#e2f1ee",GRN]:v>0?["In progress","#e4e9f6","#2b4c8c"]:["Not started","#eef0f3",MUT];svg.append("rect").attr("x",850).attr("y",y+1).attr("width",132).attr("height",26).attr("rx",13).attr("fill",bgc);T(svg,916,y+19,`${lab} ${v}/${tt}`,{f:PLEX,w:600,s:13,c:fg,a:"middle"});});
  // kanban
- const cols=[["Shipped",GRN,N],["Next up",AMB,1],["Backlog","#8c959f",50-N]];const cw=[460,220,220],cx=[72,548,788];
- cols.forEach(([h,c,n],i)=>{const g=svg.append("g");g.append("rect").attr("x",cx[i]).attr("y",1126).attr("width",cw[i]).attr("height",714).attr("rx",14).attr("fill","#efeff0");
-  g.append("circle").attr("cx",cx[i]+22).attr("cy",1160).attr("r",7).attr("fill",c);T(g,cx[i]+38,1167,h,{f:"DM Sans",w:700,s:20,c:INK});T(g,cx[i]+cw[i]-18,1167,`${n}`,{f:MONO,w:500,s:17,c:MUT,a:"end"});});
- const per=Math.ceil(N/2),ch=Math.min(46,640/Math.max(per,1));
- ALPHA.forEach((n,i)=>{const c=Math.floor(i/per),r=i%per,x=86+c*218,y=1188+r*ch;svg.append("rect").attr("x",x).attr("y",y).attr("width",208).attr("height",ch-8).attr("rx",8).attr("fill","#fff").attr("stroke",LINE);
-  svg.append("rect").attr("x",x).attr("y",y).attr("width",5).attr("height",ch-8).attr("rx",2).attr("fill",R[REG(n)]);fitT(T(svg,x+16,y+(ch-8)/2+6,n,{f:"DM Sans",w:500,s:Math.min(17,ch*.42),c:INK}),180,17);});
- svg.append("rect").attr("x",562).attr("y",1188).attr("width",192).attr("height",84).attr("rx",8).attr("fill","#fff").attr("stroke",LINE);T(svg,578,1222,"Next stop",{f:"DM Sans",w:700,s:17,c:INK});T(svg,578,1252,"TBD · scoping",{f:"DM Sans",w:400,s:15,c:MUT});
- const unv=STATES.map(d=>d.properties.name).concat(["Alaska","Hawaii"]).filter(n=>!VIS.has(n)).sort();
- unv.slice(0,11).forEach((n,i)=>{const y=1188+i*54;svg.append("rect").attr("x",802).attr("y",y).attr("width",192).attr("height",46).attr("rx",8).attr("fill","#fff").attr("stroke",LINE);fitT(T(svg,818,y+29,n,{f:"DM Sans",w:400,s:16,c:MUT}),164,16);});
- if(unv.length>11)T(svg,898,1188+11*54+24,`+${unv.length-11} more`,{f:"DM Sans",w:500,s:16,c:MUT,a:"middle"});
+ const KY=1336,KH=506;[[72,460,"Shipped",GRN,N],[548,220,"Next up",AMB,1],[784,224,"Backlog","#8c959f",50-N]].forEach(([x,w,h,c,n])=>{svg.append("rect").attr("x",x).attr("y",KY).attr("width",w).attr("height",KH).attr("rx",14).attr("fill","#e6eaf0");svg.append("circle").attr("cx",x+22).attr("cy",KY+32).attr("r",7).attr("fill",c);T(svg,x+38,KY+39,h,{f:PLEX,w:700,s:19,c:INK});T(svg,x+w-16,KY+39,`${n}`,{f:MONO,w:600,s:16,c:MUT,a:"end"});});
+ const per=Math.ceil(N/2),chh=Math.min(50,430/Math.max(per,1));
+ ALPHA.forEach((n,i)=>{const c=Math.floor(i/per),r=i%per,x=84+c*220,y=KY+60+r*chh;svg.append("rect").attr("x",x).attr("y",y).attr("width",210).attr("height",chh-6).attr("rx",8).attr("fill","#fff").attr("stroke","#d6dce6");
+  svg.append("rect").attr("x",x).attr("y",y).attr("width",5).attr("height",chh-6).attr("rx",2).attr("fill",R[REG(n)]);
+  if(chh>=34)drawSticker(svg,n,x+24,y+(chh-6)/2,Math.min(.28,(chh-10)/100),0);fitT(T(svg,x+(chh>=34?46:14),y+(chh-6)/2+6,n,{f:PLEX,w:600,s:Math.min(16,chh*.42),c:INK}),chh>=34?150:180,16);});
+ const unv=STATES.map(d=>d.properties.name).concat(["Alaska","Hawaii"]).filter(n=>!VIS.has(n)),sug=STICKER_PRIORITY.find(s=>unv.includes(s));
+ svg.append("rect").attr("x",560).attr("y",KY+60).attr("width",196).attr("height",150).attr("rx",8).attr("fill","#fff").attr("stroke","#d6dce6");T(svg,576,KY+90,"Next stop",{f:PLEX,w:700,s:16,c:INK});T(svg,576,KY+112,"scoping · TBD",{f:PLEX,s:14,c:MUT});
+ if(sug){drawSticker(svg,sug,604,KY+160,.38,-6);T(svg,640,KY+166,sug,{f:PLEX,w:600,s:15,c:INK});}
+ unv.sort().slice(0,8).forEach((n,i)=>{const y=KY+60+i*50;svg.append("rect").attr("x",796).attr("y",y).attr("width",200).attr("height",44).attr("rx",8).attr("fill","#fff").attr("stroke","#d6dce6");fitT(T(svg,812,y+28,n,{f:PLEX,w:500,s:15,c:MUT}),170,15);});
+ if(unv.length>8)T(svg,896,KY+60+8*50+24,`+${unv.length-8} more`,{f:PLEX,w:600,s:15,c:MUT,a:"middle"});
+ stickerLayer(m,[[962,180,1.2,8],[1012,580,.8,10],[62,1030,.8,-10]],null,.48);
 }
 
 /* 70 · Compiler Engineer — IDE */
@@ -1435,12 +1446,13 @@ function v70(){const ST=STATS(),BG="#0f1117",PAN="#161a22",LN="#232a36",TX="#c8d
   ln.forEach(([s,c])=>t2.append("tspan").attr("fill",c).text(s));});
  // dot map
  win(72,796,936,520,["target: usa-lower48"]);
- dotMap(svg,[100,856,880,420],12,(n,v)=>v?R[REG(n)]:"#262d3a");
+ const m=dotMap(svg,[100,856,880,420],12,(n,v)=>v?R[REG(n)]:"#262d3a");
  // terminal
  win(72,1342,936,500,["zsh — cargo"]);
  const L=[[["$ ",STR],["cargo build --release",TX]],[["   Compiling ",STR],[`travel v${N}.0.0`,TX]],[["  Optimizing ",STR],[`${ST.ra} regions (-O3)`,TX]],[["     Linking ",STR],[`${N} states`,TX]],
   [["    Finished ",STR],["release [optimized] in 0.44s",TX]],[["warning",FN],[`: ${50-N} states unused`,TX]],[["  = note: ",CM],["consider visiting them",CM]],[["$ ",STR],["./travel",TX]],[[`Hello from ${N} states · ${ST.pct}% of the US`,KW]],[["$ ",STR],["█",TX]]];
  L.forEach((ln,i)=>{const t2=svg.append("text").attr("x",100).attr("y",1422+i*40).attr("font-family",MONO).attr("font-size",20).attr("xml:space","preserve");ln.forEach(([s,c])=>t2.append("tspan").attr("fill",c).text(s));});
+ stickerLayer(m,[[962,170,1.1,8],[1012,806,.8,10],[66,1346,.8,-10],[1012,1350,.75,6]],null,.46);
 }
 
 /* 71 · Stylist — magazine cover */
@@ -1472,6 +1484,7 @@ function v71(){const ST=STATS(),INK="#141210",MUT="#7a7068",PAPER="#f4ede4",RED=
  const r=rnd(N+3);let xx=0;while(xx<140){const w=1+Math.floor(r()*3.5);bc.append("rect").attr("x",xx).attr("y",0).attr("width",w).attr("height",70).attr("fill",INK);xx+=w+1+Math.floor(r()*3);}
  T(bc,72,90,`0 50 ${String(N).padStart(2,"0")} USA`,{f:MONO,s:13,c:INK,a:"middle"});
  T(svg,72,1830,"$0.00 · PRICELESS",{f:"DM Sans",w:700,s:15,ls:4,c:MUT});
+ stickerLayer(m,[[1004,470,.85,10],[78,970,.85,-8]],null,.46);
 }
 
 
@@ -1480,16 +1493,33 @@ function vSheet(){bg("#eef1f5");const F=stickerFilter(5);T(svg,540,90,"STATE STI
 
 /* ===================== MODERN · STICKER ATLAS ===================== */
 const MOD={R:{West:"#2f8f8a",Southwest:"#d08a2c",Midwest:"#6b85c9",Southeast:"#c4553d",Northeast:"#2b4c8c"}};
-function pickStickers(n){const vis=new Set(VISITED);return STICKER_PRIORITY.filter(s=>vis.has(s)).slice(0,n);}
-function highwaySigns(g,cities,x0,y0,w,o={}){if(!cities.length)return y0;const GRN=o.green||"#1f6b45",H=o.h||58,gap=10;
- const meas=svg.append("text").attr("font-family",DISP).attr("font-weight",700).attr("font-size",30).attr("letter-spacing",1).attr("opacity",0);
- const items=cities.map(c=>{meas.text(c.toUpperCase());return [c.toUpperCase(),meas.node().getComputedTextLength()+44];});meas.remove();
- const rows=[];let row=[],rw=0;items.forEach(it=>{if(rw+it[1]>w&&row.length){rows.push([row,rw-gap]);row=[];rw=0;}row.push(it);rw+=it[1]+gap;});rows.push([row,rw-gap]);
- rows.slice(0,o.maxRows||3).forEach(([r,rwid],ri)=>{let x=x0+(w-rwid)/2;const y=y0+ri*(H+12);r.forEach(([lab,wd])=>{
-  g.append("rect").attr("x",x).attr("y",y).attr("width",wd).attr("height",H).attr("rx",9).attr("fill",GRN);
-  g.append("rect").attr("x",x+4).attr("y",y+4).attr("width",wd-8).attr("height",H-8).attr("rx",6).attr("fill","none").attr("stroke","#ffffff").attr("stroke-width",2);
-  T(g,x+wd/2,y+H/2+11,lab,{f:DISP,w:700,s:30,ls:1,c:"#ffffff",a:"middle"});x+=wd+gap;});});
- return y0+Math.min(rows.length,o.maxRows||3)*(H+12);}
+function pickStickers(n){const vis=new Set(VISITED),DBc=window.CITY_DB||{},cs=[];
+ (CONFIG.cities||[]).forEach(c=>{for(const st in DBc)if(DBc[st].some(([nm])=>nm===c)&&!cs.includes(st))cs.push(st);});
+ return [...cs,...STICKER_PRIORITY].filter((s,i,a)=>vis.has(s)&&a.indexOf(s)===i).slice(0,n);}
+function stickerLayer(m,slots,F,k=.48){const mode=CONFIG.stickers||"around";if(mode==="off")return;F=F||stickerFilter(5);
+ if(mode!=="map"||!m){pickStickers(slots.length).forEach((s,i)=>{const [x,y,kk,r]=slots[i];drawSticker(svg,s,x,y,kk,r,F);});return;}
+ const lower=new Set(STATES.map(d=>d.properties.name)),placed=[],minD=86*k;
+ pickStickers(50).filter(s=>lower.has(s)).forEach((s,i)=>{const [x,y]=m.anchor(s),yy=y-4;if(placed.some(([a,b])=>Math.hypot(a-x,b-yy)<minD))return;placed.push([x,yy]);drawSticker(svg,s,x,yy,k,((i*37)%17)-8,F);});}
+function shields(y,B,x0){const meas=svg.append("text").attr("font-family",MONO).attr("font-size",16).attr("font-weight",600).attr("opacity",0);
+ const ws=B.map(([k,v])=>{meas.text(k);const a1=meas.node().getComputedTextLength()+20;meas.text(v);return [a1,meas.node().getComputedTextLength()+20];});meas.remove();
+ let bx=x0!=null?x0:540-(ws.reduce((s,[a1,a2])=>s+a1+a2+10,0)-10)/2;
+ B.forEach(([k,v,c],i)=>{const [w1,w2]=ws[i];svg.append("rect").attr("x",bx).attr("y",y).attr("width",w1+w2).attr("height",32).attr("rx",6).attr("fill","#2c3a55");
+  svg.append("path").attr("d",`M${bx+w1},${y} h${w2-6} a6,6 0 0 1 6,6 v20 a6,6 0 0 1 -6,6 h${-(w2-6)}Z`).attr("fill",c);
+  T(svg,bx+10,y+22,k,{f:MONO,w:600,s:16,c:"#fff"});T(svg,bx+w1+10,y+22,v,{f:MONO,w:600,s:16,c:"#fff"});bx+=w1+w2+10;});}
+function card(x,y,w,h,P2,r=14){return svg.append("rect").attr("x",x).attr("y",y).attr("width",w).attr("height",h).attr("rx",r).attr("fill",P2.surf).attr("stroke",P2.line).attr("stroke-width",1.5).attr("filter",P2.sh);}
+function dotBg(c1,c2){bg(c1);const dp=defs.append("pattern").attr("id","dg"+uid).attr("width",28).attr("height",28).attr("patternUnits","userSpaceOnUse");dp.append("circle").attr("cx",14).attr("cy",14).attr("r",1.3).attr("fill",c2);svg.append("rect").attr("width",1080).attr("height",1920).attr("fill",`url(#dg${uid++})`).attr("opacity",.8);}
+const hex7=n=>((hash=>{let h=7;for(const ch of n)h=(h*31+ch.charCodeAt(0))>>>0;return h;})()).toString(16).padStart(8,"0").slice(0,7);
+function highwaySigns(g,cities,x0,y0,w,o={}){if(!cities.length)return y0;const GRN=o.green||"#1f6b45",gap=10,maxR=o.maxRows||3;
+ const meas=svg.append("text").attr("font-family",DISP).attr("font-weight",700).attr("letter-spacing",1).attr("opacity",0);
+ let fs=30,rows;for(fs of [30,26,22,19,16,14]){const H=fs*1.9;meas.attr("font-size",fs);const items=cities.map(c=>{meas.text(c.toUpperCase());return [c.toUpperCase(),meas.node().getComputedTextLength()+fs*1.4];});
+  rows=[];let row=[],rw=0;items.forEach(it=>{if(rw+it[1]>w&&row.length){rows.push([row,rw-gap]);row=[];rw=0;}row.push(it);rw+=it[1]+gap;});rows.push([row,rw-gap]);
+  if(rows.length*(H+12)<=maxR*70||fs===14)break;}
+ meas.remove();const H=fs*1.9;
+ rows.forEach(([r,rwid],ri)=>{let x=x0+(w-rwid)/2;const y=y0+ri*(H+12);r.forEach(([lab,wd])=>{
+  g.append("rect").attr("x",x).attr("y",y).attr("width",wd).attr("height",H).attr("rx",fs*.3).attr("fill",GRN);
+  g.append("rect").attr("x",x+4).attr("y",y+4).attr("width",wd-8).attr("height",H-8).attr("rx",fs*.2).attr("fill","none").attr("stroke","#ffffff").attr("stroke-width",2);
+  T(g,x+wd/2,y+H/2+fs*.36,lab,{f:DISP,w:700,s:fs,ls:1,c:"#ffffff",a:"middle"});x+=wd+gap;});});
+ return y0+rows.length*(H+12);}
 function shield(g,x,y,num,s=1,c1="#1d4f91",c2="#d23b3b"){const k=g.append("g").attr("transform",`translate(${x},${y}) scale(${s})`);
  k.append("path").attr("d","M-30,-30 Q0,-40 30,-30 Q34,10 0,36 Q-34,10 -30,-30Z").attr("fill","#ffffff").attr("stroke","#1f2433").attr("stroke-width",2.5);
  k.append("path").attr("d","M-25,-14 L25,-14 Q24,8 0,28 Q-24,8 -25,-14Z").attr("fill",c1);k.append("path").attr("d","M-26,-26 Q0,-34 26,-26 L25,-16 L-25,-16Z").attr("fill",c2);
@@ -1500,8 +1530,8 @@ function stickerAtlas(P){const ST=STATS(),R=P.R||MOD.R,F=stickerFilter(5);
  const sh=shadow(0,8,18,"#0b1220",P.dark?.35:.07);
  // header
  T(svg,72,146,`${CONFIG.name.toUpperCase()}  ·  STATES LOG  ·  ${CONFIG.sinceShort.toUpperCase()}`,{f:MONO,w:500,s:19,ls:3,c:P.muted});
- const [l1,l2]=splitTitle(CONFIG.title.toUpperCase());
- fitT(T(svg,66,300,l1,{f:DISP,w:800,s:150,c:P.ink}),760,150);fitT(T(svg,66,438,l2||"",{f:DISP,w:800,s:150,c:P.amber}),760,150);
+ const [l1,l2]=splitTitle(CONFIG.title);
+ fitT(T(svg,62,300,l1,{f:DISP,w:800,s:136,ls:-5,c:P.ink}),780,136);fitT(T(svg,66,438,l2||"",{f:SERIF2,i:true,w:400,s:168,c:P.amber}),780,168);
  // board
  const by=482;svg.append("rect").attr("x",72).attr("y",by).attr("width",936).attr("height",128).attr("rx",12).attr("fill",P.surf).attr("stroke",P.line).attr("stroke-width",1.5).attr("filter",sh);
  [["STATES",`${N}`,"of 50"],["COVERAGE",`${ST.pct}%`,"of the US"],["REGIONS",`${ST.ra}/5`,ST.ra===5?"all active":`${5-ST.ra} to go`],["TOP REGION",ST.top,`${Math.round(ST.tp*100)}% covered`]].forEach(([k,v,s],i)=>{const x=72+i*234;
@@ -1513,7 +1543,7 @@ function stickerAtlas(P){const ST=STATS(),R=P.R||MOD.R,F=stickerFilter(5);
  let lx=0;const ms=svg.append("text").attr("font-family",PLEX).attr("font-size",16).attr("font-weight",600).attr("opacity",0);const ws=REGS.map(k=>{ms.text(k);return ms.node().getComputedTextLength()+40;});ms.remove();
  lx=540-ws.reduce((a,b)=>a+b,0)/2;REGS.forEach((k,i)=>{svg.append("rect").attr("x",lx).attr("y",my+mh-44).attr("width",14).attr("height",14).attr("rx",3).attr("fill",R[k]);T(svg,lx+22,my+mh-32,k,{f:PLEX,w:600,s:16,c:P.muted});lx+=ws[i];});
  // states list as tiles
- const ly=1266;T(svg,72,ly,"STATES VISITED",{f:DISP,w:800,s:34,c:P.ink});T(svg,1008,ly,`${N} / 50`,{f:MONO,w:500,s:17,ls:2,c:P.amber,a:"end"});
+ const ly=1266;T(svg,72,ly,"States visited",{f:DISP,w:700,s:32,ls:-.5,c:P.ink});T(svg,1008,ly,`${N} / 50`,{f:MONO,w:500,s:17,ls:2,c:P.amber,a:"end"});
  const cols=3,per=Math.ceil(N/cols),th=Math.min(58,(P.sky?260:300)/Math.max(per,1)),tw=300;
  ALPHA.forEach((n,i)=>{const c=Math.floor(i/per),r=i%per,x=72+c*(tw+18),y=ly+20+r*th;
   svg.append("rect").attr("x",x).attr("y",y).attr("width",tw).attr("height",th-6).attr("rx",6).attr("fill",P.surf).attr("stroke",P.line);
@@ -1525,14 +1555,14 @@ function stickerAtlas(P){const ST=STATS(),R=P.R||MOD.R,F=stickerFilter(5);
   const sk=svg.append("g");const S=lineSky(sk,72,base,.6,P.bldg||P.surf,P.amber,false,6,P.ink,2);
   sk.append("line").attr("x1",60).attr("x2",1020).attr("y1",base).attr("y2",base).attr("stroke",P.ink).attr("stroke-width",2.4);
   const nm=S.names.map(n=>n[1]),h=nm.length>6?Math.ceil(nm.length/2):nm.length,st={f:MONO,w:500,s:14,ls:2,c:P.muted,a:"middle"};
-  T(svg,540,base+30,nm.slice(0,h).join("  ·  "),st);if(nm.length>6)T(svg,540,base+52,nm.slice(h).join("  ·  "),st);
+  nameLines(nm,base+30,22,st);
   const slots=[[890,240,1.45,8],[1000,390,1.0,-8],[76,700,1.0,-10],[1004,700,1.0,10],[76,900,.95,8],[1004,920,.95,-6],[76,1100,.95,-6],[1004,1130,.95,8]];
-  pickStickers(slots.length).forEach((s,i)=>{const [x,y,k,r]=slots[i];drawSticker(svg,s,x,y,k,r,F);});return;}
- const hy=ly+64+per*th;{const ct=T(svg,72,hy+6,"CITIES",{f:DISP,w:800,s:30,c:P.ink});shield(svg,72+ct.node().getComputedTextLength()+30,hy-4,N,.62);}
+  stickerLayer(m,slots,F,.5);return;}
+ const hy=ly+64+per*th;{const ct=T(svg,72,hy+6,"Cities",{f:DISP,w:700,s:28,ls:-.5,c:P.ink});shield(svg,72+ct.node().getComputedTextLength()+30,hy-4,N,.62);}
  highwaySigns(svg,CONFIG.cities,72,hy+26,936,{maxRows:Math.max(1,Math.min(3,Math.floor((1880-hy-26)/70)))});
  // stickers around the map + top-right corner
  const slots=[[890,240,1.45,8],[1000,390,1.0,-8],[76,700,1.0,-10],[1004,700,1.0,10],[76,900,.95,8],[1004,920,.95,-6],[76,1100,.95,-6],[1004,1130,.95,8]];
- pickStickers(slots.length).forEach((s,i)=>{const [x,y,k,r]=slots[i];drawSticker(svg,s,x,y,k,r,F);});
+ stickerLayer(m,slots,F,.5);
 }
 const ATLAS={light:{bg:"#eef1f5",surf:"#ffffff",ink:"#17223a",muted:"#5d6a82",line:"#cfd6e1",amber:"#c9761a",un:"#eef1f6",unS:"#d6dce6",unLab:"#a3adbd"},
  dark:{dark:true,bg:"#0e1524",surf:"#151f33",ink:"#e6ebf3",muted:"#95a2bb",line:"#2a3752",amber:"#f2a93b",un:"#1d2940",unS:"#2a3752",unLab:"#56628a",
@@ -1549,7 +1579,7 @@ function vLand(){bg("#eef1f5");const all=Object.keys(window.mkLandmarks({})).con
   g.append("rect").attr("x",40).attr("y",y-300).attr("width",250).attr("height",350).attr("fill","#fff").attr("stroke","#cfd6e1");
   lineSky(g,40,y,1,"#ffffff","#e2b25c",false,6,"#17223a",2.2);CONFIG.cities=save;T(svg,x+125,y+36,k,{f:"IBM Plex Mono",w:600,s:15,c:"#17223a",a:"middle"});});}
 const FN=[null,null,null,null,null,null,null,null,null,null,null,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22,v23,v24,v25,v26,v27,v28,v29,v30,v31,v32,v33,v34,v35,v36,v37,v38,v39,v40,v41,v42,v43,v44,v45,v46,v47,v48,v49,v50,v51,v52,v53,v54,v55,v56,v57,v58,v59,v60,v61,v62,v63,v64,v65,v66,v67,v68,v69,v70,v71,v72,v73,v74,v75];
-const PRE=["400 20px \"IBM Plex Mono\"","500 20px \"IBM Plex Mono\"","600 20px \"IBM Plex Mono\"","400 20px \"IBM Plex Sans\"","600 20px \"IBM Plex Sans\"","700 20px \"IBM Plex Sans\"","400 20px \"DM Sans\"","500 20px \"DM Sans\"","700 20px \"DM Sans\"","italic 500 20px \"Playfair Display\"","500 20px \"Playfair Display\"","600 20px \"Playfair Display\"","900 20px Fraunces","20px Anton","600 20px \"Big Shoulders Display\"","800 20px \"Big Shoulders Display\"","600 20px Cinzel","20px Limelight","700 20px Caveat","500 20px \"Bodoni Moda\"","700 20px \"Bodoni Moda\"","italic 500 20px \"Bodoni Moda\"","400 20px \"Space Mono\""];
+const PRE=["400 20px \"IBM Plex Mono\"","500 20px \"IBM Plex Mono\"","600 20px \"IBM Plex Mono\"","400 20px \"IBM Plex Sans\"","600 20px \"IBM Plex Sans\"","700 20px \"IBM Plex Sans\"","400 20px \"DM Sans\"","500 20px \"DM Sans\"","700 20px \"DM Sans\"","italic 500 20px \"Playfair Display\"","500 20px \"Playfair Display\"","600 20px \"Playfair Display\"","900 20px Fraunces","20px Anton","600 20px \"Big Shoulders Display\"","800 20px \"Big Shoulders Display\"","600 20px Cinzel","20px Limelight","800 20px \"Bricolage Grotesque\"","600 20px \"Bricolage Grotesque\"","italic 400 20px \"Instrument Serif\"","400 20px Geist","500 20px Geist","600 20px Geist","700 20px Geist","400 20px \"Geist Mono\"","500 20px \"Geist Mono\"","600 20px \"Geist Mono\"","700 20px Caveat","500 20px \"Bodoni Moda\"","700 20px \"Bodoni Moda\"","italic 500 20px \"Bodoni Moda\"","400 20px \"Space Mono\""];
 
 /* ---------- in-browser PNG export (used by the maker page) ---------- */
 async function inlineFontsCSS(){let out="";const toData=b=>new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(b);});

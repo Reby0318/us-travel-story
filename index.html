@@ -6,22 +6,22 @@
 <title>Make Your US Travel Story</title>
 <meta name="description" content="Tap the states you've visited and download an aesthetic 1080×1920 Instagram Story. No coding needed.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root{--paper:#eef1f5;--card:#ffffff;--ink:#17223a;--muted:#5d6a82;--line:#cfd6e1;--accent:#2b4c8c;--amber:#c9761a;--amber-text:#9a5a10;
- --West:#2f8f8a;--Southwest:#d08a2c;--Midwest:#6b85c9;--Southeast:#c4553d;--Northeast:#2b4c8c;--disp:"Big Shoulders Display","Arial Narrow",sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+ --West:#2f8f8a;--Southwest:#d08a2c;--Midwest:#6b85c9;--Southeast:#c4553d;--Northeast:#2b4c8c;--disp:"Bricolage Grotesque",system-ui,sans-serif;--serif:"Instrument Serif",Georgia,serif;--mono:"Geist Mono",ui-monospace,monospace}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 "IBM Plex Sans",system-ui,sans-serif;
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 "Geist",system-ui,sans-serif;
  background-image:radial-gradient(var(--line) 1px,transparent 1.2px);background-size:28px 28px}
 .wrap{max-width:1180px;margin:0 auto;padding:32px 16px 120px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:28px;align-items:start}
 header{grid-column:1/-1}
 .eyebrow{font:500 13px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
-h1{font:800 clamp(46px,8vw,86px)/.9 var(--disp);text-transform:uppercase;margin:0 0 12px;letter-spacing:.01em}
-h1 span{color:var(--amber)}
+h1{font:800 clamp(44px,7.5vw,84px)/.95 var(--disp);margin:0 0 12px;letter-spacing:-.04em}
+h1 span{color:var(--amber);font:italic 400 1.12em/.9 var(--serif);letter-spacing:0}
 .sub{color:var(--muted);margin:0;font-size:17px;max-width:70ch}
 .q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:14px}
-.q h2{font:700 26px/1.1 var(--disp);text-transform:uppercase;letter-spacing:.02em;margin:0 0 6px;display:flex;gap:12px;align-items:center}
+.q h2{font:700 24px/1.15 var(--disp);letter-spacing:-.02em;margin:0 0 6px;display:flex;gap:12px;align-items:center}
 .n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--ink);color:#fff;font:600 14px var(--mono);flex:none}
 .hint{color:var(--muted);font-size:14px;margin:0 0 14px 42px}
 .body{margin-left:42px}
@@ -29,22 +29,22 @@ h1 span{color:var(--amber)}
 input[type=text]{width:100%;font:inherit;padding:11px 13px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);outline:none}
 input[type=text]:focus,select:focus{border-color:var(--accent)}
 .pills{display:flex;flex-wrap:wrap;gap:7px}
-.pill{font:500 15px "IBM Plex Sans",sans-serif;border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;min-height:40px}
+.pill{font:500 15px "Geist",sans-serif;border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;min-height:40px}
 .pill:hover{border-color:#9aa6ba}
 .pill[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
 .pill .dot{width:10px;height:10px;border-radius:3px}
 .pill:focus-visible,.design:focus-visible,.btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 .region{margin-bottom:14px}
 .region-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
-.region-h b{font:600 15px "IBM Plex Sans";display:flex;align-items:center;gap:8px}
+.region-h b{font:600 15px "Geist";display:flex;align-items:center;gap:8px}
 .region-h b i{width:12px;height:12px;border-radius:3px;display:inline-block}
-.link{background:none;border:0;color:var(--accent);font:500 14px "IBM Plex Sans";cursor:pointer;padding:4px}
+.link{background:none;border:0;color:var(--accent);font:500 14px "Geist";cursor:pointer;padding:4px}
 .st[aria-pressed=true]{color:#fff}
 .count{font-weight:700;color:var(--amber-text);font-family:var(--mono)}
 .row{display:flex;gap:8px}
 .row input{flex:1}
-.btn{font:700 16px "IBM Plex Sans";border:0;border-radius:8px;padding:12px 18px;cursor:pointer;background:var(--ink);color:#fff}
-.btn.big{width:100%;padding:16px;font:800 24px/1 var(--disp);letter-spacing:.04em;text-transform:uppercase;background:var(--ink)}
+.btn{font:700 16px "Geist";border:0;border-radius:8px;padding:12px 18px;cursor:pointer;background:var(--ink);color:#fff}
+.btn.big{width:100%;padding:16px;font:700 21px/1 var(--disp);letter-spacing:-.01em;background:var(--ink)}
 .btn.big:hover{background:var(--accent)}
 .btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
 .btn:disabled{opacity:.6;cursor:default}
@@ -52,7 +52,7 @@ input[type=text]:focus,select:focus{border-color:var(--accent)}
 .chip{background:var(--ink);color:#fff;border-radius:8px;padding:6px 8px 6px 12px;font-size:14px;display:inline-flex;align-items:center;gap:6px}
 .chip button{background:rgba(255,255,255,.2);border:0;color:#fff;width:22px;height:22px;border-radius:5px;cursor:pointer;font-size:14px;line-height:1}
 .designs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
-.design{border:2px solid transparent;border-radius:10px;padding:4px;background:none;cursor:pointer;text-align:center;font:500 13px "IBM Plex Sans";color:var(--ink)}
+.design{border:2px solid transparent;border-radius:10px;padding:4px;background:none;cursor:pointer;text-align:center;font:500 13px "Geist";color:var(--ink)}
 .design img{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:6px;display:block;margin-bottom:6px;box-shadow:0 3px 10px rgba(23,34,58,.12)}
 .design[aria-pressed=true]{border-color:var(--amber)}
 .badge{display:table;margin:3px auto 0;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--ink);border-radius:4px;padding:2px 6px}
@@ -65,7 +65,7 @@ aside{position:sticky;top:20px}
 .actions{margin-top:16px;display:grid;gap:10px}
 .quick{margin-top:14px}
 .quick-h{display:flex;justify-content:space-between;align-items:baseline;font:600 13px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.quick-h span{color:var(--ink);text-transform:none;letter-spacing:0;font:600 14px "IBM Plex Sans"}
+.quick-h span{color:var(--ink);text-transform:none;letter-spacing:0;font:600 14px "Geist"}
 .quick-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory}
 .quick-row button{flex:none;width:62px;border:2px solid transparent;border-radius:8px;padding:2px;background:none;cursor:pointer;scroll-snap-align:start;position:relative}
 .quick-row button[aria-pressed=true]{border-color:var(--amber)}
@@ -88,7 +88,7 @@ footer a{color:var(--accent)}
 <div class="wrap">
  <header>
   <p class="eyebrow">States log · Instagram Story maker</p>
-  <h1>Make your <span>states story</span></h1>
+  <h1>Make your states <span>story</span></h1>
   <p class="sub">Answer a few quick questions, tap the states you've been to, and download a ready-to-post Instagram Story (1080 × 1920). No coding needed.</p>
  </header>
 
@@ -105,7 +105,7 @@ footer a{color:var(--accent)}
 
   <section class="q">
    <h2><span class="n">2</span>Which cities did you visit?</h2>
-   <p class="hint">Cities come from the states you picked. Each state's best-known city is added for you, so tap to change. Up to <b>12</b> appear in your skyline, ordered west to east. <span class="count" id="cityCount">0</span> selected.</p>
+   <p class="hint">Cities come from the states you picked. Each state's best-known city is added for you, so tap to change. Your skyline shows all of them, ordered west to east. <span class="count" id="cityCount">0</span> selected.</p>
    <div class="body">
     <div id="cityStates"></div>
     <p class="hint" id="noStates" style="margin:0">Pick some states above first ✨</p>
@@ -145,7 +145,8 @@ footer a{color:var(--accent)}
   <section class="q">
    <h2><span class="n">6</span>Choose a design</h2>
    <p class="hint">You can switch any time. The preview updates instantly. <b>New</b> designs add hand-drawn stickers of the states you visited. Designs tagged <b>Pro</b> are made for your profession.</p>
-   <div class="body"><div class="designs" id="designs"></div></div>
+   <div class="body"><div class="designs" id="designs"></div>
+    <p class="hint" style="margin:18px 0 8px">Stickers <span style="opacity:.7">(on designs that have them)</span></p><div class="pills" id="stkPills"></div></div>
   </section>
  </main>
 
@@ -173,7 +174,7 @@ const REGIONS={
  Southeast:["Kentucky","Tennessee","North Carolina","South Carolina","Georgia","Florida","Alabama","Mississippi","Louisiana","Arkansas","Virginia","West Virginia","Maryland","Delaware"],
  Northeast:["New York","Pennsylvania","New Jersey","Connecticut","Rhode Island","Massachusetts","Vermont","New Hampshire","Maine"]};
 const LANDMARKS=["Seattle","Portland","San Francisco","Las Vegas","Albuquerque","Dallas","Chicago","Nashville","Philadelphia","New York","Miami"];
-const MAXC=12;
+const MAXC=Infinity;
 const TITLES=["States I've Been To","Where I've Been","Places I've Been","Coast to Coast","My US Travel Map"];
 const SINCE=[["since I moved to the US","since day one","Since I moved to the US"],["so far","so far","So far"],["year","","Since a year…"]];
 const DESIGNS=[[72,"Sticker Atlas","New"],[73,"Sticker Atlas Night","New"],[74,"Skyline Atlas","New"],[75,"Skyline Atlas Night","New"],[58,"Travel Wrapped","Top pick"],[63,"Wrapped Noir","Dark"],[59,"Noir & Gold","Luxury"],[60,"Midnight","Dark"],[61,"Emerald Velvet","Dark"],[62,"Bordeaux","Dark"],[65,"Doctor","Pro"],[66,"Physician","Pro"],[67,"CEO","Pro"],[68,"Teacher","Pro"],[69,"Product Manager","Pro"],[70,"Compiler Engineer","Pro"],[71,"Stylist","Pro"],[57,"Album"],[55,"MBA Slide"],[56,"Tech"]];
@@ -187,7 +188,7 @@ function sortCities(){S.cities.sort((a,b)=>lonOf(a)-lonOf(b));}
 function autoCity(s){if(S.cities.some(x=>x.s===s)||S.cities.length>=MAXC)return;const L=DB[s]||[];if(!L.length)return;
  const pick=L.find(([n])=>LANDMARKS.includes(n))||L[0];S.cities.push({c:pick[0],s});sortCities();}
 function dropCities(s){S.cities=S.cities.filter(x=>x.s!==s);}
-const S={states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:72};
+const S={stickers:"around",states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:72};
 // restore from a shared link or the last visit
 try{const h=new URLSearchParams(location.hash.slice(1)).get("a");const saved=h?JSON.parse(decodeURIComponent(escape(atob(h)))):JSON.parse(localStorage.getItem("ustravel")||"null");
  if(saved){Object.assign(S,saved);S.states=new Set(saved.states||[]);S.cities=(saved.cities||[]).map(c=>typeof c==="string"?{c,s:stateOf(c,S.states)}:c).filter(x=>x.s&&S.states.has(x.s));}
@@ -251,14 +252,17 @@ $("name").value=S.name;$("name").addEventListener("input",e=>{S.name=e.target.va
 /* ---- Q6 designs ---- */
 function drawQuick(){const q=$("quick");q.innerHTML="";DESIGNS.forEach(([v,n,tag])=>{const b=el("button",{type:"button","aria-pressed":S.design===v,"data-v":v,title:n,"aria-label":n},`<img src="maker/thumbs/${v}.jpg" alt="">${tag==="New"?"<i>NEW</i>":""}`);q.appendChild(b);});const cur=DESIGNS.find(d=>d[0]===S.design);$("quickName").textContent=cur?cur[1]:"";}
 $("quick").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.design=+b.dataset.v;drawDesigns();update();});
-function drawDesigns(){drawQuick();const g=$("designs");g.innerHTML="";DESIGNS.forEach(([v,n,tag])=>{const b=el("button",{class:"design",type:"button","aria-pressed":S.design===v,"data-v":v},`<img src="maker/thumbs/${v}.jpg" alt="${esc(n)} design preview" loading="lazy">${esc(n)}${tag?`<span class="badge${tag==="New"?" new":""}">${tag}</span>`:""}`);g.appendChild(b);});}
+const STK=[["around","Around the map"],["map","On the map"],["off","Off"]];
+function drawStk(){const p=$("stkPills");p.innerHTML="";STK.forEach(([v,l])=>p.appendChild(el("button",{class:"pill",type:"button","aria-pressed":(S.stickers||"around")===v,"data-k":v},l)));}
+$("stkPills").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.stickers=b.dataset.k;drawStk();update();});
+function drawDesigns(){drawStk();drawQuick();const g=$("designs");g.innerHTML="";DESIGNS.forEach(([v,n,tag])=>{const b=el("button",{class:"design",type:"button","aria-pressed":S.design===v,"data-v":v},`<img src="maker/thumbs/${v}.jpg" alt="${esc(n)} design preview" loading="lazy">${esc(n)}${tag?`<span class="badge${tag==="New"?" new":""}">${tag}</span>`:""}`);g.appendChild(b);});}
 $("designs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.design=+b.dataset.v;drawDesigns();update();});
 
 /* ---- build config + preview ---- */
 function config(){const yr=S.year&&S.year.length===4?S.year:"20XX";const since=S.since===2?[`since ${yr}`,`since ${yr}`]:SINCE[S.since].slice(0,2);
  const order=Object.values(REGIONS).flat();
  return {name:S.name.trim()||"Me",title:(S.title==="__custom"?S.titleCustom.trim():S.title)||"States I've Been To",since:since[0],sinceShort:since[1],
-  states:[...S.states].sort((a,b)=>order.indexOf(a)-order.indexOf(b)),cities:S.cities.map(x=>x.c)};}
+  states:[...S.states].sort((a,b)=>order.indexOf(a)-order.indexOf(b)),cities:S.cities.map(x=>x.c),stickers:S.stickers||"around"};}
 const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 let tmr=null;
 function update(){try{localStorage.setItem("ustravel",JSON.stringify({...S,states:[...S.states]}));}catch(e){}
