@@ -97,6 +97,27 @@ aside{position:sticky;top:20px}
  .mobilebar{display:block;position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(238,241,245,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);z-index:5}
 }
 @media(max-width:420px){.frame{width:min(360px,calc(100vw - 32px));height:calc(min(360px,calc(100vw - 32px))*16/9)}.frame iframe{transform:scale(calc(min(360px,calc(100vw - 32px))/1080px))}}
+/* career mode */
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fld>span{display:block;font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 5px}
+.fld>span i{font-style:normal;text-transform:none;letter-spacing:0;opacity:.8}
+.list{display:grid;gap:8px}
+.crow{display:grid;gap:8px;align-items:center}
+.crow>*{min-width:0}
+.crow.head span{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sel{width:100%;font:inherit;padding:11px 10px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);outline:none}
+.del{width:36px;height:44px;border:1.5px solid var(--line);background:#fff;border-radius:8px;color:var(--muted);cursor:pointer;font:400 20px/1 "Geist",sans-serif}
+.del:hover{color:var(--ink);border-color:#9aa6ba}
+.del:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+input.bad{border-color:var(--amber);background:#fdf6ee}
+.list-foot{display:flex;gap:6px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.list-foot .btn{font-size:14px;padding:9px 14px}
+.list-foot .meta{margin-left:auto;font:500 12px var(--mono);letter-spacing:.06em;color:var(--muted)}
+.designs.li .design img,.quick-row.li img{aspect-ratio:4/5}
+.frame.li{height:450px}
+.frame.li iframe{height:1350px}
+@media(max-width:600px){.fields{grid-template-columns:1fr}.crow{grid-template-columns:1fr 36px!important;padding-bottom:10px;border-bottom:1px solid var(--line)}.crow>*:not(.del){grid-column:1}.crow .del{grid-column:2;grid-row:1}.crow.head{display:none}}
+@media(max-width:420px){.frame.li{height:calc(min(360px,calc(100vw - 32px))*1.25)}}
 footer{grid-column:1/-1;color:var(--muted);font:500 13px var(--mono);text-align:center}
 footer a{color:var(--accent)}
 </style>
@@ -105,12 +126,55 @@ footer a{color:var(--accent)}
 <div class="wrap">
  <header>
   <p class="eyebrow">States log · Instagram Story maker</p>
-  <h1>Make your travel <span>story</span></h1>
-  <p class="sub">Answer a few quick questions, tap the states or countries you've been to, and download a ready-to-post Instagram Story (1080 × 1920). No coding needed.</p>
+  <h1 id="h1">Make your travel <span>story</span></h1>
+  <p class="sub" id="sub">Answer a few quick questions, tap the states or countries you've been to, and download a ready-to-post Instagram Story (1080 × 1920). No coding needed.</p>
  </header>
 
  <main>
-  <div class="mode" id="modeBar" role="tablist" aria-label="Map"><button type="button" data-m="us">🇺🇸 USA · states</button><button type="button" data-m="world">🌍 World · countries</button></div>
+  <div class="mode" id="modeBar" role="tablist" aria-label="Map"><button type="button" data-m="us">🇺🇸 USA · states</button><button type="button" data-m="world">🌍 World · countries</button><button type="button" data-m="career">💼 Career · skills</button></div>
+  <section class="q career-only" hidden>
+   <h2><span class="n">1</span>Where are you now?</h2>
+   <p class="hint">Who you are today and the role you're aiming for. The sample answers are placeholders, so replace them with your own.</p>
+   <div class="body fields">
+    <label class="fld"><span>Your name <i>(optional)</i></span><input type="text" id="cName" data-c="name" maxlength="24" placeholder="Me"></label>
+    <label class="fld"><span>Current role</span><input type="text" data-c="role" maxlength="40" placeholder="e.g. MBA Candidate"></label>
+    <label class="fld"><span>Target role</span><input type="text" data-c="target" maxlength="40" placeholder="e.g. Product Manager"></label>
+    <label class="fld"><span>School or company</span><input type="text" data-c="org" maxlength="40" placeholder="e.g. Rotman School"></label>
+    <label class="fld"><span>Period</span><input type="text" data-c="period" maxlength="20" placeholder="e.g. 2025–2026"></label>
+    <label class="fld"><span>Headline <i>(optional)</i></span><input type="text" data-c="headline" maxlength="24" placeholder="Career Recap"></label>
+   </div>
+  </section>
+  <section class="q career-only" hidden>
+   <h2><span class="n">2</span>Your skills</h2>
+   <p class="hint">Rate each skill in words, not percentages. Groups become the branches and practice areas; <b>up to 4 groups</b> look best.</p>
+   <div class="body"><div class="list" id="L-skills"></div><datalist id="groupList"></datalist>
+    <div class="list-foot"><button class="btn ghost" type="button" data-add="skills">+ Add skill</button><button class="link" type="button" data-clear="skills">Clear all</button><span class="meta" id="M-skills"></span></div></div>
+  </section>
+  <section class="q career-only" hidden>
+   <h2><span class="n">3</span>Certificates</h2>
+   <p class="hint">Name, who issued it, and the year. Leave empty if you have none yet.</p>
+   <div class="body"><div class="list" id="L-certs"></div>
+    <div class="list-foot"><button class="btn ghost" type="button" data-add="certs">+ Add certificate</button><button class="link" type="button" data-clear="certs">Clear all</button><span class="meta" id="M-certs"></span></div></div>
+  </section>
+  <section class="q career-only" hidden>
+   <h2><span class="n">4</span>Projects</h2>
+   <p class="hint">One measurable result per project. Tags are skills, separated by commas. Don't post confidential employer numbers.</p>
+   <div class="body"><div class="list" id="L-projects"></div>
+    <div class="list-foot"><button class="btn ghost" type="button" data-add="projects">+ Add project</button><button class="link" type="button" data-clear="projects">Clear all</button><span class="meta" id="M-projects"></span></div></div>
+  </section>
+  <section class="q career-only" hidden>
+   <h2><span class="n">5</span>Milestones</h2>
+   <p class="hint">Dates as year and month, like <b>2026-05</b>. They become the timeline and activity grid.</p>
+   <div class="body"><div class="list" id="L-milestones"></div>
+    <div class="list-foot"><button class="btn ghost" type="button" data-add="milestones">+ Add milestone</button><button class="link" type="button" data-clear="milestones">Clear all</button><span class="meta" id="M-milestones"></span></div></div>
+  </section>
+  <section class="q career-only" hidden>
+   <h2><span class="n">6</span>Choose a design and size</h2>
+   <p class="hint"><b>Story</b> is 1080 × 1920 for Instagram. <b>LinkedIn</b> is 1080 × 1350, the 4:5 feed size, so nothing gets cropped. The LinkedIn size leaves out some sections to keep it readable.</p>
+   <div class="body"><div class="pills" id="fmtPills" style="margin-bottom:16px"></div><div class="designs" id="cdesigns"></div>
+    <div id="goalWrap" hidden><p class="hint" style="margin:18px 0 8px">Targets for the OKR bars <span style="opacity:.7">(leave blank to show your current counts)</span></p>
+     <div class="fields"><label class="fld"><span>Target certificates</span><input type="text" id="gCerts" inputmode="numeric" maxlength="2" placeholder="e.g. 4"></label><label class="fld"><span>Target projects</span><input type="text" id="gProjects" inputmode="numeric" maxlength="2" placeholder="e.g. 5"></label></div></div></div>
+  </section>
   <section class="q" id="qCountries" hidden>
    <h2><span class="n">1</span>Which countries have you been to?</h2>
    <p class="hint">Tap to select. <span class="count" id="ctyCount">0</span> of 195 selected.</p>
@@ -146,7 +210,7 @@ footer a{color:var(--accent)}
    </div>
   </section>
 
-  <section class="q">
+  <section class="q travel-only">
    <h2><span class="n">3</span>Pick a headline</h2>
    <p class="hint">Or write your own.</p>
    <div class="body">
@@ -155,7 +219,7 @@ footer a{color:var(--accent)}
    </div>
   </section>
 
-  <section class="q">
+  <section class="q travel-only">
    <h2><span class="n">4</span>Since when?</h2>
    <p class="hint">Shown in small text on some designs.</p>
    <div class="body">
@@ -164,13 +228,13 @@ footer a{color:var(--accent)}
    </div>
   </section>
 
-  <section class="q">
+  <section class="q travel-only">
    <h2><span class="n">5</span>Your name <span style="color:var(--muted);font-weight:400;font-size:15px">(optional)</span></h2>
    <p class="hint">Appears as the "artist" on the album and Wrapped designs.</p>
    <div class="body"><input type="text" id="name" placeholder="Me" maxlength="18" aria-label="Your name"></div>
   </section>
 
-  <section class="q">
+  <section class="q travel-only">
    <h2><span class="n">6</span>Choose a design</h2>
    <p class="hint">You can switch any time. The preview updates instantly. <b>New</b> designs add hand-drawn stickers of the states you visited. Designs tagged <b>Pro</b> are made for your profession.</p>
    <div class="body"><div class="designs" id="designs"></div>
@@ -186,8 +250,9 @@ footer a{color:var(--accent)}
   <div class="actions">
    <button class="btn big" id="download" type="button">Download my Story ⬇</button>
    <div class="status" id="status" role="status"></div>
+   <button class="btn ghost" id="alt" type="button" hidden>Copy alt text for LinkedIn</button>
    <button class="btn ghost" id="share" type="button">Copy link to my answers</button>
-   <p class="small">PNG · 1080 × 1920 px · fits Instagram Stories exactly</p>
+   <p class="small" id="sizeNote">PNG · 1080 × 1920 px · fits Instagram Stories exactly</p>
   </div>
  </aside>
 
@@ -195,7 +260,7 @@ footer a{color:var(--accent)}
 </div>
 <div class="mobilebar"><button class="btn big" id="toPreview" type="button">See preview &amp; download ↓</button></div>
 
-<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="generator/stickers.js"></script><script src="maker/countries.js"></script><script src="generator/stickers-world.js"></script><script src="maker/cities.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="generator/stickers.js"></script><script src="maker/countries.js"></script><script src="generator/stickers-world.js"></script><script src="maker/cities.js"></script><script src="my-career.js"></script>
 <script>
 const REGIONS={
  West:["Washington","Oregon","California","Nevada","Idaho","Montana","Wyoming","Utah","Colorado","Alaska","Hawaii"],
@@ -210,6 +275,11 @@ const SINCE=[["since I moved to the US","since day one","Since I moved to the US
 let DESIGNS;const WDESIGNS=[[80,"World Atlas","New"],[81,"World Atlas Night","New"],[82,"World Wrapped","Top pick"],[83,"Noir & Gold World","Luxury"]];
 const USDESIGNS=[[72,"Sticker Atlas","New"],[73,"Sticker Atlas Night","New"],[74,"Skyline Atlas","New"],[75,"Skyline Atlas Night","New"],[58,"Travel Wrapped","Top pick"],[63,"Wrapped Noir","Dark"],[59,"Noir & Gold","Luxury"],[60,"Midnight","Dark"],[61,"Emerald Velvet","Dark"],[62,"Bordeaux","Dark"],[65,"Doctor","Pro"],[66,"Physician","Pro"],[67,"CEO","Pro"],[68,"Teacher","Pro"],[69,"Product Manager","Pro"],[70,"Compiler Engineer","Pro"],[71,"Stylist","Pro"],[57,"Album"],[55,"MBA Slide"],[56,"Tech"]];
 DESIGNS=USDESIGNS;
+const CDESIGNS=[[90,"Skill Tree","New"],[91,"MBA Portfolio","New"],[92,"Tech Profile","New"],[93,"PM Roadmap","New"]];
+const LVL=["","Learning","Working","Proficient","Advanced","Expert"];
+// starting answers for Career mode: the placeholders from my-career.js
+const defCareer=()=>{const C=JSON.parse(JSON.stringify(window.CAREER||{}));return {role:C.role||"",target:C.target||"",org:C.org||"",period:C.period||"",headline:"",
+ skills:C.skills||[],certs:C.certs||[],projects:C.projects||[],milestones:C.milestones||[],goals:{}};};
 
 
 /* ---- city helpers: cities always belong to a visited state ---- */
@@ -221,7 +291,7 @@ function sortCities(){S.cities.sort((a,b)=>lonOf(a)-lonOf(b));}
 function autoCity(s){if(S.cities.some(x=>x.s===s)||S.cities.length>=MAXC)return;const L=DB[s]||[];if(!L.length)return;
  const pick=L[0];S.cities.push({c:pick[0],s});sortCities();}
 function dropCities(s){S.cities=S.cities.filter(x=>x.s!==s);}
-const S={stkOff:[],mode:"us",countries:new Set(),skyPick:{},stickers:"around",states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:72};
+const S={stkOff:[],mode:"us",countries:new Set(),skyPick:{},stickers:"around",states:new Set(),cities:[],title:TITLES[0],titleCustom:"",since:0,year:"",name:"",design:72,career:defCareer(),fmt:"story"};
 // restore from a shared link or the last visit
 try{const h=new URLSearchParams(location.hash.slice(1)).get("a");const saved=h?JSON.parse(decodeURIComponent(escape(atob(h)))):JSON.parse(localStorage.getItem("ustravel")||"null");
  if(saved){Object.assign(S,saved);S.states=new Set(saved.states||[]);S.countries=new Set(saved.countries||[]);S.cities=(saved.cities||[]).map(c=>typeof c==="string"?{c,s:stateOf(c,S.states)}:c).filter(x=>x.s&&S.states.has(x.s));}
@@ -285,23 +355,25 @@ $("sinceYear").addEventListener("input",e=>{S.year=e.target.value.replace(/\D/g,
 $("name").value=S.name;$("name").addEventListener("input",e=>{S.name=e.target.value;update();});
 
 /* ---- Q6 designs ---- */
-function drawQuick(){const q=$("quick");q.innerHTML="";DESIGNS.forEach(([v,n,tag])=>{const b=el("button",{type:"button","aria-pressed":S.design===v,"data-v":v,title:n,"aria-label":n},`<img src="maker/thumbs/${v}.jpg" alt="">${tag==="New"?"<i>NEW</i>":""}`);q.appendChild(b);});const cur=DESIGNS.find(d=>d[0]===S.design);$("quickName").textContent=cur?cur[1]:"";}
+const thumb=v=>`maker/thumbs/${v}${isLI()?"-li":""}.jpg`;
+function drawQuick(){const q=$("quick");q.innerHTML="";q.classList.toggle("li",isLI());DESIGNS.forEach(([v,n,tag])=>{const b=el("button",{type:"button","aria-pressed":S.design===v,"data-v":v,title:n,"aria-label":n},`<img src="${thumb(v)}" alt="">${tag==="New"?"<i>NEW</i>":""}`);q.appendChild(b);});const cur=DESIGNS.find(d=>d[0]===S.design);$("quickName").textContent=cur?cur[1]:"";}
 $("quick").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.design=+b.dataset.v;drawDesigns();update();});
 const STK=[["around","Around the map"],["map","On the map"],["off","Off"]];
 function drawStk(){const p=$("stkPills");p.innerHTML="";STK.forEach(([v,l])=>p.appendChild(el("button",{class:"pill",type:"button","aria-pressed":(S.stickers||"around")===v,"data-k":v},l)));}
 $("stkPills").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.stickers=b.dataset.k;drawStk();update();});
-function drawDesigns(){drawStk();drawQuick();const g=$("designs");g.innerHTML="";DESIGNS.forEach(([v,n,tag])=>{const b=el("button",{class:"design",type:"button","aria-pressed":S.design===v,"data-v":v},`<img src="maker/thumbs/${v}.jpg" alt="${esc(n)} design preview" loading="lazy">${esc(n)}${tag?`<span class="badge${tag==="New"?" new":""}">${tag}</span>`:""}`);g.appendChild(b);});}
+function drawDesigns(){drawStk();drawQuick();if(S.mode==="career"){drawCDesigns();return;}const g=$("designs");g.innerHTML="";DESIGNS.forEach(([v,n,tag])=>{const b=el("button",{class:"design",type:"button","aria-pressed":S.design===v,"data-v":v},`<img src="maker/thumbs/${v}.jpg" alt="${esc(n)} design preview" loading="lazy">${esc(n)}${tag?`<span class="badge${tag==="New"?" new":""}">${tag}</span>`:""}`);g.appendChild(b);});}
 $("designs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.design=+b.dataset.v;drawDesigns();update();});
 
 /* ---- build config + preview ---- */
-function config(){const yr=S.year&&S.year.length===4?S.year:"20XX";const since=S.since===2?[`since ${yr}`,`since ${yr}`]:SINCE[S.since].slice(0,2);
+function config(){if(S.mode==="career")return {mode:"career",name:S.name.trim()||"Me",career:careerData()};const yr=S.year&&S.year.length===4?S.year:"20XX";const since=S.since===2?[`since ${yr}`,`since ${yr}`]:SINCE[S.since].slice(0,2);
  const order=Object.values(REGIONS).flat();
  return {name:S.name.trim()||"Me",title:(S.title==="__custom"?S.titleCustom.trim():S.title)||"States I've Been To",since:since[0],sinceShort:since[1],
   states:[...S.states].sort((a,b)=>order.indexOf(a)-order.indexOf(b)),cities:S.cities.map(x=>x.c),skyline:S.cities.filter(x=>skyOf(x.s)===x.c).map(x=>x.c),stickers:S.stickers||"around",stickerPick:stickerPick(),mode:S.mode,countries:[...S.countries]};}
 const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 let tmr=null;
 function update(){try{drawStickerGrid();}catch(e){}try{localStorage.setItem("ustravel",JSON.stringify({...S,states:[...S.states],countries:[...S.countries]}));}catch(e){}
- clearTimeout(tmr);tmr=setTimeout(()=>{$("loading").classList.remove("off");$("pv").src=`generator/index.html?r=${Date.now()}#v=${S.design}&cfg=${encodeURIComponent(enc(config()))}`;},350);}
+ clearTimeout(tmr);tmr=setTimeout(()=>{$("loading").classList.remove("off");$("pv").src=`generator/index.html?r=${Date.now()}#v=${S.design}${isLI()?"&fmt=li":""}&cfg=${encodeURIComponent(enc(config()))}`;},350);
+ document.querySelector(".frame").classList.toggle("li",isLI());sizeUI();}
 window.addEventListener("message",e=>{if(e.data&&e.data.type==="drawn")$("loading").classList.add("off");});
 
 
@@ -320,18 +392,106 @@ $("continents").addEventListener("click",e=>{const b=e.target.closest("button");
  drawCountries();update();});
 $("ctySearch").addEventListener("input",drawCountries);
 $("clearCty").onclick=()=>{S.countries.clear();drawCountries();update();};
-function applyMode(){const w=S.mode==="world";document.querySelectorAll(".us-only").forEach(s=>s.hidden=w);$("qCountries").hidden=!w;
+function applyMode(){const w=S.mode==="world",c=S.mode==="career";document.querySelectorAll(".us-only").forEach(s=>s.hidden=S.mode!=="us");$("qCountries").hidden=!w;
+ document.querySelectorAll(".travel-only").forEach(s=>s.hidden=c);document.querySelectorAll(".career-only").forEach(s=>s.hidden=!c);$("alt").hidden=!c;
  document.querySelectorAll("#modeBar button").forEach(b=>b.setAttribute("aria-selected",b.dataset.m===S.mode));
- TITLES=w?TITLES_W:TITLES_US;DESIGNS=w?WDESIGNS:USDESIGNS;
+ TITLES=w?TITLES_W:TITLES_US;DESIGNS=c?CDESIGNS:w?WDESIGNS:USDESIGNS;
  if(S.title!=="__custom"&&!TITLES.includes(S.title))S.title=TITLES[0];
- if(!DESIGNS.some(d=>d[0]===S.design))S.design=(w?S.designW:S.designUS)||DESIGNS[0][0];
+ if(!DESIGNS.some(d=>d[0]===S.design))S.design=(c?S.designC:w?S.designW:S.designUS)||DESIGNS[0][0];
  let k=0;document.querySelectorAll("main .q").forEach(s=>{if(!s.hidden){const n=s.querySelector(".n");if(n)n.textContent=++k;}});
- const ey=document.querySelector(".eyebrow");if(ey)ey.textContent=w?"World log · Instagram Story maker":"States log · Instagram Story maker";
+ const ey=document.querySelector(".eyebrow");if(ey)ey.textContent=c?"Career log · Story & LinkedIn maker":w?"World log · Instagram Story maker":"States log · Instagram Story maker";
+ $("h1").innerHTML=c?"Make your career <span>recap</span>":"Make your travel <span>story</span>";
+ $("sub").textContent=c?"Fill in your role, skills, certificates and projects, then download a ready-to-post image for your Instagram Story (1080 × 1920) or LinkedIn feed (1080 × 1350). No coding needed.":"Answer a few quick questions, tap the states or countries you've been to, and download a ready-to-post Instagram Story (1080 × 1920). No coding needed.";
+ if(c)$("cName").value=S.name;else $("name").value=S.name;
+ $("loading").textContent=c?"Drawing your recap…":"Drawing your map…";
  drawTitles();drawDesigns();}
 $("modeBar").addEventListener("click",e=>{const b=e.target.closest("button[data-m]");if(!b||b.dataset.m===S.mode)return;
- if(S.mode==="world")S.designW=S.design;else S.designUS=S.design;S.mode=b.dataset.m;
+ if(S.mode==="world")S.designW=S.design;else if(S.mode==="career")S.designC=S.design;else S.designUS=S.design;S.mode=b.dataset.m;
  if(S.mode==="world"&&!S.countries.size)S.countries.add("United States");applyMode();drawCountries();update();});
 
+
+/* ---- Career mode: role, skills, certificates, projects, milestones ---- */
+function isLI(){return S.mode==="career"&&S.fmt==="li";}
+const dlLabel=()=>isLI()?"Download for LinkedIn ⬇":"Download my Story ⬇";
+function sizeUI(){if(!$("download").disabled)$("download").textContent=dlLabel();
+ $("sizeNote").textContent=isLI()?"PNG · 1080 × 1350 px · 4:5, fits the LinkedIn feed":"PNG · 1080 × 1920 px · fits Instagram Stories exactly";}
+const MS_OK=d=>/^\d{4}-(0[1-9]|1[0-2])$/.test(String(d||"").trim());
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function careerData(){const K=S.career,t=v=>String(v==null?"":v).trim(),gl={},gc=parseInt((K.goals||{}).certs),gp=parseInt((K.goals||{}).projects);
+ if(gc>0)gl.certs=gc;if(gp>0)gl.projects=gp;
+ return {name:S.name.trim()||"Me",role:t(K.role),target:t(K.target),org:t(K.org),period:t(K.period),headline:t(K.headline)||"Career Recap",
+  skills:K.skills.filter(x=>t(x.name)).map(x=>({name:t(x.name),group:t(x.group)||"Skills",level:Math.max(1,Math.min(5,+x.level||3))})),
+  certs:K.certs.filter(x=>t(x.name)).map(x=>({name:t(x.name),issuer:t(x.issuer),year:t(x.year)})),
+  projects:K.projects.filter(x=>t(x.name)).map(x=>({name:t(x.name),result:t(x.result),tags:(x.tags||[]).map(t).filter(Boolean)})),
+  milestones:K.milestones.filter(x=>MS_OK(x.date)&&t(x.label)).map(x=>({date:t(x.date),label:t(x.label)})),goals:gl};}
+// each list: columns, header labels, row limit, fields [key, placeholder, maxlength, datalist, inputmode]
+const LISTS={
+ skills:{blank:()=>({name:"",group:"",level:3}),cols:"minmax(0,1.5fr) minmax(0,1.2fr) minmax(118px,1fr) 36px",head:["Skill","Group","Level"],max:24,
+  f:[["name","Skill, e.g. SQL",40],["group","Group, e.g. Analytics",20,"groupList"],["level"]]},
+ certs:{blank:()=>({name:"",issuer:"",year:""}),cols:"minmax(0,1.8fr) minmax(0,1.1fr) 84px 36px",head:["Certificate","Issuer","Year"],max:8,
+  f:[["name","e.g. Google Data Analytics",48],["issuer","e.g. Google",24],["year","2026",4,null,"numeric"]]},
+ projects:{blank:()=>({name:"",result:"",tags:[]}),cols:"minmax(0,1.1fr) minmax(0,1.7fr) minmax(0,1fr) 36px",head:["Project","Result, one line","Tags"],max:8,
+  f:[["name","e.g. Retail BI dashboard",40],["result","e.g. Cut reporting from 6 h to 30 min",64],["tags","SQL, Tableau",48]]},
+ milestones:{blank:()=>({date:"",label:""}),cols:"104px minmax(0,1fr) 36px",head:["YYYY-MM","Milestone"],max:12,
+  f:[["date","2026-05",7],["label","e.g. Started MBA",40]]}};
+function listMeta(k){const rows=S.career[k],L=LISTS[k],n=rows.filter(r=>String(r.name||r.label||"").trim()).length;let m=`${n} of ${L.max}`;
+ if(k==="skills"){const g=new Set(rows.filter(r=>String(r.name).trim()).map(r=>String(r.group).trim()||"Skills")).size;m=`${n} skills · ${g} group${g===1?"":"s"}${g>4?" · 4 look best":""}`;}
+ if(k==="milestones"){const bad=rows.filter(r=>String(r.date).trim()&&!MS_OK(r.date)).length;if(bad)m=`${bad} date${bad>1?"s need":" needs"} YYYY-MM · `+m;}
+ $("M-"+k).textContent=m;document.querySelector(`[data-add="${k}"]`).hidden=rows.length>=L.max;}
+function drawGroups(){$("groupList").innerHTML=[...new Set(S.career.skills.map(s=>String(s.group).trim()).filter(Boolean))].map(g=>`<option value="${esc(g)}"></option>`).join("");}
+function drawList(k){const L=LISTS[k],box=$("L-"+k),rows=S.career[k];box.innerHTML="";
+ if(rows.length){const h=el("div",{class:"crow head","aria-hidden":"true"});h.style.gridTemplateColumns=L.cols;h.innerHTML=L.head.map(x=>`<span>${x}</span>`).join("")+"<span></span>";box.appendChild(h);}
+ rows.forEach((r,i)=>{const row=el("div",{class:"crow"});row.style.gridTemplateColumns=L.cols;
+  L.f.forEach(([f,ph,max,list,im],j)=>{const lab=`${L.head[j]}, row ${i+1}`;
+   if(f==="level"){const sel=el("select",{class:"sel","data-i":i,"data-f":f,"aria-label":lab});LVL.slice(1).forEach((w,n)=>{const o=el("option",{value:n+1},w);if(+r.level===n+1)o.selected=true;sel.appendChild(o);});row.appendChild(sel);return;}
+   const inp=el("input",{type:"text","data-i":i,"data-f":f,placeholder:ph,maxlength:max,"aria-label":lab});if(list)inp.setAttribute("list",list);if(im)inp.setAttribute("inputmode",im);
+   inp.value=f==="tags"?(r.tags||[]).join(", "):(r[f]==null?"":r[f]);if(f==="date")inp.classList.toggle("bad",!!inp.value&&!MS_OK(inp.value));row.appendChild(inp);});
+  row.appendChild(el("button",{class:"del",type:"button","data-del":i,"aria-label":`Remove row ${i+1}`,title:"Remove"},"×"));box.appendChild(row);});
+ listMeta(k);if(k==="skills")drawGroups();}
+Object.keys(LISTS).forEach(k=>{const box=$("L-"+k);
+ const set=e=>{const t=e.target;if(!t.dataset.f)return;const r=S.career[k][+t.dataset.i],f=t.dataset.f,v=t.value;
+  if(f==="tags")r.tags=v.split(",").map(x=>x.trim()).filter(Boolean);else if(f==="level")r.level=+v;else r[f]=f==="year"?v.replace(/\D/g,""):v;
+  if(f==="year"&&t.value!==r.year)t.value=r.year;if(f==="date")t.classList.toggle("bad",!!v.trim()&&!MS_OK(v));if(f==="group")drawGroups();listMeta(k);update();};
+ box.addEventListener("input",set);box.addEventListener("change",e=>{if(e.target.tagName==="SELECT")set(e);});
+ box.addEventListener("click",e=>{const b=e.target.closest("[data-del]");if(!b)return;S.career[k].splice(+b.dataset.del,1);drawList(k);update();});});
+document.querySelector("main").addEventListener("click",e=>{const a=e.target.closest("[data-add]"),c=e.target.closest("[data-clear]");
+ if(a){const k=a.dataset.add;S.career[k].push(LISTS[k].blank());drawList(k);const ins=$("L-"+k).querySelectorAll(".crow:last-child input");if(ins[0])ins[0].focus();update();}
+ if(c){S.career[c.dataset.clear]=[];drawList(c.dataset.clear);update();}});
+document.querySelectorAll("[data-c]").forEach(inp=>{const k=inp.dataset.c;inp.value=k==="name"?S.name:(S.career[k]||"");
+ inp.addEventListener("input",()=>{if(k==="name")S.name=inp.value;else S.career[k]=inp.value;update();});});
+[["gCerts","certs"],["gProjects","projects"]].forEach(([id,k])=>{const inp=$(id);inp.value=(S.career.goals||{})[k]||"";
+ inp.addEventListener("input",()=>{inp.value=inp.value.replace(/\D/g,"");S.career.goals=Object.assign({},S.career.goals,{[k]:inp.value});update();});});
+function drawCareer(){Object.keys(LISTS).forEach(drawList);}
+/* design + size */
+const FMTS=[["story","Story · 1080 × 1920"],["li","LinkedIn · 1080 × 1350"]];
+function drawCDesigns(){const p=$("fmtPills");p.innerHTML="";FMTS.forEach(([v,l])=>p.appendChild(el("button",{class:"pill",type:"button","aria-pressed":(S.fmt||"story")===v,"data-fmt":v},l)));
+ const g=$("cdesigns");g.innerHTML="";g.classList.toggle("li",isLI());
+ CDESIGNS.forEach(([v,n,tag])=>g.appendChild(el("button",{class:"design",type:"button","aria-pressed":S.design===v,"data-v":v},`<img src="${thumb(v)}" alt="${esc(n)} design preview" loading="lazy">${esc(n)}${tag?`<span class="badge${tag==="New"?" new":""}">${tag}</span>`:""}`)));
+ $("goalWrap").hidden=S.design!==93;}
+$("cdesigns").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.design=+b.dataset.v;drawDesigns();update();});
+$("fmtPills").addEventListener("click",e=>{const b=e.target.closest("button[data-fmt]");if(!b)return;S.fmt=b.dataset.fmt;drawDesigns();update();});
+/* alt text: a plain-English description of what the chosen design and size actually show */
+function altText(){const C=careerData(),li=isLI(),v=S.design,nm=C.name!=="Me"?C.name:"";
+ const TITLE={90:"Skill Tree",91:"Capability Portfolio",92:`${C.skills.length} skills merged`,93:"Career Roadmap"}[v];
+ const KIND={90:"drawn as a skill tree where each skill group is a branch and each skill a leaf",91:"laid out as a consulting-style slide with skills rated by Harvey balls",
+  92:"styled like a developer profile page, with skill groups as languages and projects as pinned repositories",93:"styled as a product roadmap with OKR progress bars, a timeline and a board of shipped work, skills being leveled up and the next role"}[v];
+ const SHOW={90:{c:li?0:4,p:li?0:4,m:0},91:{c:li?0:3,p:li?2:4,m:0},92:{c:li?0:3,p:4,m:li?0:6},93:{c:99,p:99,m:99}}[v];
+ const groups=[...new Set(C.skills.map(s=>s.group))],ms=C.milestones.slice().sort((a,b)=>a.date<b.date?-1:1).slice(SHOW.m?-SHOW.m:0);
+ let who=(nm?nm+", ":"")+C.role;if(C.org)who+=`${C.role?" at ":""}${C.org}`;if(C.period)who+=`, ${C.period}`;who=who.replace(/^,\s*/,"");
+ const build=n=>{const out=[`Career recap image${li?"":" for an Instagram Story"} titled “${TITLE}”, ${KIND}.`];
+  if(who)out.push(who+".");if(C.target)out.push(`Next goal: ${C.target}.`);
+  if(C.skills.length){const per=g=>C.skills.filter(s=>s.group===g).sort((a,b)=>b.level-a.level);
+   const detail=groups.map(g=>{const a=per(g),more=a.length>n?", and more":"";return v>=92?`${g} (${a.slice(0,n).map(s=>s.name).join(", ")}${more})`:`${g}: ${a.slice(0,n).map(s=>`${s.name} (${LVL[s.level]})`).join(", ")}${more}`;}).join("; ");
+   out.push(`${C.skills.length} skills in ${groups.length} group${groups.length===1?"":"s"}, rated from Learning to Expert. ${detail}.`);}
+  const lst=(arr,k,f)=>{const vis=Math.min(k,arr.length),m=Math.min(vis,n);return arr.slice(0,m).map(f).join("; ")+(vis>m?`; and ${vis-m} more`:"");};
+  if(SHOW.c&&C.certs.length)out.push(`Certificates: ${lst(C.certs,SHOW.c,c=>c.name+(c.issuer||c.year?` (${[c.issuer,c.year].filter(Boolean).join(", ")})`:""))}.`);
+  if(SHOW.p&&C.projects.length)out.push(`Projects: ${lst(C.projects,SHOW.p,p=>p.name+(p.result?`: ${p.result}`:""))}.`);
+  if(SHOW.m&&ms.length)out.push(`Milestones: ${lst(ms,SHOW.m,m=>`${MON[+m.date.slice(5,7)-1]} ${m.date.slice(0,4)}, ${m.label}`)}.`);
+  return out.join(" ").replace(/\s+/g," ").replace(/\.\./g,".");};
+ let n=12,t=build(n);while(t.length>1000&&n>1)t=build(--n); // LinkedIn alt text allows up to 1,000 characters
+ return t.length>1000?t.slice(0,999).trimEnd()+"…":t;}
+$("alt").onclick=async()=>{const t=altText();
+ try{await navigator.clipboard.writeText(t);$("status").textContent=`Alt text copied (${t.length} characters). On LinkedIn, open the image, choose Alt text, and paste.`;}catch(e){prompt("Copy this alt text:",t);}};
 
 /* ---- sticker picker ---- */
 const SPOTS={80:5,81:5,82:4,83:3,72:7,73:7,74:7,75:7,58:4,63:4,56:4,69:3,65:4,66:2,67:3,68:3,70:4,71:2,55:3};
@@ -352,14 +512,16 @@ $("stkNone").onclick=()=>{S.stkOff=[...new Set([...(S.stkOff||[]),...stickerOrde
 
 /* ---- download ---- */
 let reqId=0;
-$("download").onclick=()=>{const c=config();if(S.mode==="world"?!c.countries.length:!c.states.length){$("status").textContent=S.mode==="world"?"Pick at least one country first.":"Pick at least one state first.";return;}
+$("download").onclick=()=>{const c=config();const empty=S.mode==="career"?!c.career.skills.length:S.mode==="world"?!c.countries.length:!c.states.length;
+ if(empty){$("status").textContent=S.mode==="career"?"Add at least one skill first.":S.mode==="world"?"Pick at least one country first.":"Pick at least one state first.";return;}
+ const fname=S.mode==="career"?`my-career-recap${isLI()?"-linkedin":""}.png`:S.mode==="world"?"my-world-travel-story.png":"my-us-travel-story.png",H=isLI()?1350:1920;
  const btn=$("download");btn.disabled=true;btn.textContent="Creating your PNG…";$("status").textContent="";const id=++reqId;
- const done=(msg)=>{btn.disabled=false;btn.textContent="Download my Story ⬇";$("status").textContent=msg||"";};
+ const done=(msg)=>{btn.disabled=false;btn.textContent=dlLabel();$("status").textContent=msg||"";};
  const onMsg=e=>{if(!e.data||e.data.type!=="png"||e.data.id!==id)return;window.removeEventListener("message",onMsg);
   if(e.data.error){done("Sorry, that didn't work. Try Chrome or Safari, or screenshot the preview.");return;}
-  fetch(e.data.url).then(r=>r.blob()).then(async blob=>{const file=new File([blob],(S.mode==="world"?"my-world-travel-story.png":"my-us-travel-story.png"),{type:"image/png"});
-   if(navigator.canShare&&navigator.canShare({files:[file]})&&/iPhone|iPad|Android/i.test(navigator.userAgent)){try{await navigator.share({files:[file],title:"My US Travel Story"});done("Saved! Share it to your Story ✨");return;}catch(err){}}
-   const a=el("a",{href:URL.createObjectURL(blob),download:(S.mode==="world"?"my-world-travel-story.png":"my-us-travel-story.png")});document.body.appendChild(a);a.click();a.remove();done("Downloaded ✓ 1080 × 1920 PNG");});};
+  fetch(e.data.url).then(r=>r.blob()).then(async blob=>{const file=new File([blob],fname,{type:"image/png"});
+   if(navigator.canShare&&navigator.canShare({files:[file]})&&/iPhone|iPad|Android/i.test(navigator.userAgent)){try{await navigator.share({files:[file],title:S.mode==="career"?"My Career Recap":"My US Travel Story"});done(isLI()?"Saved! Ready for your LinkedIn post.":"Saved! Share it to your Story ✨");return;}catch(err){}}
+   const a=el("a",{href:URL.createObjectURL(blob),download:fname});document.body.appendChild(a);a.click();a.remove();done(`Downloaded ✓ 1080 × ${H} PNG`);});};
  window.addEventListener("message",onMsg);$("pv").contentWindow.postMessage({type:"export",id},"*");
  setTimeout(()=>{if(btn.disabled)done("Still working… if nothing happens, refresh and try again.");},20000);};
 
@@ -368,8 +530,7 @@ $("share").onclick=async()=>{const url=location.href.split("#")[0]+"#a="+enc({..
 $("toPreview").onclick=()=>$("preview").scrollIntoView({behavior:"smooth"});
 
 if("IntersectionObserver" in window)new IntersectionObserver(es=>{document.querySelector(".mobilebar").style.display=es[0].isIntersecting?"none":"";}).observe($("preview"));
-if(!DESIGNS.some(d=>d[0]===S.design))S.design=72;
-drawStates();drawCities();drawCountries();drawSince();applyMode();update();
+drawStates();drawCities();drawCountries();drawSince();drawCareer();applyMode();update();
 </script>
 </body>
 </html>
