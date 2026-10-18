@@ -5,6 +5,7 @@
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
 <script src="data/us-states.js"></script><script src="data/world-countries.js"></script><script src="stickers.js"></script><script src="landmarks.js"></script><script src="stickers-world.js"></script><script src="../maker/cities.js"></script><script src="../maker/countries.js"></script>
 <script src="../my-travel.js"></script>
+<script src="../my-career.js"></script><script src="skill-stickers.js"></script><script src="career.js"></script>
 </head><body>
 <svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
 <script>
@@ -1677,7 +1678,7 @@ function v83(){const WD=W(),IV="#f4ece0",MUT="#9d9283",GS="#c9a45c",GOLD=lg(GOLD
  WD.list.forEach((n,i)=>{const c=Math.floor(i/per),r=i%per,x=(cols===4?88:130)+c*cw,y=1250+r*RH;svg.append("path").attr("d",`M${x},${y-15}L${x+4.5},${y-9}L${x},${y-3}L${x-4.5},${y-9}Z`).attr("fill",GOLD);
   fitT(T(svg,x+16,y,n,{f:SERIF2,w:400,s:Math.min(28,RH*.82),c:IV}),cw-30,28);});}
 
-const FN=[null,null,null,null,null,null,null,null,null,null,null,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22,v23,v24,v25,v26,v27,v28,v29,v30,v31,v32,v33,v34,v35,v36,v37,v38,v39,v40,v41,v42,v43,v44,v45,v46,v47,v48,v49,v50,v51,v52,v53,v54,v55,v56,v57,v58,v59,v60,v61,v62,v63,v64,v65,v66,v67,v68,v69,v70,v71,v72,v73,v74,v75,null,null,null,null,v80,v81,v82,v83];
+const FN=[null,null,null,null,null,null,null,null,null,null,null,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22,v23,v24,v25,v26,v27,v28,v29,v30,v31,v32,v33,v34,v35,v36,v37,v38,v39,v40,v41,v42,v43,v44,v45,v46,v47,v48,v49,v50,v51,v52,v53,v54,v55,v56,v57,v58,v59,v60,v61,v62,v63,v64,v65,v66,v67,v68,v69,v70,v71,v72,v73,v74,v75,null,null,null,null,v80,v81,v82,v83,null,null,null,null,null,null,v90,v91,v92,v93];
 const PRE=["400 20px \"IBM Plex Mono\"","500 20px \"IBM Plex Mono\"","600 20px \"IBM Plex Mono\"","400 20px \"IBM Plex Sans\"","600 20px \"IBM Plex Sans\"","700 20px \"IBM Plex Sans\"","400 20px \"DM Sans\"","500 20px \"DM Sans\"","700 20px \"DM Sans\"","italic 500 20px \"Playfair Display\"","500 20px \"Playfair Display\"","600 20px \"Playfair Display\"","900 20px Fraunces","20px Anton","600 20px \"Big Shoulders Display\"","800 20px \"Big Shoulders Display\"","600 20px Cinzel","20px Limelight","800 20px \"Bricolage Grotesque\"","600 20px \"Bricolage Grotesque\"","italic 400 20px \"Instrument Serif\"","400 20px Geist","500 20px Geist","600 20px Geist","700 20px Geist","400 20px \"Geist Mono\"","500 20px \"Geist Mono\"","600 20px \"Geist Mono\"","700 20px Caveat","500 20px \"Bodoni Moda\"","700 20px \"Bodoni Moda\"","italic 500 20px \"Bodoni Moda\"","400 20px \"Space Mono\""];
 
 /* ---------- in-browser PNG export (used by the maker page) ---------- */
@@ -1693,12 +1694,12 @@ window.exportPNG=async function(scale=1){
  const st=document.createElementNS("http://www.w3.org/2000/svg","style");st.textContent=_fontCSS;clone.insertBefore(st,clone.firstChild);
  const xml=new XMLSerializer().serializeToString(clone);
  const img=new Image();img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(xml);await img.decode();await new Promise(r=>setTimeout(r,300));
- const c=document.createElement("canvas");c.width=1080*scale;c.height=1920*scale;const ctx=c.getContext("2d");ctx.drawImage(img,0,0,c.width,c.height);
+ const c=document.createElement("canvas");c.width=1080*scale;c.height=(+document.getElementById("s").getAttribute("height")||1920)*scale;const ctx=c.getContext("2d");ctx.drawImage(img,0,0,c.width,c.height);
  return c.toDataURL("image/png");};
 window.addEventListener("message",async e=>{if(!e.data||e.data.type!=="export")return;
  try{const url=await window.exportPNG();e.source.postMessage({type:"png",url,id:e.data.id},"*");}catch(err){e.source.postMessage({type:"png",error:String(err),id:e.data.id},"*");}});
 
-const FEATURED=[[72,"sticker-atlas"],[73,"sticker-atlas-night"],[74,"skyline-atlas"],[75,"skyline-atlas-night"],[58,"travel-wrapped"],[63,"wrapped-noir"],[59,"noir-gold"],[60,"midnight"],[61,"emerald-velvet"],[62,"bordeaux"],[64,"ivory-gold"],[51,"luxe-sky"],[52,"luxe-cream"],[65,"doctor"],[66,"physician"],[67,"ceo"],[68,"teacher"],[69,"product-manager"],[70,"compiler-engineer"],[71,"stylist"],[57,"music-album"],[55,"mba-market-coverage"],[56,"tech-dashboard"],[48,"sky-skyline-top"],[49,"lavender-skyline-top"],[47,"sage"],[50,"terracotta"],[45,"travel-map-cream"],[46,"places-blush"]];
+const FEATURED=[[72,"sticker-atlas"],[73,"sticker-atlas-night"],[74,"skyline-atlas"],[75,"skyline-atlas-night"],[58,"travel-wrapped"],[63,"wrapped-noir"],[59,"noir-gold"],[60,"midnight"],[61,"emerald-velvet"],[62,"bordeaux"],[64,"ivory-gold"],[51,"luxe-sky"],[52,"luxe-cream"],[65,"doctor"],[66,"physician"],[67,"ceo"],[68,"teacher"],[69,"product-manager"],[70,"compiler-engineer"],[71,"stylist"],[57,"music-album"],[55,"mba-market-coverage"],[56,"tech-dashboard"],[90,"career-skill-tree"],[91,"career-mba"],[92,"career-tech"],[93,"career-pm"],[48,"sky-skyline-top"],[49,"lavender-skyline-top"],[47,"sage"],[50,"terracotta"],[45,"travel-map-cream"],[46,"places-blush"]];
 if(!/[#&]v=\d+/.test(location.hash)){
  document.documentElement.style.cssText="width:auto;height:auto;overflow:auto";document.body.style.cssText="margin:0;width:auto;height:auto;overflow:auto;background:#f4efe8;font-family:system-ui,sans-serif;padding:32px";
  document.getElementById("s").remove();
@@ -1707,5 +1708,5 @@ if(!/[#&]v=\d+/.test(location.hash)){
  FEATURED.forEach(([v,n])=>{const a=document.createElement("a");a.href="#v="+v;a.onclick=()=>setTimeout(()=>location.reload(),0);a.style.cssText="text-decoration:none;color:#2c2531;font:500 14px system-ui";
   a.innerHTML=`<div style="width:216px;height:384px;overflow:hidden;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.12);background:#fff"><iframe src="index.html#v=${v}" style="width:1080px;height:1920px;border:0;transform:scale(.2);transform-origin:0 0;pointer-events:none" loading="lazy"></iframe></div><div style="margin-top:8px">${v} · ${n}</div>`;g.appendChild(a);});
  wStickerLayer(wm,[[1000,560,.85,8],[80,1050,.85,-8],[1000,1050,.8,10]],.36);
-}else Promise.all(PRE.map(f=>document.fonts.load(f).catch(()=>null))).then(()=>document.fonts.ready).then(()=>{(V===999?vSheet:V===998?vLand:V===997?vSheetW:FN[V])();window.__drawn=true;try{parent.postMessage({type:"drawn"},"*");}catch(e){}});
+}else Promise.all(PRE.map(f=>document.fonts.load(f).catch(()=>null))).then(()=>document.fonts.ready).then(()=>{(V===999?vSheet:V===998?vLand:V===997?vSheetW:V===996?vSheetSkills:FN[V])();window.__drawn=true;try{parent.postMessage({type:"drawn"},"*");}catch(e){}});
 </script></body></html>
