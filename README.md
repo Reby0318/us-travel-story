@@ -31,6 +31,28 @@ Not just the US: switch the maker to **World · countries** at the top, tap the 
 
 ---
 
+## 💼 Career Recap (new)
+
+The same editorial style, applied to your career instead of your travels. It's built for graduation posts, job-search posts and year-end reviews. Fill in **`my-career.js`** once (role, target role, skills with a 1–5 level, certificates, projects with one result each, milestones), then open:
+
+| # | Design | Best for |
+|---|--------|----------|
+| 90 | **Skill Tree**: your skill groups as branches, skills as leaves, credentials and proof of work below | Instagram, personal brand |
+| 91 | **MBA capability portfolio**: consulting-slide skill matrix with Harvey balls, a "so what" line, engagements and impact | LinkedIn, MBA recruiting |
+| 92 | **Tech profile**: GitHub-style README, languages (skill groups), pinned projects, contribution timeline, achievements | Tech / data roles |
+| 93 | **PM career roadmap**: avg-level ring, OKRs, timeline, epics and a Shipped / Leveling up / Next board | Product roles |
+
+- **Two sizes.** `generator/index.html#v=90` is the 1080 × 1920 Story. Add `&fmt=li` (`#v=90&fmt=li`) for the **1080 × 1350 LinkedIn** feed size, where a 9:16 image would get cropped.
+- **Export:** `./scripts/render.sh 90 91 92 93` (Story) or `FMT=li ./scripts/render.sh 90 91 92 93` (LinkedIn).
+- **Keep it credible.** Levels are words, not percentages (1 Learning · 2 Working · 3 Proficient · 4 Advanced · 5 Expert). Every certificate shows its issuer and year, and every project carries one measurable result. Don't post confidential employer numbers.
+- Each skill gets a hand-drawn sticker by keyword (spreadsheet for Excel, database for SQL, chart for Tableau, compass for strategy, and so on). Open `generator/index.html#v=996` to see them all.
+
+| Skill Tree | MBA | Tech | PM | LinkedIn size |
+|---|---|---|---|---|
+| ![](examples/featured/90-career-skill-tree.png) | ![](examples/featured/91-career-mba.png) | ![](examples/featured/92-career-tech.png) | ![](examples/featured/93-career-pm.png) | ![](examples/featured/91-career-mba-linkedin.png) |
+
+---
+
 ## Quick start for tinkerers (edit the config file)
 
 1. **Download** this repo (green **Code** button → *Download ZIP*) and unzip it.
@@ -123,8 +145,10 @@ Every one of the 168 cities in the maker has its own line drawing of what it is 
 index.html            ← the no-code survey maker (GitHub Pages)
 maker/thumbs/         ← design thumbnails for the maker
 my-travel.js          ← edit me
+my-career.js          ← edit me for the Career Recap (designs 90–93)
 generator/index.html  ← all designs (open in a browser)
 generator/data/       ← US + world map shapes
+generator/career.js   ← Career Recap designs · skill-stickers.js ← hand-drawn skill icons
 scripts/render.sh     ← export PNGs with Chrome
 prompt-kit/           ← copy-paste prompts for Claude / ChatGPT
 examples/featured/    ← the 14 designs, rendered
