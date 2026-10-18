@@ -1,5 +1,7 @@
 # US Travel Story 🗺️✨
 
+**Live site:** https://reby0318.github.io/us-travel-story/
+
 Turn the US states you've visited into an aesthetic **Instagram Story** (1080 × 1920 px, 9:16).
 20 ready-made designs: a new **Sticker Atlas** with hand-drawn state stickers, a Travel Wrapped summary, a dark luxury collection, a profession collection (doctor, physician, CEO, teacher, PM, compiler engineer, stylist), a vinyl album, an MBA slide and a developer dashboard.
 
